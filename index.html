@@ -175,6 +175,16 @@ body.ctrlBtn.driving .tbR .gas{grid-column:2;grid-row:1 / span 3;height:100%;min
 body.ctrlBtn.driving .tbR .nitro{grid-column:1;grid-row:1}body.ctrlBtn.driving .tbR .drift{grid-column:1;grid-row:2}body.ctrlBtn.driving .tbR .brake{grid-column:1;grid-row:3}
 body.ctrlBtn.driving .tbS{right:calc(max(12px,env(safe-area-inset-right)) + 182px)}
 
+/* v.12b: kamera seçim penceresi dokunulabilir; dışına dokununca kapanır */
+#camBar{pointer-events:auto}
+#camBack{position:fixed;inset:0;z-index:5;display:none;background:rgba(0,0,0,.35);pointer-events:auto}
+body.touch.playing.camOpen #camBack{display:block}
+#camBar .camX{display:none}body.touch #camBar .camX{display:inline-block;width:100%;margin-top:4px;background:rgba(255,43,74,.25);border-color:#ff2b4a}
+body.touch #camBar button{padding:10px 12px;font-size:13px;min-width:74px}
+/* büyük harita */
+#bigMap{position:fixed;inset:0;z-index:40;display:none;background:rgba(4,3,10,.94);touch-action:none}
+#bigMap.show{display:block}#bigMap canvas{position:absolute;inset:0;width:100%;height:100%}
+
 </style>
 </head>
 <body>
@@ -337,7 +347,8 @@ body.ctrlBtn.driving .tbS{right:calc(max(12px,env(safe-area-inset-right)) + 182p
 
 <div id="touch">
   <div id="joyBase"><div id="joyKnob"></div></div>
-  <div id="camBar"><span>KAMERA</span><button data-cm="0">Yakın</button><button data-cm="1">Uzak</button><button data-cm="4">Yayın</button><button data-cm="5">Kokpit</button><button data-cm="2">Kaput</button><button data-cm="3">Tepeden</button><button data-cm="6">Gezinti</button></div>
+  <div id="camBar"><span>KAMERA</span><button data-cm="0">Yakın</button><button data-cm="1">Uzak</button><button data-cm="4">Yayın</button><button data-cm="5">Kokpit</button><button data-cm="2">Kaput</button><button data-cm="3">Tepeden</button><button data-cm="6">Gezinti</button><button class="camX" data-act="camClose">✕ KAPAT</button></div>
+  <div id="camBack"></div>
 <div class="tb tbL">
     <button class="tbtn steer" data-k="left">◀</button>
     <button class="tbtn steer" data-k="right">▶</button>
@@ -355,6 +366,7 @@ body.ctrlBtn.driving .tbS{right:calc(max(12px,env(safe-area-inset-right)) + 182p
   </div>
 </div>
 <button id="btnPause" aria-label="Duraklat">❚❚</button>
+<div id="bigMap"><canvas id="bigMapC"></canvas></div>
 <div id="tipRot">📱↻ Telefonu yan çevirirsen yolu daha geniş görürsün<br><small style="font-weight:600;opacity:.8">Dik ekranda da oynayabilirsin</small></div>
 <div id="flash"></div>
 <script>
@@ -373,7 +385,7 @@ return {ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnimationB
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.12";
+const VER = "v.13";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -3140,6 +3152,8 @@ addEventListener("keydown", e => {
   if (e.target && e.target.tagName === "INPUT") return;
   auInit(); if (GAME_KEYS.includes(e.code)) e.preventDefault();
   const first = !KEY[e.code]; KEY[e.code] = true; if (!first) return;
+  if (G.state === "map") { if (e.code === "KeyN" || e.code === "Escape" || e.code === "KeyM") closeMap(); return; }
+  if (G.state === "play" && e.code === "KeyN" && !freeCamOn()) { openMap(); return; }
   if (G.state === "play" && freeCamOn()) { // gezinti kamerasında sürüş tuşları kapalı
     if (e.code === "Escape" || e.code === "Digit7" || e.code === "KeyC" || e.code === "KeyV") setCam(FC.prev || 0); else if (/^Digit[1-6]$/.test(e.code)) setCam(CAM_ORDER[+e.code.slice(5) - 1]); else if (e.code === "KeyP") pauseGame(); return;
   }
@@ -3160,11 +3174,11 @@ addEventListener("keydown", e => {
   else if (G.state === "garage" && e.code === "Escape") closeGarage();
   else if (G.state === "shop" && (e.code === "Escape" || e.code === "KeyE")) closeShop();
 });
-hud.addEventListener("mousedown", e => { if (!IS_TOUCH && e.button === 0 && G.walker && G.state === "play") playerPunch(); });
+hud.addEventListener("mousedown", e => { if (G.mm && G.state === "map") return; if (!IS_TOUCH && e.button === 0 && G.walker && G.state === "play" && !inMinimap(e.clientX, e.clientY)) playerPunch(); });
 /* Kamerayı sürükleyerek döndür (v.12): bilgisayarda sağ ya da orta tuşla, telefonda sağ yarıdaki boş yerde parmakla */
 const ORB = { id: null, x: 0 };
 hud.addEventListener("pointerdown", e => {
-  if (G.state !== "play" || freeCamOn() || ORB.id !== null) return;
+  if (G.state !== "play" || freeCamOn() || ORB.id !== null || inMinimap(e.clientX, e.clientY)) return;
   if (e.pointerType === "mouse" ? !(e.button === 2 || e.button === 1) : e.clientX < CW * 0.55) return;
   ORB.id = e.pointerId; ORB.x = e.clientX; try { hud.setPointerCapture(e.pointerId); } catch (er) { }
 });
@@ -3176,7 +3190,7 @@ addEventListener("blur", () => { for (const k in KEY) KEY[k] = false; for (const
 /* ---------------- Dokunmatik ---------------- */
 let joyId = null, joyX = 0, joyY = 0; const JR = 55;
 hud.addEventListener("pointerdown", e => {
-  auInit(); if (G.state !== "play" || e.pointerType === "mouse") return;
+  auInit(); if (inMinimap(e.clientX, e.clientY)) { e.stopImmediatePropagation(); openMap(); return; } if (G.state !== "play" || e.pointerType === "mouse") return;
   if (joyId === null && e.clientX < CW * 0.55 && !(document.body.classList.contains("ctrlBtn") && G.pv && !freeCamOn())) { joyId = e.pointerId; joyX = e.clientX; joyY = e.clientY; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; const b = $("joyBase"); b.style.display = "block"; b.style.left = joyX + "px"; b.style.top = joyY + "px"; $("joyKnob").style.transform = ""; try { hud.setPointerCapture(e.pointerId); } catch (er) { } }
 });
 hud.addEventListener("pointermove", e => {
@@ -4411,7 +4425,7 @@ function drawHUD() {
   // mini harita
   const land = IS_TOUCH && !port, ms = land ? Math.min(118, CH - 200) : small ? 112 : IS_TOUCH ? 128 : 168;
   const mx = land ? 10 : IS_TOUCH ? CW - ms - 10 : 14, my = land ? (small ? 66 : 74) : IS_TOUCH ? CH - 236 - ms : CH - ms - 14; // bilgisayarda GTA gibi sol alt
-  drawMinimap(c, mx, my, ms);
+  drawMinimap(c, mx, my, ms); G.mm = { x: mx + ms / 2, y: my + ms / 2, r: ms / 2 + 6 };
   if (G.carName && G.carName.t > 0) { G.carName.t -= 1 / 60; c.globalAlpha = Math.min(1, G.carName.t * 2); c.font = "italic 900 " + (small ? 20 : 26) + "px 'Trebuchet MS',system-ui"; c.textAlign = "right"; c.textBaseline = "alphabetic"; c.fillStyle = "rgba(0,0,0,.6)"; const cy2 = land ? 140 : my - 14; c.fillText(G.carName.txt, CW - 16, cy2 + 2); c.fillStyle = "#ffd000"; c.fillText(G.carName.txt, CW - 18, cy2); c.globalAlpha = 1; }
   // hız göstergesi
   const fcOn = freeCamOn();
@@ -4638,6 +4652,7 @@ document.addEventListener("click", e => {
   if (d.pickcar) { SV.car = d.pickcar; persist(true); sfxClick(); return buildGarage(); }
   if (d.route) return startMode(pendingMode, d.route);
   if (d.time) { SV.set.time = d.time; setTimeMode(); return syncToggles(); }
+  if (d.act === "camClose") { document.body.classList.remove("camOpen"); return; }
   if (d.ctl) { SV.set.ctrl = d.ctl; persist(); applyCtrl(); return syncToggles(); }
   if (d.tog) { SV.set[d.tog] = !SV.set[d.tog]; if (d.tog === "music") setMusic(SV.set.music); if (d.tog === "sfx") setSfx(SV.set.sfx); persist(); return syncToggles(); }
   if (d.q) { SV.set.quality = d.q; persist(); applyQuality(); return syncToggles(); }
@@ -4679,6 +4694,49 @@ function init() {
   requestAnimationFrame(loop);
 }
 setTimeout(init, 30);
+
+/* =====================================================================
+   BÜYÜK HARİTA (v.12b): küçük haritaya (radar) dokun / tıkla ya da N tuşu.
+   Oyun durur; bütün İstanbul, sen, hedef, yolcular, polis, dükkanlar,
+   garaj, satıcılar ve simge yapılar görünür. Tekrar dokununca kapanır.
+   ===================================================================== */
+function inMinimap(x, y) { const m = G.mm; return !!(m && G.state === "play" && !freeCamOn() && (x - m.x) ** 2 + (y - m.y) ** 2 < m.r * m.r); }
+function openMap() {
+  if (G.state !== "play") return; G.state = "map"; hornOff(); document.body.classList.remove("camOpen"); for (const k in TOUCH.btn) TOUCH.btn[k] = false; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0;
+  $("bigMap").classList.add("show"); sfxClick(); drawBigMap();
+}
+function closeMap() { if (G.state !== "map") return; $("bigMap").classList.remove("show"); G.state = "play"; sfxClick(); }
+function drawBigMap() {
+  const cv = $("bigMapC"), dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.fillStyle = "#04030a"; c.fillRect(0, 0, W, H);
+  const small = Math.min(W, H) < 560, top = small ? 44 : 54, bot = small ? (H > W ? 78 : 64) : 58, pad = 10, rot = H > W * 1.1; // dik ekranda harita 90° döner, ekranı doldurur (kuzey sağda)
+  const mw = rot ? MH : MW, mh = rot ? MW : MH, sc = Math.min((W - pad * 2) / mw, (H - top - bot) / mh), ox = (W - mw * sc) / 2, oy = top + (H - top - bot - mh * sc) / 2;
+  const P = rot ? (x, z) => [ox + (MH - z) * sc, oy + x * sc] : (x, z) => [ox + x * sc, oy + z * sc];
+  c.save(); c.beginPath(); rr(c, ox - 2, oy - 2, mw * sc + 4, mh * sc + 4, 12); c.clip(); if (rot) { c.translate(ox + MH * sc, oy); c.rotate(Math.PI / 2); c.drawImage(MAPC, 0, 0, MW * sc, MH * sc); } else c.drawImage(MAPC, ox, oy, MW * sc, MH * sc); c.restore();
+  c.strokeStyle = "rgba(0,229,255,.6)"; c.lineWidth = 2; rr(c, ox - 2, oy - 2, mw * sc + 4, mh * sc + 4, 12); c.stroke();
+  // semt adları ve simge yapılar
+  c.textAlign = "center"; c.textBaseline = "middle";
+  c.font = "800 " + (small ? 9 : 11) + "px system-ui"; c.fillStyle = "rgba(255,255,255,.38)"; for (const d of DISTRICTS) { const [x, y] = P(d.x, d.z); c.fillText(d.name.toUpperCase(), x, y); }
+  c.font = "700 " + (small ? 8 : 10) + "px system-ui"; for (const l of LANDMARKS) { if (!l.r || l.r < (small ? 40 : 20)) continue; const [x, y] = P(l.x, l.z); c.fillStyle = "#ffd27a"; c.beginPath(); c.arc(x, y, 2.5, 0, TAU); c.fill(); c.fillStyle = "rgba(255,230,180,.85)"; c.fillText(l.name, x, y - 9); }
+  const dot = (x0, z0, r, col, ring) => { const [x, y] = P(x0, z0); c.fillStyle = col; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); if (ring) { c.strokeStyle = "#000"; c.lineWidth = 1.5; c.stroke(); } };
+  for (const v of VENDORS) if (v.up) dot(v.x, v.z, 2.6, "#ffb040", true);
+  for (const s of SHOPS) { const [x, y] = P(s.x, s.z); c.fillStyle = "#0a0612"; c.beginPath(); c.arc(x, y, 7, 0, TAU); c.fill(); c.fillStyle = SHOP_TYPES[s.type].mini; c.beginPath(); c.arc(x, y, 5.5, 0, TAU); c.fill(); c.fillStyle = "#fff"; c.font = "900 8px system-ui"; c.fillText(SHOP_TYPES[s.type].icon, x, y + 0.5); }
+  if (G.mode === "taxi" || G.mode === "cruise") { const [gx, gy] = P(GARAGE.rx, GARAGE.rz); c.fillStyle = "#2b7bff"; rr(c, gx - 8, gy - 8, 16, 16, 4); c.fill(); c.fillStyle = "#fff"; c.font = "900 10px system-ui"; c.fillText("G", gx, gy + 0.5); }
+  if (!G.fare && (G.mode === "taxi" || G.mode === "cruise")) for (const p of G.pax) if (p.state === "wait") dot(p.x, p.z, 4, "#2bff7a", true);
+  for (const v of G.veh) if (v.police && v !== G.pv) dot(v.x, v.z, v.chase ? 4.5 : 3, v.chase ? "#ff2b4a" : "#3a78ff", true);
+  const tgt = G.fare ? G.fare.dest : G.cps ? G.cps[G.cpi] : null;
+  if (tgt) { const [x, y] = P(tgt.x, tgt.z); c.strokeStyle = G.fare ? "#ff2b4a" : "#00e5ff"; c.lineWidth = 3; c.beginPath(); c.arc(x, y, 9, 0, TAU); c.stroke(); c.fillStyle = c.strokeStyle; c.beginPath(); c.arc(x, y, 4, 0, TAU); c.fill(); c.font = "900 11px system-ui"; c.fillStyle = "#fff"; c.fillText(tgt.name || "HEDEF", x, y - 16); }
+  const me = G.pv || G.walker; if (me) { const [x, y] = P(me.x, me.z), a = (G.pv ? G.pv.a : me.a || 0) + (rot ? Math.PI / 2 : 0); c.save(); c.translate(x, y); c.rotate(a); c.fillStyle = "#ffd000"; c.strokeStyle = "#000"; c.lineWidth = 2; c.beginPath(); c.moveTo(11, 0); c.lineTo(-7, 7); c.lineTo(-3, 0); c.lineTo(-7, -7); c.closePath(); c.fill(); c.stroke(); c.restore(); }
+  // başlık ve açıklama
+  c.textAlign = "left"; c.font = "italic 900 " + (small ? 17 : 22) + "px 'Trebuchet MS',system-ui"; c.fillStyle = "#ffd000"; c.fillText("İSTANBUL HARİTASI", 14, top / 2 + 2);
+  c.textAlign = "right"; c.font = "800 " + (small ? 10 : 12) + "px system-ui"; c.fillStyle = "rgba(255,255,255,.75)"; c.fillText(IS_TOUCH ? "Kapatmak için dokun" : "Kapatmak için tıkla ya da N / Esc", W - 14, top / 2 + 2);
+  const items = [["#ffd000", "Sen"], ["#2bff7a", "Yolcu"], ["#ff2b4a", "Hedef / kovalayan polis"], ["#3a78ff", "Polis"], ["#2b7bff", "Garaj"], ["#ffb040", "Satıcı"], ["#ff6ab0", "Butik"], ["#ff8a3a", "Lokanta"], ["#4ab0ff", "Kuaför"]];
+  c.textAlign = "left"; c.font = "700 " + (small ? 9 : 11) + "px system-ui"; let lx = 14, ly = H - bot / 2 - (small ? 8 : 0);
+  for (const [col, t] of items) { const w = c.measureText(t).width + 26; if (lx + w > W - 10) { lx = 14; ly += 16; } c.fillStyle = col; c.beginPath(); c.arc(lx + 5, ly, 5, 0, TAU); c.fill(); c.fillStyle = "rgba(255,255,255,.85)"; c.fillText(t, lx + 14, ly + 0.5); lx += w; }
+}
+$("bigMap").addEventListener("pointerdown", e => { e.preventDefault(); closeMap(); });
+$("camBack").addEventListener("pointerdown", e => { e.preventDefault(); document.body.classList.remove("camOpen"); });
+addEventListener("resize", () => { if (G.state === "map") drawBigMap(); });
 
 </script>
 <script>if("serviceWorker" in navigator){addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").then(r=>{r.update();}).catch(()=>{});let rl=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(rl)return;rl=true;location.reload();});});}</script>
