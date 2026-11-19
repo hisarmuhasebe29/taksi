@@ -245,12 +245,12 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
     <div class="wallet">Cüzdan: <b id="mWallet">0 ₺</b> · Rekor: <b id="mBest">0 ₺</b> · Araban: <b id="mCar">Taksi</b></div>
     <div class="btns">
       <div class="row">
-        <button class="nb big" data-act="taxi"><span>ÇILGIN TAKSİ</span><small>60 sn · el sallayan yolcuyu al, hedefe yetiştir</small></button>
+        <button class="nb big" data-act="taxi"><span>ÇILGIN TAKSİ</span><small>3 dk · el sallayan yolcuyu al, hedefe yetiştir</small></button>
         <button class="nb big cyan" data-act="cruise"><span>SERBEST GEZİNTİ</span><small>Şehri dolaş · istediğin arabaya bin</small></button>
         <button class="nb big" data-act="walk" style="border-color:#a0ff3d"><span>YAYA OLARAK GEZ</span><small>Arabadan in, sokakta yürü, koş, zıpla, araba al</small></button>
       </div>
       <div class="row">
-        <button class="nb big org" data-act="blitz"><span>BLİTZ</span><small>Süreye karşı kontrol noktaları</small></button>
+        
         <button class="nb big grn" data-act="race"><span>YARIŞ</span><small>3 rakibe karşı kontrol noktası</small></button>
       </div>
       <div class="row">
@@ -281,11 +281,13 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
     <h3>Kamera</h3>
     <div class="seg"><button class="sg" data-cam="0">Yakın takip</button><button class="sg" data-cam="1">Uzak takip</button><button class="sg" data-cam="2">Kaput</button><button class="sg" data-cam="3">Tepeden</button></div>
     <h3>Grafik</h3>
-    <div class="seg"><button class="sg" data-q="auto">Otomatik</button><button class="sg" data-q="yuksek">Yüksek</button><button class="sg" data-q="dusuk">Düşük (hızlı)</button></div>
+    <div class="seg"><button class="sg" data-q="ultra">Ultra HD</button><button class="sg" data-q="yuksek">Yüksek</button><button class="sg" data-q="dusuk">Düşük (hızlı)</button></div>
+    <h3>Direksiyon / joystick hassasiyeti</h3>
+    <div class="seg"><button class="sg" data-sens="yavas">Yavaş</button><button class="sg" data-sens="orta">Orta</button><button class="sg" data-sens="hizli">Hızlı</button></div>
     <h3>Telefon kontrolü</h3>
     <div class="seg"><button class="sg" data-ctl="joy">Joystik (parmakla sür)</button><button class="sg" data-ctl="btn">Butonlar (◀ ▶ GAZ FREN)</button></div>
     <h3>Gün saati</h3>
-    <div class="seg"><button class="sg" data-time="gunduz">Gündüz</button><button class="sg" data-time="aksam">Akşam</button><button class="sg" data-time="gece">Gece</button><button class="sg" data-time="dinamik">Döngü</button></div>
+    <div class="seg"><button class="sg" data-time="altin">Altın saat</button><button class="sg" data-time="gunduz">Gündüz</button><button class="sg" data-time="aksam">Akşam</button><button class="sg" data-time="gece">Gece</button><button class="sg" data-time="dinamik">Döngü</button></div>
     <h3>Hava</h3>
     <div class="seg"><button class="sg" data-w="acik">Açık</button><button class="sg" data-w="yagmur">Yağmurlu</button></div>
     <h3>Ses ve harita</h3>
@@ -313,7 +315,7 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
     <p><b>Çılgın Taksi:</b> Kaldırımda el sallayan, üstünde <b>yeşil ışık sütunu</b> olan yolcuya git, yoldaki <b>yeşil halkada DUR</b>, yolcu binsin (duraklarda da bekleyenler var). Ok hedefi gösterir; kırmızı ışık sütununda dur. Hızlı, drift'li, yakın geçişli sürüş daha çok para ve süre!</p>
     <p><b>Serbest Gezinti:</b> Süre yok. Arabadan in (F), sokakta yürü, başka arabaya bin, rampalardan uç. Ağaçlar ve duraklar sağlamdır; lamba, trafik ışığı, bank, çöp kovası ve durak camı hızlı çarpınca devrilir, uçar, kırılır. Taksideysen yolcu da alabilirsin.</p>
     <p><b>Yaya olarak gez:</b> Oyuna yürüyerek başla, istediğin arabaya bin.</p>
-    <p><b>Blitz:</b> Süre bitmeden kontrol noktalarına ulaş. <b>Yarış:</b> 3 rakiple aynı noktalardan geç, birinci bitir.</p>
+    <p><b>Yarış:</b> 3 rakiple aynı noktalardan geç, birinci bitir.</p>
     <p><b>Polis (5 yıldız):</b> Yayaya ya da polise çarpmak, polis arabası çalmak, kaza, aşırı hız ve kavga yıldız getirir. Yıldız arttıkça daha çok ve daha hızlı polis gelir. Gözden kaybol, saklan (1 yıldızda 10 sn, 5 yıldızda 20 sn) ya da garajda boyayı değiştir. <b>Hasar:</b> Sert çarpmalar arabayı yıpratır: duman, alev, PERT! Pert olunca hemen in, patlar. Garajda tamir ettir.</p>
     <p>Polis arabasına çarparsan peşine düşerler. Kazandığın parayla <b>GARAJ</b>'da yeni arabalar (cabrio, spor, otobüs...) al, istediğin renge boya, güçlendir.</p>
     <button class="nb" data-act="back">TAMAM</button>
@@ -434,7 +436,7 @@ return {ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnimationB
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.16";
+const VER = "v.20";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -459,7 +461,7 @@ function pointInPoly(x, z, poly) { let ins = false; for (let i = 0, j = poly.len
 const SAVE_KEY = "neonIstanbulTaksi3B.v2";
 const DEF_SAVE = {
   wallet: 0, up: { engine: 0, grip: 0, nitro: 0 }, owned: ["taxi", "sedan", "hatch"], car: "taxi", paint: {},
-  set: { music: true, sfx: true, time: "gunduz", cam: 0, quality: "auto", rot: true, weather: "acik", ctrl: "joy" },
+  set: { music: true, sfx: true, time: "altin", cam: 0, quality: "auto", rot: true, weather: "acik", ctrl: "joy" },
   taxiScores: [], blitz: {}, race: {}, stats: { pax: 0, earned: 0 }, name: ""
 };
 function loadSave() {
@@ -541,7 +543,7 @@ const LANDMARKS = [
 const LM = {}; for (const l of LANDMARKS) LM[l.id] = l;
 const PARKS = LANDMARKS.filter(l => l.park).concat([{ name: "Gezi Parkı", x: 960, z: 360, r: 26, park: true }]);
 /* v.13: eğlence alanları (lunapark, oyun parkları, havuz) — buralara ağaç dikilmez */
-const FUN_ZONES = [{ id: "luna", x: 1105, z: 205, r: 30 }, { id: "oyun1", x: 1000, z: 240, r: 9 }, { id: "oyun2", x: 960, z: 360, r: 9 }, { id: "oyun3", x: 1118, z: 748, r: 8 }, { id: "oyun4", x: 1545, z: 395, r: 9 }, { id: "havuz", x: 1575, z: 365, r: 16 }];
+const FUN_ZONES = [{ id: "luna", x: 1105, z: 205, r: 30 }, { id: "oyun1", x: 1000, z: 240, r: 16 }, { id: "oyun2", x: 960, z: 360, r: 15 }, { id: "oyun3", x: 1118, z: 748, r: 13 }, { id: "oyun4", x: 1545, z: 395, r: 15 }, { id: "havuz", x: 1575, z: 365, r: 16 }];
 function inFun(x, z, pad) { for (const f of FUN_ZONES) if (dist(x, z, f.x, f.z) < f.r + (pad || 0)) return f; return null; }
 function inExclusion(x, z, pad) { for (const l of LANDMARKS) if (l.r && dist(x, z, l.x, l.z) < l.r + pad) return l; return null; }
 
@@ -735,6 +737,7 @@ function tryBuilding(b) {
     for (const e of edgesNear(x, z)) if (segDist(x, z, e.a.x, e.a.z, e.b.x, e.b.z) < e.hw + 4) return false;
     for (const n of LIVE_NODES) if (Math.abs(n.x - x) < 30 && Math.abs(n.z - z) < 30 && dist(n.x, n.z, x, z) < n.r + 4) return false;
   }
+  { const C = obbCorners(b); for (let k = 0; k < 4; k++) { const [x0, z0] = C[k], [x1, z1] = C[(k + 1) % 4], n = Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 2); for (let i = 1; i < n; i++) { const x = lerp(x0, x1, i / n), z = lerp(z0, z1, i / n); for (const e of edgesNear(x, z)) if (segDist(x, z, e.a.x, e.a.z, e.b.x, e.b.z) < e.hw + 4) return false; } } } /* v.17: kenar boyunca sık kontrol — bina kaldırıma taşmasın */
   for (const o of bldNear(b.x, b.z)) if (Math.abs(o.x - b.x) < 60 && Math.abs(o.z - b.z) < 60 && obbOverlap(o, b)) return false;
   for (const r of RAMPS) if (dist(r.x, r.z, b.x, b.z) < 20) return false;
   return true;
@@ -833,6 +836,7 @@ let renderer, scene, camera;
 const W3 = {};
 const CURB = 0.14;
 function mkCanvas(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+function nrmTag(t, k) { t.userData.nrm = k; return t; }
 function canvasTex(c, rep, lin) { const t = new THREE.CanvasTexture(c); if (!lin) t.colorSpace = THREE.SRGBColorSpace; if (rep) t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t; }
 function stdMat(o) { return new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.85, metalness: 0 }, o)); }
 
@@ -852,7 +856,7 @@ function texAsphalt(type) {
   g.fillStyle = "rgba(240,240,235,.9)"; g.fillRect(5, 0, 5, H); g.fillRect(W - 10, 0, 5, H);
   if (type === "ana") { g.fillStyle = "#f2c230"; g.fillRect(W / 2 - 8, 0, 5, H); g.fillRect(W / 2 + 3, 0, 5, H); g.fillStyle = "rgba(245,245,240,.9)"; for (let y = 0; y < H; y += 128) { g.fillRect(W / 4 - 2, y, 5, 70); g.fillRect(W * 3 / 4 - 2, y, 5, 70); } }
   else { g.fillStyle = "rgba(245,245,240,.9)"; for (let y = 0; y < H; y += 128) g.fillRect(W / 2 - 2, y + 20, 5, 70); }
-  return canvasTex(c, true);
+  return nrmTag(canvasTex(c, true), 0.6);
 }
 /* v.13b: Arnavut kaldırımı (ara sokaklar) ve mermer döşeme (meydanlar) */
 function texCobble() {
@@ -865,7 +869,7 @@ function texCobble() {
       for (let q = 0; q < 6; q++) { g.fillStyle = `rgba(${r() < 0.5 ? "255,255,255" : "0,0,0"},${0.05 + r() * 0.07})`; g.fillRect(x0 + r() * ww, y0 + r() * hh, 1 + r() * 3, 1 + r() * 2); }
       g.fillStyle = "rgba(0,0,0,.18)"; g.fillRect(x0, y0 + hh - 1.5, ww, 1.5); x += w; } }
   const n = noiseCanvas(128, [128, 128, 128], 50, 9); g.globalAlpha = 0.22; g.globalCompositeOperation = "overlay"; g.drawImage(n, 0, 0, W, H); g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
-  return canvasTex(c, true);
+  return nrmTag(canvasTex(c, true), 1.4);
 }
 
 function texMarble() {
@@ -873,7 +877,7 @@ function texMarble() {
   for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) { const light = (i + j) % 2 === 0; g.fillStyle = light ? "#d9d2c4" : "#b3a99a"; g.fillRect(i * T, j * T, T, T);
     g.strokeStyle = light ? "rgba(150,140,128,.35)" : "rgba(90,84,76,.35)"; g.lineWidth = 1; for (let k = 0; k < 3; k++) { g.beginPath(); let x = i * T + r() * T, y = j * T; g.moveTo(x, y); for (let q = 0; q < 6; q++) { x += (r() - 0.5) * 18; y += T / 6; g.lineTo(x, y); } g.stroke(); } }
   g.strokeStyle = "rgba(70,64,58,.55)"; g.lineWidth = 2; for (let k = 0; k <= S; k += T) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, S); g.moveTo(0, k); g.lineTo(S, k); g.stroke(); }
-  return canvasTex(c, true);
+  return nrmTag(canvasTex(c, true), 0.5);
 }
 function buildPlazas() { // meydanlar: mermer döşeme dairesi (dünya koordinatlı UV, 3 m'de bir desen)
   const P = [], U = [], N = [], I = []; let b = 0;
@@ -883,11 +887,18 @@ function buildPlazas() { // meydanlar: mermer döşeme dairesi (dünya koordinat
   const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(P, 3)); geo.setAttribute("uv", new THREE.Float32BufferAttribute(U, 2)); geo.setAttribute("normal", new THREE.Float32BufferAttribute(N, 3)); geo.setIndex(I);
   const m = stdMat({ map: texMarble(), roughness: 0.5, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); m.map.repeat.set(1, 1); const mesh = new THREE.Mesh(geo, m); mesh.receiveShadow = true; scene.add(mesh); W3.plazaMat = m;
 }
-function texSidewalk() { const c = mkCanvas(256, 256), g = c.getContext("2d"); g.drawImage(noiseCanvas(256, [168, 162, 150], 30, 11), 0, 0); g.strokeStyle = "rgba(60,55,50,.45)"; g.lineWidth = 2; for (let i = 0; i <= 256; i += 64) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 256); g.moveTo(0, i); g.lineTo(256, i); g.stroke(); } for (let y = 0; y < 256; y += 32) for (let x = (y / 32) % 2 * 32; x < 256; x += 64) { g.fillStyle = "rgba(0,0,0,.04)"; g.fillRect(x, y, 32, 32); } return canvasTex(c, true); }
+const SIDE_K = ["sideP", "sideM", "sideR"];
+/* v.17: renkli yürüyüş yolu — kilitli parke (kırmızı / antrasit / bej desen, kenarda koyu şerit) */
+function texPavers() { const c = mkCanvas(256, 256), g = c.getContext("2d"), r = mulberry32(77); g.fillStyle = "#3a3634"; g.fillRect(0, 0, 256, 256);
+  const cols = ["#b5543c", "#a84a34", "#c06048", "#8e8a84", "#d8c8a8"]; const bw = 32, bh = 16;
+  for (let y = 0; y < 256; y += bh) for (let x = -bw; x < 256; x += bw) { const ox = (y / bh) % 2 ? bw / 2 : 0, band = (Math.floor(y / 64) % 2 === 0 && y % 64 < 16); const base = band ? "#4a4644" : (x / bw + y / bh) % 7 === 3 ? cols[4] : cols[Math.floor(r() * 3)];
+    g.fillStyle = base; g.fillRect(x + ox + 1.2, y + 1.2, bw - 2.4, bh - 2.4); g.fillStyle = "rgba(255,255,255,.06)"; g.fillRect(x + ox + 1.2, y + 1.2, bw - 2.4, 2); g.fillStyle = "rgba(0,0,0,.12)"; g.fillRect(x + ox + 1.2, y + bh - 3.4, bw - 2.4, 2.2); }
+  const n = noiseCanvas(128, [128, 128, 128], 45, 5); g.globalAlpha = 0.18; g.globalCompositeOperation = "overlay"; g.drawImage(n, 0, 0, 256, 256); g.globalAlpha = 1; g.globalCompositeOperation = "source-over"; return nrmTag(canvasTex(c, true), 1.1); }
+function texSidewalk() { const c = mkCanvas(256, 256), g = c.getContext("2d"); g.drawImage(noiseCanvas(256, [168, 162, 150], 30, 11), 0, 0); g.strokeStyle = "rgba(60,55,50,.45)"; g.lineWidth = 2; for (let i = 0; i <= 256; i += 64) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i, 256); g.moveTo(0, i); g.lineTo(256, i); g.stroke(); } for (let y = 0; y < 256; y += 32) for (let x = (y / 32) % 2 * 32; x < 256; x += 64) { g.fillStyle = "rgba(0,0,0,.04)"; g.fillRect(x, y, 32, 32); } return nrmTag(canvasTex(c, true), 0.8); }
 const WIN_STYLES = ["mid", "old", "color", "tower"];
 function texFacade(style, lit) {
   const S = 512, c = mkCanvas(S, S), g = c.getContext("2d"), r = mulberry32(style.length * 13 + (lit ? 99 : 0));
-  if (!lit) { g.drawImage(noiseCanvas(256, style === "tower" ? [200, 210, 220] : [236, 230, 220], 22, style.length), 0, 0, S, S); } else { g.fillStyle = "#000"; g.fillRect(0, 0, S, S); }
+  if (!lit) { g.drawImage(noiseCanvas(256, style === "tower" ? [200, 210, 220] : [236, 230, 220], 22, style.length), 0, 0, S, S); } if (!lit && style === "old") { /* v.19: tuğla duvar */ const bh = 12, bw = 30; g.fillStyle = "rgb(238,232,224)"; g.fillRect(0, 0, S, S); for (let y = 0; y < S; y += bh) for (let x = -bw; x < S; x += bw) { const ox = (y / bh) % 2 ? bw / 2 : 0, l = 196 + Math.floor(r() * 34); g.fillStyle = `rgb(${l},${l - 8},${l - 14})`; g.fillRect(x + ox + 1.5, y + 1.5, bw - 3, bh - 3); g.fillStyle = "rgba(0,0,0,.06)"; g.fillRect(x + ox + 1.5, y + bh - 3.5, bw - 3, 2); } } else { g.fillStyle = "#000"; g.fillRect(0, 0, S, S); }
   const n = style === "tower" ? 4 : 3, cw = S / n;
   for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
     const x = i * cw, y = j * cw;
@@ -909,7 +920,7 @@ function texFacade(style, lit) {
     if (style === "mid" && r() < 0.55) { g.fillStyle = "rgba(40,40,45,.85)"; g.fillRect(x + cw * 0.12, wy + wh * 0.72, cw * 0.76, 5); for (let k = x + cw * 0.12; k < x + cw * 0.88; k += 9) g.fillRect(k, wy + wh * 0.72, 2, wh * 0.28); g.fillRect(x + cw * 0.12, wy + wh, cw * 0.76, 6); }
   }
   if (!lit && style !== "tower") { g.fillStyle = "rgba(0,0,0,.12)"; for (let j = 1; j < n; j++) g.fillRect(0, j * cw - 3, S, 3); }
-  return canvasTex(c, true);
+  return lit ? canvasTex(c, true) : nrmTag(canvasTex(c, true), style === "old" ? 1.3 : 0.7);
 }
 function texShops(lit) {
   const W = 1024, H = 128, c = mkCanvas(W, H), g = c.getContext("2d"), r = mulberry32(lit ? 7 : 8), names = ["BAKKAL", "KEBAP", "ECZANE", "BERBER", "ÇAY", "FIRIN", "BÜFE", "KAFE", "LOKANTA", "TERZİ", "SİMİT", "OPTİK"];
@@ -931,6 +942,12 @@ function texText(txt, col, bg, w, h) {
   g.shadowColor = col; g.shadowBlur = c.height * 0.25; g.fillStyle = col; g.fillText(txt, c.width / 2, c.height / 2 + 2); g.shadowBlur = 0; g.fillStyle = "#fff"; g.globalAlpha = 0.5; g.fillText(txt, c.width / 2, c.height / 2 + 2);
   return canvasTex(c);
 }
+/* v.19: çim detayı — kodla çizilmiş ot yaprakları (dünya koordinatlı, 2.2 m tekrar) */
+function texGrassDet() { const S = 256, c = mkCanvas(S, S), g = c.getContext("2d"), r = mulberry32(5150); g.drawImage(noiseCanvas(S, [118, 128, 104], 60, 51), 0, 0);
+  for (let i = 0; i < 2600; i++) { const x = r() * S, y = r() * S, l = 4 + r() * 9, a = -Math.PI / 2 + (r() - 0.5) * 0.9, v = 70 + Math.floor(r() * 120); g.strokeStyle = `rgba(${v * 0.75 | 0},${v},${v * 0.55 | 0},.55)`; g.lineWidth = 0.8 + r() * 1.1;
+    for (const dx of [0, S, -S]) for (const dy of [0, S, -S]) { if (dx || dy) { if (x + dx < -12 || x + dx > S + 12 || y + dy < -12 || y + dy > S + 12) continue; } g.beginPath(); g.moveTo(x + dx, y + dy); g.lineTo(x + dx + Math.cos(a) * l, y + dy + Math.sin(a) * l); g.stroke(); } }
+  for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(${r() < 0.5 ? "250,240,120" : "255,255,255"},.55)`; g.beginPath(); g.arc(r() * S, r() * S, 1 + r() * 1.2, 0, TAU); g.fill(); }
+  const t = canvasTex(c, true, true); return t; }
 function texGround() {
   const S = 1 / 1.5, c = mkCanvas(Math.round(MW * S), Math.round(MH * S)), g = c.getContext("2d");
   const n = noiseCanvas(256, [120, 116, 104], 34, 21); const p = g.createPattern(n, "repeat"); g.fillStyle = p; g.fillRect(0, 0, c.width, c.height);
@@ -955,7 +972,7 @@ function texClouds() {
 /* ---------------- Renderer, ışık, gök ---------------- */
 function initRenderer() {
   renderer = new THREE.WebGLRenderer({ canvas: glCanvas, antialias: !IS_MOBILE, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, IS_MOBILE ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3)); /* v.18: Ultra HD */
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(62, 1, 0.3, 2400);
@@ -968,7 +985,7 @@ function initRenderer() {
   W3.skyMat = new THREE.ShaderMaterial({
     uniforms: W3.skyU, side: THREE.BackSide, depthWrite: false, fog: false,
     vertexShader: "varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-    fragmentShader: "uniform vec3 top; uniform vec3 hor; uniform vec3 sunDir; uniform vec3 sunCol; varying vec3 vP; void main(){ float h = clamp(vP.y*1.4+0.04,0.0,1.0); vec3 c = mix(hor, top, pow(h,0.6)); if(vP.y<0.0) c = mix(hor, hor*0.55, clamp(-vP.y*4.0,0.0,1.0)); float s = max(dot(vP, normalize(sunDir)),0.0); c += sunCol * (pow(s,900.0)*2.5 + pow(s,40.0)*0.35 + pow(s,6.0)*0.12); gl_FragColor = vec4(c,1.0); }"
+    fragmentShader: "uniform vec3 top; uniform vec3 hor; uniform vec3 sunDir; uniform vec3 sunCol; varying vec3 vP; void main(){ float h = clamp(vP.y*1.4+0.04,0.0,1.0); vec3 c = mix(hor, top, pow(h,0.6)); if(vP.y<0.0) c = mix(hor, hor*0.55, clamp(-vP.y*4.0,0.0,1.0)); float s = max(dot(vP, normalize(sunDir)),0.0); c += sunCol * (pow(s,900.0)*2.5 + pow(s,40.0)*0.35 + pow(s,6.0)*0.12); c += sunCol * pow(s,2.5) * 0.18 * (1.0 - h); gl_FragColor = vec4(c,1.0); }"
   });
   W3.sky = new THREE.Mesh(new THREE.SphereGeometry(2000, 32, 16), W3.skyMat); W3.sky.renderOrder = -2; scene.add(W3.sky);
   const sg = new THREE.BufferGeometry(), sp = []; const rs = mulberry32(9);
@@ -1023,6 +1040,14 @@ function buildGround() {
   const pos = geo.attributes.position, uv = geo.attributes.uv; for (let i = 0; i < pos.count; i++) uv.setXY(i, pos.getX(i) / MW, 1 - pos.getZ(i) / MH);
   W3.groundTex = texGround(); W3.groundTex.flipY = true;
   W3.groundMat = stdMat({ map: W3.groundTex, roughness: 0.95, color: 0xcfcfcf });
+  /* v.17: boş yaya alanları taş döşeme — harita dokusunun üstüne dünya koordinatlı döşeme deseni (parklar hariç) */
+  { const c = mkCanvas(256, 256), g = c.getContext("2d"), r = mulberry32(919); g.fillStyle = "#5c5852"; g.fillRect(0, 0, 256, 256);
+    for (let y = 0; y < 256; y += 64) for (let x = 0; x < 256; x += 64) { const sz = (x + y) % 128 ? 64 : 64; for (let k = 0; k < 4; k++) { const ox = x + (k % 2) * 32, oy = y + Math.floor(k / 2) * 32, l = 150 + Math.floor(r() * 40); g.fillStyle = `rgb(${l},${l - 4},${l - 12})`; g.fillRect(ox + 1.5, oy + 1.5, 29, 29); g.fillStyle = "rgba(0,0,0,.07)"; g.fillRect(ox + 1.5, oy + 26, 29, 4); } }
+    const n = noiseCanvas(128, [128, 128, 128], 40, 13); g.globalAlpha = 0.25; g.globalCompositeOperation = "overlay"; g.drawImage(n, 0, 0, 256, 256); g.globalAlpha = 1; g.globalCompositeOperation = "source-over";
+    const dt = canvasTex(c, true); dt.colorSpace = THREE.NoColorSpace;
+    W3.grassDet = texGrassDet(); W3.groundMat.onBeforeCompile = sh => { sh.uniforms.tDet = { value: dt }; sh.uniforms.tGr = { value: W3.grassDet };
+      sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vGW;").replace("#include <worldpos_vertex>", "#include <worldpos_vertex>\nvGW = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+      sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vGW; uniform sampler2D tDet; uniform sampler2D tGr; float gGrass = 0.0; float gH(vec2 p){ return mix(dot(texture2D(tDet, p / 6.0).rgb, vec3(.33)), dot(texture2D(tGr, p / 2.2).rgb, vec3(.33)), gGrass); }").replace("#include <map_fragment>", "#include <map_fragment>\n{ vec3 d = texture2D(tDet, vGW.xz / 6.0).rgb; float grass = smoothstep(0.02, 0.08, diffuseColor.g - diffuseColor.r); gGrass = grass; vec3 gq = texture2D(tGr, vGW.xz / 2.2).rgb; diffuseColor.rgb = mix(diffuseColor.rgb * (0.35 + d * 1.25), diffuseColor.rgb * (0.55 + gq * 1.1), grass); }").replace("#include <normal_fragment_maps>", "#include <normal_fragment_maps>\n{ vec3 upV = normalize((viewMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xyz); float upn = clamp(dot(normal, upV) * 2.0 - 1.0, 0.0, 1.0); float e = 0.06, h0 = gH(vGW.xz), hx = gH(vGW.xz + vec2(e, 0.0)) - h0, hz = gH(vGW.xz + vec2(0.0, e)) - h0; float k = mix(5.0, 9.0, gGrass); vec3 nW = normalize(vec3(-hx * k, 1.0, -hz * k)); normal = normalize(mix(normal, normalize((viewMatrix * vec4(nW, 0.0)).xyz), upn)); }"); }; }
   addShadowMesh(geo, W3.groundMat, false, true);
   W3.waterN = waterNormal(); W3.waterN.repeat.set(220, 160);
   W3.waterU = THREE.UniformsUtils.merge([THREE.UniformsLib.fog, { tN: { value: W3.waterN }, time: { value: 0 }, deep: { value: new THREE.Color(0x06222c) }, shal: { value: new THREE.Color(0x0f4a52) } }]);
@@ -1046,10 +1071,10 @@ function buildGround() {
 function nodeGaps(n) { return n.e.filter(e => !e.dead).map(e => { const o = e.a === n ? e.b : e.a; return { a: Math.atan2(o.z - n.z, o.x - n.x), w: Math.atan2(e.hw + 0.3, n.r + 1.5) }; }); }
 function buildRoads() {
   const tex = { ana: texAsphalt("ana"), cadde: texAsphalt("cadde"), cobble: texCobble() };
-  const B = { ana: new GeoBuf(), cadde: new GeoBuf(), cobble: new GeoBuf(), side: new GeoBuf(), curb: new GeoBuf(), disc: new GeoBuf(), zebra: new GeoBuf(), deck: new GeoBuf(), rail: new GeoBuf() };
+  const B = { ana: new GeoBuf(), cadde: new GeoBuf(), cobble: new GeoBuf(), side: new GeoBuf(), sideP: new GeoBuf(), sideM: new GeoBuf(), sideR: new GeoBuf(), curb: new GeoBuf(), disc: new GeoBuf(), zebra: new GeoBuf(), deck: new GeoBuf(), rail: new GeoBuf() };
   const curbC = colOf("#b8b4aa");
   for (const e of LIVE_EDGES) {
-    const tt = e.type === "cadde" ? (districtAt((e.a.x + e.b.x) / 2, (e.a.z + e.b.z) / 2).style === "tower" ? "cadde" : "cobble") : "ana", nx = -e.dz, nz = e.dx, a0 = e.a.r * 0.7, a1 = e.len - e.b.r * 0.7, s0 = e.a.r + 0.2, s1 = e.len - e.b.r - 0.2;
+    const tt = e.type === "cadde" ? "cadde" : "ana", sk = SIDE_K[Math.floor(hash2(Math.floor((e.a.x + e.b.x) / 300), Math.floor((e.a.z + e.b.z) / 300)) * 3) % 3], /* v.17: araba yolu hep asfalt; yaya yolu parke / mermer / renkli */ nx = -e.dz, nz = e.dx, a0 = e.a.r * 0.7, a1 = e.len - e.b.r * 0.7, s0 = e.a.r + 0.2, s1 = e.len - e.b.r - 0.2;
     const seg = e.bridge && e.bridge.h ? 40 : 1, hw = e.hw, sw = hw + 3;
     for (let i = 0; i < seg; i++) {
       const t0 = lerp(a0, a1, i / seg), t1 = lerp(a0, a1, (i + 1) / seg);
@@ -1068,7 +1093,7 @@ function buildRoads() {
     }
     if (!e.bridge) for (const sd of [1, -1]) { // kaldırım + bordür
       const q0x = e.a.x + e.dx * s0, q0z = e.a.z + e.dz * s0, q1x = e.a.x + e.dx * s1, q1z = e.a.z + e.dz * s1, i0 = hw * sd, o0 = sw * sd;
-      B.side.quad([q0x + nx * i0, CURB, q0z + nz * i0], [q0x + nx * o0, CURB, q0z + nz * o0], [q1x + nx * o0, CURB, q1z + nz * o0], [q1x + nx * i0, CURB, q1z + nz * i0], WHITE, [[0, s0 / 4], [0.75, s0 / 4], [0.75, s1 / 4], [0, s1 / 4]], UP);
+      B[sk].quad([q0x + nx * i0, CURB, q0z + nz * i0], [q0x + nx * o0, CURB, q0z + nz * o0], [q1x + nx * o0, CURB, q1z + nz * o0], [q1x + nx * i0, CURB, q1z + nz * i0], WHITE, [[0, s0 / 4], [0.75, s0 / 4], [0.75, s1 / 4], [0, s1 / 4]], UP);
       B.curb.quad([q0x + nx * i0, 0.0, q0z + nz * i0], [q1x + nx * i0, 0.0, q1z + nz * i0], [q1x + nx * i0, CURB, q1z + nz * i0], [q0x + nx * i0, CURB, q0z + nz * i0], curbC, null, [-nx * sd, 0, -nz * sd]);
       B.curb.quad([q0x + nx * (i0 + 0.25 * sd), CURB + 0.001, q0z + nz * (i0 + 0.25 * sd)], [q1x + nx * (i0 + 0.25 * sd), CURB + 0.001, q1z + nz * (i0 + 0.25 * sd)], [q1x + nx * i0, CURB + 0.001, q1z + nz * i0], [q0x + nx * i0, CURB + 0.001, q0z + nz * i0], curbC, null, UP);
     }
@@ -1086,7 +1111,7 @@ function buildRoads() {
       if (gaps.some(g => Math.abs(angDiff(am, g.a)) < g.w + 0.08)) continue;
       const p = (a, rr) => [n.x + Math.cos(a) * rr, n.z + Math.sin(a) * rr];
       const A = p(a0, r), Bp = p(a1, r), Cc = p(a1, R2), D = p(a0, R2);
-      B.side.quad([A[0], CURB, A[1]], [Bp[0], CURB, Bp[1]], [Cc[0], CURB, Cc[1]], [D[0], CURB, D[1]], WHITE, [[A[0] / 4, A[1] / 4], [Bp[0] / 4, Bp[1] / 4], [Cc[0] / 4, Cc[1] / 4], [D[0] / 4, D[1] / 4]], UP);
+      B[SIDE_K[Math.floor(hash2(Math.floor(n.x / 300), Math.floor(n.z / 300)) * 3) % 3]].quad([A[0], CURB, A[1]], [Bp[0], CURB, Bp[1]], [Cc[0], CURB, Cc[1]], [D[0], CURB, D[1]], WHITE, [[A[0] / 4, A[1] / 4], [Bp[0] / 4, Bp[1] / 4], [Cc[0] / 4, Cc[1] / 4], [D[0] / 4, D[1] / 4]], UP);
       B.curb.quad([A[0], 0, A[1]], [Bp[0], 0, Bp[1]], [Bp[0], CURB, Bp[1]], [A[0], CURB, A[1]], curbC, null, [-Math.cos(am), 0, -Math.sin(am)]);
     }
   }
@@ -1095,6 +1120,7 @@ function buildRoads() {
   W3.roadMats = [];
   const mk = (buf, mat, po) => { if (po) { mat.polygonOffset = true; mat.polygonOffsetFactor = po; mat.polygonOffsetUnits = po; } return addShadowMesh(buf.geo(), mat, false, true); };
   mk(B.side, stdMat({ map: texSidewalk(), roughness: 0.9 }), -1);
+  { const tp = texCobble(); tp.repeat.set(1.4, 1.4); mk(B.sideP, stdMat({ map: tp, roughness: 0.75 }), -1); const tm = texMarble(); tm.repeat.set(1.2, 1.2); mk(B.sideM, stdMat({ map: tm, roughness: 0.45 }), -1); mk(B.sideR, stdMat({ map: texPavers(), roughness: 0.8 }), -1); }
   mk(B.curb, stdMat({ vertexColors: true, roughness: 0.8 }));
   for (const k of ["ana", "cadde", "cobble"]) { const m = stdMat({ map: tex[k], roughness: k === "cobble" ? 0.7 : 0.82 }); if (k === "cobble") m.map.repeat.set(2, 4); W3.roadMats.push(m); mk(B[k], m, -2); } // ara sokaklar: Arnavut kaldırımı
   const dm = stdMat({ map: canvasTex(dc, true), roughness: 0.82 }); W3.roadMats.push(dm); mk(B.disc, dm, -3);
@@ -1348,7 +1374,7 @@ function binGeo() {
   return mergeGeos(P);
 }
 function buildProps() {
-  buildShops(); buildCivic(); buildFun(); buildPool(); buildBoats(); buildBina(); buildRail(); buildOverpasses(); buildShore();
+  buildShops(); buildCivic(); buildFun(); buildPool(); buildBoats(); buildBina(); buildRail(); buildOverpasses(); buildShore(); buildPromenade(); buildParks2();
   planBusStops();
   const tp = [];
   for (const e of LIVE_EDGES) { if (e.type === "kopru" || (e.type === "ana" && rnd() < 0.5)) continue; const nx = -e.dz, nz = e.dx; for (let t = e.a.r + 6; t < e.len - e.b.r - 6; t += R(11, 18)) for (const s of [1, -1]) { if (rnd() < 0.45) continue; const x = e.a.x + e.dx * t + nx * (e.hw + 2.2) * s, z = e.a.z + e.dz * t + nz * (e.hw + 2.2) * s; if (isLand(x, z) && propFree(x, z, 1.5)) tp.push([x, z, 1, "street"]); } }
@@ -1503,6 +1529,7 @@ const TOD_KEYS = [
   [7.5, "#3f86e0", "#cfe0f0", "#b8cfe0", 0.75, 2.4, "#fff2dd", 0.08],
   [12, "#2f74d8", "#bfdcf5", "#a8c8e8", 0.85, 3.0, "#fffaf0", 0],
   [17, "#3f7cd0", "#d8dcd8", "#c0cad6", 0.8, 2.6, "#ffe8c8", 0.05],
+  [17.9, "#4a6cb8", "#ffc27a", "#e6b48c", 0.72, 2.3, "#ffb469", 0.1], /* v.19: altın saat */
   [18.6, "#4f55a0", "#ff7a3a", "#c07a5a", 0.55, 1.5, "#ff7a3a", 0.45],
   [19.6, "#1a1c44", "#5a2a5a", "#2a2040", 0.4, 0.3, "#ff5a3a", 0.85],
   [21, "#05060f", "#151a36", "#0d1126", 0.3, 0.0, "#8899ff", 1],
@@ -1523,7 +1550,7 @@ function applyTimeOfDay(h) {
   W3.skyU.sunDir.value.copy(sunDir); W3.skyU.sunCol.value.set(h > 5.5 && h < 19.8 ? A[6] : "#000000").multiplyScalar(rk); W3.sunDir = sunDir;
   W3.hemi.color.set(NIGHT > 0.5 ? 0x6a7aaa : 0xcfe4ff); W3.hemi.groundColor.set(NIGHT > 0.5 ? 0x2a2230 : 0x5a5040);
   if (NIGHT > 0.6) { W3.sun.intensity = 0.35; W3.sun.color.set(0x8aa0ff); }
-  scene.fog.density = lerp(0.0016, 0.0034, Math.max(NIGHT * 0.6, RAIN));
+  scene.fog.density = lerp(0.0021, 0.0034, Math.max(NIGHT * 0.6, RAIN));
   for (const st in W3.wallMats) W3.wallMats[st].emissiveIntensity = NIGHT * (st === "tower" ? 0.75 : 0.62);
   W3.shopMat.emissiveIntensity = NIGHT * 0.16; W3.neonMat.opacity = NIGHT; W3.stars.material.opacity = NIGHT * (1 - RAIN);
   W3.moon.material.opacity = NIGHT * (1 - RAIN); W3.moon.position.set(camera.position.x + 600, 700, camera.position.z - 900);
@@ -1533,7 +1560,7 @@ function applyTimeOfDay(h) {
   if (W3.cableMats) for (const m of W3.cableMats) m.opacity = NIGHT; if (W3.nightOnly) for (const m of W3.nightOnly) m.opacity = NIGHT;
   if (W3.beam) W3.beam.material.opacity = NIGHT * 0.22;
   for (const s of W3.signs) s.material.color.setScalar(lerp(0.85, 1.4, NIGHT));
-  if (CMAT.head) CMAT.head.emissiveIntensity = 0.5 + NIGHT * 3;
+  if (CMAT.head) CMAT.head.emissiveIntensity = 0.5 + NIGHT * 3; if (W3.beamMats) for (const m of W3.beamMats) m.opacity = NIGHT * 0.16;
   if (W3.carLightMat) W3.carLightMat.opacity = NIGHT * 0.32;
   if (W3.headSpot) W3.headSpot.intensity = NIGHT * 80;
   for (const f of (W3.ferries || [])) f.g.userData.deck.material.emissiveIntensity = NIGHT * 0.8;
@@ -1565,7 +1592,7 @@ function updateFerries(dt) {
     f.g.position.set(f.x, -0.6 + Math.sin(G.t * 1.3 + f.x) * 0.15, f.z); f.g.rotation.y = -f.a; f.g.rotation.z = Math.sin(G.t * 0.9 + f.z) * 0.02;
   }
   if (W3.beamPivot) W3.beamPivot.rotation.y = G.t * 0.9;
-  updateTreesLOD(dt); updateLampLOD(dt); updateSecrets(dt); updateVendors(dt); updateHeadPools(); updateDamage(dt); updateArea(dt); updateSpray(dt); updateCivicFx(dt); updateFun(dt); updateShops(dt); updateBoats(dt); updateBina(dt); updateNav(dt); updateRail(dt); updateShore(dt);
+  updateTreesLOD(dt); updateLampLOD(dt); updateSecrets(dt); updateVendors(dt); updateHeadPools(); updateDamage(dt); updateArea(dt); updateSpray(dt); updateCivicFx(dt); updateFun(dt); updateShops(dt); updateBoats(dt); updateBina(dt); updateNav(dt); updateRail(dt); updateShore(dt); updatePark(dt); updateLook(dt);
   W3.waterN.offset.set(G.t * 0.004, G.t * 0.0025); if (W3.waterU) W3.waterU.time.value = G.t; W3.cloudTex.offset.set(G.t * 0.0006, G.t * 0.0003);
   W3.clouds.position.x = camera.position.x; W3.clouds.position.z = camera.position.z; W3.cloudTex.offset.x += camera.position.x / 5000 * 3 * 0;
   updateTrafficLights(dt); updateWeather(dt);
@@ -1586,7 +1613,7 @@ const PROPS = [], PCELL = 12, PGW = Math.ceil(MW / PCELL), PGH = Math.ceil(MH / 
 const PROP_DEF = {
   tree: { r: 0.42, brk: false }, post: { r: 0.12, brk: false },
   lamp: { r: 0.22, brk: true, need: 5, slow: 0.14 }, tl: { r: 0.22, brk: true, need: 6, slow: 0.16 },
-  bench: { r: 0.55, brk: true, need: 3, slow: 0.07 }, bin: { r: 0.34, brk: true, need: 2, slow: 0.03 },
+  bench: { r: 0.55, brk: true, need: 3, slow: 0.07 }, bin: { r: 0.34, brk: true, need: 2, slow: 0.03 }, hydrant: { r: 0.26, brk: true, need: 3, slow: 0.08 },
   pole: { r: 0.14, brk: true, need: 3, slow: 0.05 }, cart: { r: 0.5, brk: true, need: 6, slow: 0.18 }, glass: { r: 0.55, brk: true, need: 6, slow: 0.1 }
 };
 function addProp(kind, x, z, o) {
@@ -1655,7 +1682,7 @@ function breakProp(p, v) {
   else if (p.kind === "glass") { if (!p.grp.broken) { p.grp.broken = true; p.grp.mesh.visible = false; for (const q of propsNear(p.x, p.z)) if (q.grp === p.grp) q.alive = false; for (let k = 0; k < 4; k++) puff(p.x + GR(-1, 1), CURB + 1 + gr(), p.z + GR(-1, 1), 0.5, 0xddeeff); sparks(p.x, 1.3, p.z, 26, v.vx, v.vz); sfxGlass(); award("CAM KIRDIN", 15, 1, "#9fe8ff"); } }
   else if (p.mesh) { // bank, çöp kovası, direk: uçar
     const up = clamp(sp * 0.35, 2, 9); DEBRIS.push({ p, x: p.x, y: p.y0 || CURB, z: p.z, vx: v.vx * 0.85 + GR(-1.5, 1.5), vy: up, vz: v.vz * 0.85 + GR(-1.5, 1.5), rx: 0, ry: p.rot || 0, rz: 0, ax: GR(-6, 6), ay: GR(-3, 3), az: GR(-6, 6), t: 0, rest: false });
-    sfxBump(0.5); if (p.kind === "bin") { for (let k = 0; k < 3; k++) puff(p.x, 0.8, p.z, 0.6, 0x9a8a6a); sparks(p.x, 0.8, p.z, 6, v.vx, v.vz); }
+    sfxBump(0.5); if (p.kind === "hydrant") { for (let k = 0; k < 8; k++) puff(p.x + (Math.random() - 0.5), 0.6 + k * 0.5, p.z + (Math.random() - 0.5), 0.8, 0xdff4ff); if (v === G.pv) award("YANGIN MUSLUĞU!", 15, 1, "#6ae8ff"); } if (p.kind === "bin") { for (let k = 0; k < 3; k++) puff(p.x, 0.8, p.z, 0.6, 0x9a8a6a); sparks(p.x, 0.8, p.z, 6, v.vx, v.vz); }
   }
   if (v === G.pv) { G.shake = Math.max(G.shake, 0.18 + p.slow); buzz(25); if (p.kind === "bench" || p.kind === "bin") award(p.kind === "bin" ? "ÇÖP KOVASI!" : "BANK UÇTU!", 10, 1, "#ffd000"); }
 }
@@ -2247,7 +2274,12 @@ function buildCarGeos(type) {
     ad(new THREE.CylinderGeometry(R * 0.64, R * 0.64, tw * 0.5, 16).rotateX(Math.PI / 2), [0.22, 0.23, 0.25]);
     ad(new THREE.TorusGeometry(R * 0.6, R * 0.05, 6, 22), [0.86, 0.87, 0.9], tw * 0.27);
     ad(new THREE.CylinderGeometry(R * 0.44, R * 0.44, 0.03, 18).rotateX(Math.PI / 2), [0.45, 0.45, 0.48], tw * 0.06);
-    const spokes = big ? 8 : P.chrome ? 0 : 6; for (let k = 0; k < spokes; k++) { const sg = new THREE.BoxGeometry(R * 0.5, R * 0.1, 0.04).translate(R * 0.32, 0, 0).rotateZ(k / spokes * TAU); ad(sg, [0.8, 0.82, 0.86], tw * 0.27); }
+    const spokes = big ? 8 : P.chrome ? 0 : 5; /* v.20: 5 kollu alaşım jant (kola doğru incelen), fren diski ve kaliper */
+    if (!big) { ad(new THREE.CylinderGeometry(R * 0.5, R * 0.5, 0.035, 22).rotateX(Math.PI / 2), [0.5, 0.5, 0.52], tw * 0.02); ad(new THREE.TorusGeometry(R * 0.36, R * 0.03, 4, 20), [0.32, 0.32, 0.34], tw * 0.04); ad(new THREE.TorusGeometry(R * 0.46, R * 0.015, 4, 22), [0.62, 0.62, 0.64], tw * 0.04);
+      const cal = new THREE.BoxGeometry(R * 0.3, R * 0.2, 0.09).translate(0, R * 0.42, 0).rotateZ(0.75); ad(cal, type === "sport" || type === "muscle" ? [0.85, 0.1, 0.1] : [0.55, 0.12, 0.1], tw * 0.12); }
+    for (let k = 0; k < spokes; k++) { let sg; if (big) sg = new THREE.BoxGeometry(R * 0.5, R * 0.1, 0.04).translate(R * 0.32, 0, 0); else { const sh = new THREE.Shape(); sh.moveTo(R * 0.13, -R * 0.085); sh.lineTo(R * 0.6, -R * 0.05); sh.lineTo(R * 0.6, R * 0.05); sh.lineTo(R * 0.13, R * 0.085); sh.closePath(); sg = new THREE.ExtrudeGeometry(sh, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.01, bevelSegments: 1 }); if (sg.index) sg = sg.toNonIndexed(); sg.translate(0, 0, -0.025); }
+      sg.rotateZ(k / spokes * TAU); ad(sg, [0.82, 0.84, 0.88], tw * 0.27); }
+    if (!big) for (let k = 0; k < 5; k++) { const a = (k + 0.5) / 5 * TAU; ad(new THREE.CylinderGeometry(R * 0.025, R * 0.025, 0.05, 6).rotateX(Math.PI / 2).translate(Math.cos(a) * R * 0.1, Math.sin(a) * R * 0.1, 0), [0.25, 0.25, 0.27], tw * 0.3); }
     if (P.chrome) ad(new THREE.CylinderGeometry(R * 0.5, R * 0.55, 0.06, 20).rotateX(Math.PI / 2), [0.85, 0.86, 0.9], tw * 0.28);
     ad(new THREE.CylinderGeometry(R * 0.14, R * 0.14, tw * 0.64, 10).rotateX(Math.PI / 2), [0.6, 0.6, 0.64]);
     if (type === "sport") ad(new THREE.BoxGeometry(R * 0.3, R * 0.42, 0.1), [0.85, 0.1, 0.1], tw * 0.12);
@@ -2305,17 +2337,19 @@ function buildCarGeos(type) {
 }
 function makeCarMesh(type, color, rotWheels, livery) {
   const G0 = buildCarGeos(type), P = G0.P, top = new THREE.Group(), g = new THREE.Group(), t = VT[type];
-  const mk = rotWheels ? o => new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.45, roughness: 0.32, clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.25 }, o)) : o => new THREE.MeshStandardMaterial(Object.assign({ color, metalness: 0.62, roughness: 0.2, envMapIntensity: 1.55 }, o)); /* metalik boya, gökyüzü yansıması */
+  const mk = rotWheels ? o => new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.42, roughness: 0.27, clearcoat: 1, clearcoatRoughness: 0.025, specularIntensity: 1, envMapIntensity: 1.55 }, o)) /* v.20: metalik boya + vernik */ : o => new THREE.MeshStandardMaterial(Object.assign({ color, metalness: 0.62, roughness: 0.2, envMapIntensity: 1.55 }, o)); /* metalik boya, gökyüzü yansıması */
   const bodySide = mk({ map: G0.sideTex }), body = mk({});
-  const glassUse = rotWheels && G0.cabin && !G0.cabin.open ? cmat("glassPlayer", () => new THREE.MeshStandardMaterial({ color: 0x1e2e3c, metalness: 0.3, roughness: 0.03, envMapIntensity: 2.0, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide })) : cmat("glass2", () => new THREE.MeshStandardMaterial({ color: 0x2b3d4e, metalness: 0.85, roughness: 0.04, envMapIntensity: 2.6, side: THREE.DoubleSide }));
+  const glassUse = rotWheels && G0.cabin && !G0.cabin.open ? cmat("glassPlayer", () => new THREE.MeshPhysicalMaterial({ color: 0x111827, metalness: 0.35, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 2.4, transparent: true, opacity: 0.66, depthWrite: false, side: THREE.DoubleSide })) : cmat("glass2", () => new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.8, roughness: 0.06, envMapIntensity: 2.8, side: THREE.DoubleSide }));
   const det = cmat("det", () => new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.45, roughness: 0.45, side: THREE.DoubleSide }));
-  const head = cmat("head", () => new THREE.MeshStandardMaterial({ map: lampTex("head"), emissive: 0xfff4dc, emissiveIntensity: 0.25, metalness: 0.3, roughness: 0.1 }));
+  const head = cmat("head", () => new THREE.MeshStandardMaterial({ map: lampTex("head"), emissive: 0xfff4dc, emissiveIntensity: 0.6, metalness: 0.3, roughness: 0.1 }));
   const tail = new THREE.MeshStandardMaterial({ map: cmat("tailTex", () => lampTex("tail")), emissive: 0xff1020, emissiveIntensity: 0.25, roughness: 0.25 });
   const gril = cmat(P.chrome ? "grilleC" : "grille", () => new THREE.MeshStandardMaterial({ map: grilleTex(P.chrome), metalness: 0.6, roughness: 0.35, side: THREE.DoubleSide }));
   const plate = cmat("plate", () => new THREE.MeshStandardMaterial({ map: plateTex(), roughness: 0.5, side: THREE.DoubleSide }));
   const bm = new THREE.Mesh(G0.body, [bodySide, body]); bm.castShadow = true; bm.receiveShadow = true; g.add(bm);
   const gm = new THREE.Mesh(G0.glass, glassUse); gm.renderOrder = 3; g.add(gm);
-  g.add(new THREE.Mesh(G0.det, det)); g.add(new THREE.Mesh(G0.head, head)); g.add(new THREE.Mesh(G0.tail, tail)); g.add(new THREE.Mesh(G0.grille, gril)); g.add(new THREE.Mesh(G0.plate, plate));
+  g.add(new THREE.Mesh(G0.det, det)); g.add(new THREE.Mesh(G0.head, head));
+  if (rotWheels && !P.box) { if (!G0.head.boundingBox) G0.head.computeBoundingBox(); const hb = G0.head.boundingBox, bm2 = cmat("beam", () => { const c = mkCanvas(8, 128), x = c.getContext("2d"), gr2 = x.createLinearGradient(0, 0, 0, 128); gr2.addColorStop(0, "rgba(255,245,220,1)"); gr2.addColorStop(1, "rgba(255,245,220,0)"); x.fillStyle = gr2; x.fillRect(0, 0, 8, 128); const m = new THREE.MeshBasicMaterial({ map: canvasTex(c), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false, toneMapped: false }); W3.beamMats = W3.beamMats || []; W3.beamMats.push(m); return m; });
+    for (const sz of [1, -1]) { const cg = new THREE.CylinderGeometry(0.08, 1.6, 9, 14, 1, true).translate(0, -4.5, 0).rotateZ(Math.PI / 2 + 0.07).translate(hb.max.x - 0.05, (hb.min.y + hb.max.y) / 2, sz * Math.max(0.3, hb.max.z * 0.72)); const bmM = new THREE.Mesh(cg, bm2); bmM.renderOrder = 4; bmM.raycast = () => {}; g.add(bmM); } } g.add(new THREE.Mesh(G0.tail, tail)); g.add(new THREE.Mesh(G0.grille, gril)); g.add(new THREE.Mesh(G0.plate, plate));
   // tek parça kalan detayların boyalı olanları (pikap kasası) gövde rengini alsın
   const rev = new THREE.MeshStandardMaterial({ color: 0xd8dadf, emissive: 0xffffff, emissiveIntensity: 0, roughness: 0.2, side: THREE.DoubleSide }); g.add(new THREE.Mesh(G0.rev, rev)); g.userData.rev = rev;
   if (P.open) { const [x0, x1, y0, y1] = P.open; for (const sd of [1, -1]) { const m = new THREE.Mesh(roundBox(x1 - x0 + 0.04, y1 - y0 + 0.02, 0.09, 0.03).translate((x0 + x1) / 2, (y0 + y1) / 2 + 0.01, sd * (P.W / 2 - 0.045)), body); m.castShadow = true; g.add(m); } }
@@ -2504,7 +2538,8 @@ function drivePhysics(v, inp, dt) {
   v.wheelRot += vf * dt / 0.36;
 }
 const CF = [[1, 1], [1, -1], [-1, 1], [-1, -1], [1, 0], [-1, 0], [0.5, 1], [0.5, -1], [-0.5, 1], [-0.5, -1]];
-function hitWater(x, z, a, l, w) { const c = Math.cos(a), s = Math.sin(a), hl = l / 2, hw = w / 2; for (const [fx, fz] of CF) { const px = x + c * fx * hl - s * fz * hw, pz = z + s * fx * hl + c * fz * hw; if (px < 2 || pz < 2 || px > MW - 2 || pz > MH - 2) return true; if (rAt(px, pz) === 0) return true; } return false; }
+function hitWater(x, z, a, l, w) { const c = Math.cos(a), s = Math.sin(a), hl = l / 2, hw = w / 2; for (const [fx, fz] of CF) { const px = x + c * fx * hl - s * fz * hw, pz = z + s * fx * hl + c * fz * hw; if (px < 2 || pz < 2 || px > MW - 2 || pz > MH - 2) return true; const r = rAt(px, pz); if (r === 0) return true; if (r === 2 && !bridgeDeckAt(px, pz, 0.2)) return true; } return false; } /* v.18: köprü kenarından düşülmez (korkuluk) */
+function bridgeDeckAt(x, z, m) { for (const bd of BRIDGES) { const e = bd.edge; if (segDist(x, z, e.a.x, e.a.z, e.b.x, e.b.z) < e.hw + (m || 0)) return true; } return false; }
 /* daire-OBB çarpışması: binalara ve simgelere karşı */
 function pushOutBuildings(v) {
   let hit = 0, nx = 0, nz = 0;
@@ -2784,7 +2819,9 @@ function buildPersonGeos() {
   PG.hair = {
     short: mergeGeos([cap(0.121, Math.PI * 0.56, -0.42, hc + 0.012, -0.012), new THREE.SphereGeometry(0.117, 12, 3, 0, TAU, Math.PI * 0.42, Math.PI * 0.22).rotateX(-0.25).translate(0, hc - 0.012, -0.02).scale(1, 1, 0.96)]),
     buzz: cap(0.116, Math.PI * 0.55, -0.4, hc + 0.008, -0.006),
-    curly: bump(cap(0.136, Math.PI * 0.6, -0.4, hc + 0.02, -0.015), 0.07, 70),
+    curly: (() => { /* v.17: kıvırcık saç = kafayı tam örten kap + üstünde lüleler (kel görünen boşluk yok) */ const parts = [cap(0.128, Math.PI * 0.6, -0.4, hc + 0.014, -0.012)], rq = mulberry32(31);
+      for (let i = 0; i < 46; i++) { const u = rq() * TAU, v = Math.acos(1 - rq() * 0.95), r = 0.124, x = Math.sin(v) * Math.cos(u) * r, y = Math.cos(v) * r, z = Math.sin(v) * Math.sin(u) * r; const p0 = new THREE.Vector3(x, y, z).applyAxisAngle(new THREE.Vector3(1, 0, 0), -0.4); if (p0.z > 0.075 && p0.y < 0.06) continue;
+        parts.push(new THREE.IcosahedronGeometry(0.027 + rq() * 0.01, 1).translate(p0.x, p0.y + hc + 0.014, p0.z - 0.012)); } return mergeGeos(parts); })(),
     long: mergeGeos([cap(0.123, Math.PI * 0.58, -0.38, hc + 0.012, -0.012), new THREE.CylinderGeometry(0.124, 0.15, 0.32, 10, 1, true, Math.PI - 1.45, 2.9).translate(0, hc - 0.14, -0.012)]),
     pony: mergeGeos([cap(0.12, Math.PI * 0.6, -0.4, hc + 0.01, -0.01), new THREE.CapsuleGeometry(0.036, 0.19, 3, 8).rotateX(0.45).translate(0, hc - 0.07, -0.16), new THREE.SphereGeometry(0.03, 8, 6).translate(0, hc + 0.03, -0.12)]),
     bun: mergeGeos([cap(0.12, Math.PI * 0.6, -0.4, hc + 0.01, -0.01), new THREE.SphereGeometry(0.06, 12, 9).translate(0, hc + 0.08, -0.1)]),
@@ -2895,6 +2932,8 @@ function pedUpdate(p, dt) {
     p.walk += dt * 14; p.a = Math.atan2(p.vz, p.vx); if (p.t <= 0) { p.state = p.home ? "idle" : "walk"; p.run = false; if (p.home && p.stand >= 0) { const st = STANDS[p.stand]; p.a = Math.atan2(st.z - p.z, st.x - p.x); } } return;
   }
   if (p.state === "idle") { p.ox *= Math.exp(-0.8 * dt); p.oz *= Math.exp(-0.8 * dt); }
+  if (p.prom && p.state === "walk" && promWalk(p, dt)) return; // sahil yürüyüş yolu
+  if (p.parkAct && p.state === "walk" && parkActUpdate(p, dt)) return; // parkta oynayan çocuklar / izleyen aileler
   // kaldırımda yürü
   if (p.e) {
     p.ox *= Math.exp(-1.5 * dt); p.oz *= Math.exp(-1.5 * dt);
@@ -3028,9 +3067,9 @@ const DRIVERS = [
   { id: "ayse", name: "Ayşe Teyze", desc: "Tatlı dilli, polis bile kıyamaz.", perk: "Polis çabuk vazgeçer, ceza yarı", look: { sex: "f", hs: "scarf", scarf: 0x2a6a8a, shirt: 0x6a4a8a, pants: 0x4a3a30, skirt: 0x4a3a30, skin: 0xf5d7bd, hair: 0xc8c8c8, shoes: 0x3a2414, sleeve: true, lips: 0xa05050, h: 0.95, old: true } }
 ];
 DRIVERS.push(
-  { id: "orhan", name: "Orhan", desc: "Sakin, saygılı, yolcuların gözdesi. Acele etmeden ama hep zamanında.", perk: "Taksi süresi +20 sn", look: { sex: "m", hs: "short", shirt: 0x2f5a8a, pants: 0x2a2a30, skin: 0xe0b28a, hair: 0x2a1c14, shoes: 0x3a2414, must: true, sleeve: true, h: 1.0 } },
+  { id: "orhan", name: "Orhan", desc: "Sakin, saygılı, yolcuların gözdesi. Acele etmeden ama hep zamanında.", perk: "Taksi süresi +20 sn", look: { sex: "m", hs: "curly", shirt: 0x2f5a8a, pants: 0x2a2a30, skin: 0xd9a57a, hair: 0x111111, shoes: 0x3a2414, h: 0.98 } }, /* v.18: üç şoför de Eymen modeli; yalnız kıyafet renkleri farklı */
   { id: "eymen", name: "Eymen", desc: "Genç, sportif, sokakların hızlısı. Arabadan inince koşar gibi yürür.", perk: "Yürüme/koşma %20 hızlı", look: { sex: "m", hs: "curly", shirt: 0xc0262e, pants: 0x1c2c4c, skin: 0xd9a57a, hair: 0x111111, shoes: 0xffffff, h: 0.98 } },
-  { id: "oguzhan", name: "Oğuzhan", desc: "İri yarı, soğukkanlı. Arabasına kimse bir şey yapamaz.", perk: "Kaza hasarı %40 az", look: { sex: "m", hs: "buzz", shirt: 0x161618, jacket: 0x3a4a2a, pants: 0x23283a, skin: 0xc89064, hair: 0x1a1210, shoes: 0x1a1a1e, beard: true, h: 1.05 } });
+  { id: "oguzhan", name: "Oğuzhan", desc: "İri yarı, soğukkanlı. Arabasına kimse bir şey yapamaz.", perk: "Kaza hasarı %40 az", look: { sex: "m", hs: "curly", shirt: 0x3aa876, pants: 0x4a3a30, skin: 0xd9a57a, hair: 0x111111, shoes: 0x1a1a1e, h: 0.98 } });
 function drvName(d) { return (SV.drvNames && SV.drvNames[d.id]) || d.name; }
 function curDriver() { return DRIVERS.find(d => d.id === SV.driver) || DRIVERS[0]; }
 /* oyuncunun güncel görünüşü: şoförün temel görünüşü + mağaza/kuaför değişiklikleri */
@@ -3473,7 +3512,7 @@ function resize() {
   hud.width = Math.round(CW * HDPR); hud.height = Math.round(CH * HDPR); hud.style.width = CW + "px"; hud.style.height = CH + "px";
   camera.aspect = CW / CH; camera.updateProjectionMatrix(); SHOW.cam.aspect = CW / CH; SHOW.cam.updateProjectionMatrix(); if (typeof SHOPST !== "undefined" && SHOPST) placeShopCam();
 }
-function applyQuality() { const q = SV.set.quality, low = q === "dusuk", hi = q === "yuksek" || (q === "auto" && !IS_MOBILE); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, low ? 1 : hi ? 2 : 1.25));
+function applyQuality() { const q = SV.set.quality || "ultra", low = q === "dusuk", dpr = window.devicePixelRatio || 1, hi = !low; renderer.setPixelRatio(low ? 1 : q === "yuksek" ? Math.min(dpr, 1.5) : Math.min(dpr, 3)); /* v.18: Ultra HD = ekranın gerçek çözünürlüğü */
   W3.shadowsOn = !low; W3.sun.castShadow = !low; const ms = hi ? 2048 : 1024; if (W3.sun.shadow.mapSize.x !== ms) { W3.sun.shadow.mapSize.set(ms, ms); if (W3.sun.shadow.map) { W3.sun.shadow.map.dispose(); W3.sun.shadow.map = null; } } const ext = hi ? 75 : 50, sc = W3.sun.shadow.camera; sc.left = sc.bottom = -ext; sc.right = sc.top = ext; sc.updateProjectionMatrix(); camera.far = low ? 1500 : 2400; camera.updateProjectionMatrix(); const k = camera.far * 0.8 / 2000; W3.sky.scale.setScalar(k); W3.stars.scale.setScalar(k); resize(); }
 
 /* ---------------- Klavye ---------------- */
@@ -3498,7 +3537,7 @@ addEventListener("keydown", e => {
     if (e.code === "KeyR") resetCar();
     if (e.code === "KeyQ" && G.walker) playerPunch();
     if (e.code === "KeyE") interact();
-    if (e.code === "KeyT" && !DAY_ONLY) { const order = ["dinamik", "gunduz", "aksam", "gece"]; SV.set.time = order[(order.indexOf(SV.set.time) + 1) % 4]; setTimeMode(); popText(TIME_NAMES[SV.set.time].toUpperCase(), "#ffd000", { size: 24, life: 1.2 }); }
+    if (e.code === "KeyT" && !DAY_ONLY) { const order = ["dinamik", "altin", "gunduz", "aksam", "gece"]; SV.set.time = order[(order.indexOf(SV.set.time) + 1) % 5]; setTimeMode(); popText(TIME_NAMES[SV.set.time].toUpperCase(), "#ffd000", { size: 24, life: 1.2 }); }
   } else if (G.state === "pause" && (e.code === "KeyP" || e.code === "Escape")) resumeGame();
   else if (G.state === "select" && (e.code === "ArrowLeft" || e.code === "ArrowRight")) { const b = document.querySelector('[data-act="' + (e.code === "ArrowLeft" ? "carPrev" : "carNext") + '"]'); if (b) b.click(); }
   else if (G.state === "garage" && e.code === "Escape") closeGarage();
@@ -3512,7 +3551,7 @@ hud.addEventListener("pointerdown", e => {
   if (e.pointerType === "mouse" ? !(e.button === 2 || e.button === 1) : e.clientX < CW * 0.55) return;
   ORB.id = e.pointerId; ORB.x = e.clientX; try { hud.setPointerCapture(e.pointerId); } catch (er) { }
 });
-hud.addEventListener("pointermove", e => { if (e.pointerId !== ORB.id) return; if (freeCamOn() || G.state !== "play") { ORB.id = null; return; } const dx = e.clientX - ORB.x; ORB.x = e.clientX; G.cam.a -= dx * (e.pointerType === "mouse" ? 0.006 : 0.008); G.cam.dragT = G.t; });
+hud.addEventListener("pointermove", e => { if (e.pointerId !== ORB.id) return; if (freeCamOn() || G.state !== "play") { ORB.id = null; return; } const dx = e.clientX - ORB.x; ORB.x = e.clientX; G.cam.a -= dx * (e.pointerType === "mouse" ? 0.006 : 0.008) * ({ yavas: 0.55, orta: 0.8, hizli: 1 }[SV.set.sens || "orta"]); G.cam.dragT = G.t; });
 const orbEnd = e => { if (e.pointerId === ORB.id) { ORB.id = null; G.cam.dragT = G.t; } }; hud.addEventListener("pointerup", orbEnd); hud.addEventListener("pointercancel", orbEnd);
 addEventListener("keyup", e => { KEY[e.code] = false; if (e.code === "KeyH") hornOff(); });
 addEventListener("blur", () => { for (const k in KEY) KEY[k] = false; for (const k in TOUCH.btn) TOUCH.btn[k] = false; hornOff(); });
@@ -3541,8 +3580,9 @@ document.addEventListener("contextmenu", e => e.preventDefault());
 function getDriveInput() {
   const up = KEY.KeyW || KEY.ArrowUp, dn = KEY.KeyS || KEY.ArrowDown, lf = KEY.KeyA || KEY.ArrowLeft, rt = KEY.KeyD || KEY.ArrowRight;
   let thr = (up ? 1 : 0) - (dn ? 1 : 0), steer = (rt ? 1 : 0) - (lf ? 1 : 0), hb = !!KEY.Space, nitro = !!(KEY.ShiftLeft || KEY.ShiftRight);
-  if (TOUCH.jm > 0.12) { steer = clamp(TOUCH.jx * 1.25, -1, 1); thr = TOUCH.jy < 0.25 ? clamp(-TOUCH.jy * 1.6 + 0.35, 0.35, 1) : -clamp((TOUCH.jy - 0.25) * 1.6, 0, 1); }
-  if (TOUCH.btn.left || TOUCH.btn.right || G.bSteer) { const tg = (TOUCH.btn.right ? 1 : 0) - (TOUCH.btn.left ? 1 : 0); G.bSteer = (G.bSteer || 0) + clamp(tg - (G.bSteer || 0), -0.12, 0.12); if (Math.abs(G.bSteer) < 0.02 && !tg) G.bSteer = 0; steer = G.bSteer; } // butonla direksiyon: yumuşak kırılır
+  const SNS = { yavas: 0.5, orta: 0.75, hizli: 1 }[SV.set.sens || "orta"];
+  if (TOUCH.jm > 0.12) { steer = clamp(TOUCH.jx * 1.25 * SNS, -1, 1); thr = TOUCH.jy < 0.25 ? clamp(-TOUCH.jy * 1.6 + 0.35, 0.35, 1) : -clamp((TOUCH.jy - 0.25) * 1.6, 0, 1); }
+  if (TOUCH.btn.left || TOUCH.btn.right || G.bSteer) { const tg = (TOUCH.btn.right ? 1 : 0) - (TOUCH.btn.left ? 1 : 0); G.bSteer = (G.bSteer || 0) + clamp(tg * SNS - (G.bSteer || 0), -0.12 * SNS, 0.12 * SNS); if (Math.abs(G.bSteer) < 0.02 && !tg) G.bSteer = 0; steer = G.bSteer; } // butonla direksiyon: yumuşak kırılır
   if (TOUCH.btn.gas) thr = 1; if (TOUCH.btn.brake) thr = -1; if (TOUCH.btn.hb) hb = true; if (TOUCH.btn.nitro) nitro = true;
   if (freeCamOn()) return { thr: 0, steer: 0, hb: true, nitro: false };
   return { thr, steer, hb, nitro };
@@ -3629,7 +3669,7 @@ function updateWalker(dt) {
   if (G.seq) return;
   const w = G.walker; let mx = 0, mz = 0; const ca = Math.cos(G.cam.a), sa = Math.sin(G.cam.a);
   let fwd = (KEY.KeyW || KEY.ArrowUp ? 1 : 0) - (KEY.KeyS || KEY.ArrowDown ? 1 : 0), str = (KEY.KeyD || KEY.ArrowRight ? 1 : 0) - (KEY.KeyA || KEY.ArrowLeft ? 1 : 0);
-  if (TOUCH.jm > 0.15) { fwd = -TOUCH.jy; str = TOUCH.jx; }
+  if (TOUCH.jm > 0.15) { fwd = -TOUCH.jy; str = TOUCH.jx * ({ yavas: 0.6, orta: 0.8, hizli: 1 }[SV.set.sens || "orta"]); }
   const fcOn = freeCamOn(); if (fcOn) fwd = str = 0;
   mx = ca * fwd - sa * str; mz = sa * fwd + ca * str; const m = Math.hypot(mx, mz); w.vx = w.vz = 0;
   if (w.immT > 0) w.immT -= dt;
@@ -3797,6 +3837,7 @@ function managePopulation() {
   standTaxis(f.x, f.z);
   for (let i = G.peds.length - 1; i >= 0; i--) { const p = G.peds[i]; if (dist(p.x, p.z, f.x, f.z) > 300 && !inView(p.x, p.z, 5)) G.peds.splice(i, 1); }
   for (let k = 0; k < (G.pedFill ? 14 : 6) && G.peds.length < PEDN; k++) spawnPed(f.x, f.z);
+  for (let k = 0; k < (G.pedFill ? 6 : 2); k++) spawnProm(f.x, f.z);
   if (G.state === "play" && (G.mode === "taxi" || G.mode === "cruise")) {
     for (let i = G.pax.length - 1; i >= 0; i--) if (G.pax[i].state === "wait" && dist(G.pax[i].x, G.pax[i].z, f.x, f.z) > (G.pax[i].stand >= 0 ? 900 : 650)) G.pax.splice(i, 1);
     if (G.pax.filter(p => p.state === "wait").length < 10) spawnPax(f.x, f.z);
@@ -3875,8 +3916,8 @@ function updateCamera(dt) {
 }
 
 /* ---------------- Gün saati ---------------- */
-const TIME_NAMES = { dinamik: "Dinamik (gün döngüsü)", gunduz: "Gündüz", aksam: "Gün batımı", gece: "Gece" };
-function setTimeMode() { const m = SV.set.time; if (m === "gunduz") G.tod = 12; else if (m === "aksam") G.tod = 18.8; else if (m === "gece") G.tod = 22.5; persist(); }
+const TIME_NAMES = { dinamik: "Dinamik (gün döngüsü)", altin: "Altın saat", gunduz: "Gündüz", aksam: "Gün batımı", gece: "Gece" };
+function setTimeMode() { const m = SV.set.time; if (m === "altin") G.tod = 17.9; else if (m === "gunduz") G.tod = 12; else if (m === "aksam") G.tod = 18.8; else if (m === "gece") G.tod = 22.5; persist(); }
 const DAY_ONLY = false; // v.12: akşam / gece geri geldi (ayarlardan seçilir, varsayılan gündüz)
 function updateTOD(dt) {
   if (DAY_ONLY) { G.tod = 13.5; if (G.lastTod !== 13.5) { G.lastTod = 13.5; applyTimeOfDay(13.5); } return; }
@@ -3894,7 +3935,7 @@ function updateTOD(dt) {
 function update(dt) {
   { const pul = !!(G.walker && G.enterPrompt && !G.seq) || !!(G.pv && !G.fare && G.mode !== "race" && G.mode !== "blitz" && Math.hypot(G.pv.vx, G.pv.vz) < 0.5 && G.t - (G.stopT || 0) > 6); if (G.pv && Math.hypot(G.pv.vx, G.pv.vz) > 0.5) G.stopT = G.t; if (G.pulse !== pul) { G.pulse = pul; const eb = document.querySelector('[data-k="enter"]'); if (eb) eb.classList.toggle("pulse", pul); } }
   { const dr = !!G.pv && G.state === "play"; if (G.drvCls !== dr) { G.drvCls = dr; document.body.classList.toggle("driving", dr); if (dr && document.body.classList.contains("ctrlBtn")) { joyId = null; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; $("joyBase").style.display = "none"; } } }
-  { const wk = !!G.walker; if (G.wkLbl !== wk) { G.wkLbl = wk; const q = k => document.querySelector('[data-k="' + k + '"]'); const L2 = (k, ic, tx) => { const b = q(k); if (b) b.innerHTML = '<i>' + ic + '</i><s>' + tx + '</s>'; }; if (q('nitro')) { L2('nitro', wk ? '🏃' : '🔥', wk ? 'KOŞ' : 'NİTRO'); L2('hb', wk ? '⬆️' : '↪️', wk ? 'ZIPLA' : 'DRİFT'); L2('brake', wk ? '👊' : '🛑', wk ? 'VUR' : 'FREN'); L2('horn', wk ? '✋' : '📯', wk ? 'AL/GİR' : 'KORNA'); } } }
+  { const wk = !!G.walker; if (G.wkLbl !== wk) { G.wkLbl = wk; const q = k => document.querySelector('[data-k="' + k + '"]'); const L2 = (k, ic, tx) => { const b = q(k); if (b) b.innerHTML = '<i>' + (ic === '✋' ? ICO_ALGIR : ic) + '</i><s>' + tx + '</s>'; }; if (q('nitro')) { L2('nitro', wk ? '🏃' : '🔥', wk ? 'KOŞ' : 'NİTRO'); L2('hb', wk ? '⬆️' : '↪️', wk ? 'ZIPLA' : 'DRİFT'); L2('brake', wk ? '👊' : '🛑', wk ? 'VUR' : 'FREN'); L2('horn', wk ? '✋' : '📯', wk ? 'AL/GİR' : 'KORNA'); } } }
   G.t += dt; if (saveTimer > 0) { saveTimer -= dt; if (saveTimer <= 0) persist(true); }
   const live = G.state === "play" || G.state === "menu";
   if (G.state === "play") {
@@ -3959,6 +4000,11 @@ function polSync() { const t = $("polTog"); if (t) { t.classList.toggle("off", !
 $("polTog").addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); auInit(); SV.noPolice = !SV.noPolice; persist(); polSync(); if (SV.noPolice) polClear("POLİS KAPATILDI"); else popText("POLİS AÇIK", "#3a78ff", { size: 26, life: 1.4 }); buzz(10); });
 $("polEsc").addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); auInit(); if (G.state !== "play") return; polClear(); buzz(20); });
 setInterval(() => { document.body.classList.toggle("wanted", G.state === "play" && G.wanted > 0); polSync(); }, 300);
+
+/* v.18: AL/GİR ve İN/BİN için çizilmiş semboller (emoji yerine) */
+const ICO_INBIN = '<svg viewBox="0 0 48 32" width="34" height="23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h4l3-8c1-2 2-3 5-3h10c3 0 4 1 6 3l4 4h4c2 0 3 1 3 3v1h-3"/><circle cx="13" cy="24" r="3.4"/><circle cx="34" cy="24" r="3.4"/><path d="M20 11v8h8" stroke="#ffd000"/><path d="M27 6l4 4-4 4" stroke="#ffd000"/><path d="M31 10h-9" stroke="#ffd000"/></svg>';
+const ICO_ALGIR = '<svg viewBox="0 0 40 32" width="30" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="4" width="15" height="24" rx="2"/><circle cx="31" cy="17" r="1.4" fill="currentColor"/><path d="M4 16h12" stroke="#2bff7a"/><path d="M11 10l6 6-6 6" stroke="#2bff7a"/></svg>';
+{ const eb = document.querySelector('[data-k="enter"]'); if (eb) eb.innerHTML = '<i>' + ICO_INBIN + '</i><s>İN/BİN</s>'; }
 
 /* =====================================================================
    GİZLİ PARA PAKETLERİ + POLİSTEN SAKLANMA (v.08)
@@ -4836,7 +4882,7 @@ function buildFun() {
   for (const f of FUN_ZONES) { if (!/^oyun/.test(f.id)) continue; const y0 = heightAt(f.x, f.z), ang = 0.3 + (f.x % 3);
     const ca = Math.cos(ang), sa = Math.sin(ang), P = (lx, lz) => [f.x + ca * lx - sa * lz, f.z + sa * lx + ca * lz];
     // zemin (kauçuk)
-    const mat = new THREE.Mesh(new THREE.CircleGeometry(f.r * 0.95, 32).rotateX(-Math.PI / 2), funMat(0x3a7a5a, { polygonOffset: true, polygonOffsetFactor: -2 })); mat.position.set(f.x, y0 + 0.03, f.z); scene.add(mat);
+    const mat = new THREE.Mesh(new THREE.CircleGeometry(f.r * 0.95, 32).rotateX(-Math.PI / 2), funMat(0xffffff, { map: (() => { const t = texRubber(); t.repeat.set(f.r / 2, f.r / 2); return t; })(), polygonOffset: true, polygonOffsetFactor: -2 })); mat.receiveShadow = true; mat.position.set(f.x, y0 + 0.03, f.z); scene.add(mat);
     // kaydırak
     { const S = new THREE.Group(), [sx, sz] = P(-3, 0); S.position.set(sx, y0, sz); S.rotation.y = -ang; const H = 2.2, col = funMat(0xf2c94c), blue = funMat(0x2e7dd1), steel = funMat(0xcfd3d8, { metalness: 0.5 });
       for (const z of [-0.45, 0.45]) S.add(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, H + 0.9, 6).translate(-1.2, (H + 0.9) / 2, z), steel));
@@ -4950,7 +4996,7 @@ function swimUpdate(w, dt, mx, mz, m) {
   const S = w.swim;
   if (!S) { // kıyı / havuz kenarından suya doğru yürüyorsa: atla
     if (m < 0.1 || w.state !== "walk" && w.state !== undefined && w.state !== "idle") return false;
-    const ux = mx / m, uz = mz / m, ax = w.x + ux * 0.55, az = w.z + uz * 0.55, wy = waterAt(ax, az); if (wy === null || waterAt(w.x, w.z) !== null) return false;
+    const ux = mx / m, uz = mz / m, ax = w.x + ux * 0.55, az = w.z + uz * 0.55, wy = waterAt(ax, az); if (wy === null || waterAt(w.x, w.z) !== null || rAt(w.x, w.z) === 2 || heightAt(w.x, w.z) > 2.5) return false; /* köprüden denize düşülmez */
     if (wy === SEA_Y && rAt(ax, az) === 2) return false; // köprüden düşmek yok
     w.swim = { phase: "in", t: 0, wy, x0: w.x, z0: w.z, x1: w.x + ux * 1.6, z1: w.z + uz * 1.6, y0: heightAt(w.x, w.z) }; w.a = Math.atan2(uz, ux); sfxWhoosh(); return true;
   }
@@ -5000,7 +5046,7 @@ const BOAT_T = {
   tour: { name: "Tur Teknesi", len: 11, wid: 3.6, vmax: 12, acc: 3.2, turn: 0.75, seat: [-3.45, 0.78], cam: [15, 5.5], sit: 0, col: "#ffd040" }
 };
 function onPier(x, z) { for (const p of PIERS) { const dx = x - p.x, dz = z - p.z, lx = dx * p.c + dz * p.s, lz = -dx * p.s + dz * p.c; if (Math.abs(lx) < p.l / 2 && Math.abs(lz) < p.w / 2) return p; } return null; }
-function walkAt(x, z) { return rAt(x, z) || (PIERS.length && onPier(x, z) ? 1 : 0); }
+function walkAt(x, z) { const r = rAt(x, z); if (r === 2 && !bridgeDeckAt(x, z, -0.4)) return 0; return r || (PIERS.length && onPier(x, z) ? 1 : 0); } /* v.18: köprüde korkuluğun dışına çıkılmaz */
 function inShip(x, z, pad) { for (const s of SHIPS) { const dx = x - s.x, dz = z - s.z, lx = dx * s.c + dz * s.s, lz = -dx * s.s + dz * s.c; if (Math.abs(lx) < s.l / 2 + pad && Math.abs(lz) < s.w / 2 + pad) return true; } return false; }
 function boatWater(x, z) { if (x < 4 || z < 4 || x > MW - 4 || z > MH - 4) return false; const r = rAt(x, z); if (r === 1) return false; if (onPier(x, z) || inShip(x, z, 0.5)) return false; return true; }
 function seaRect(x, z, a, l, w) { const c = Math.cos(a), s = Math.sin(a); for (let i = -1; i <= 1; i += 0.25) for (let j = -1; j <= 1; j += 0.5) { const lx = i * l / 2, lz = j * w / 2; if (rAt(x + c * lx - s * lz, z + s * lx + c * lz) !== 0) return false; } return true; }
@@ -5556,7 +5602,7 @@ function binReset() { if (G.indoor) G.indoor.roomG.visible = false; G.indoor = n
    böylece dışarıdaki yapıların içinden geçmez. Girişler yolda, tabelalı.
    ===================================================================== */
 BIN_NAMES.cami = "CAMİ"; BIN_NAMES.stad = "STADYUM"; BIN_NAMES.avm = "AVM";
-const BIG_DIM = { cami: [26, 26, 9], stad: [64, 42, 14], avm: [42, 20, 8] };
+const BIG_DIM = { cami: [34, 34, 11], stad: [64, 42, 14], avm: [42, 20, 8] };
 function gateNear(lx, lz, rr) { const ne = nearestEdge(lx, lz, 160); if (!ne) return null; const e = ne.e, qx = e.a.x + e.dx * e.len * ne.t, qz = e.a.z + e.dz * e.len * ne.t;
   let nx = lx - qx, nz = lz - qz; const m = Math.hypot(nx, nz) || 1; nx /= m; nz /= m; for (let off = e.hw + 2.2; off < e.hw + 9; off += 0.5) { const gx = qx + nx * off, gz = qz + nz * off; if (isLand(gx, gz) && !pointInBuilding(gx, gz) && !onRoad(gx, gz)) return { fx: gx + nx * 0.6, fz: gz + nz * 0.6, mx: gx - nx * 1.0, mz: gz - nz * 1.0, nx: -nx, nz: -nz }; } return null; }
 function makeGate(B, label, col) {
@@ -5589,6 +5635,14 @@ function makeBigRoom(B) {
     for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; add(new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfff1c0 })), Math.cos(a) * 6, 3.25, Math.sin(a) * 6); }
     for (const [x, z] of [[-hw * 0.55, -hd * 0.55], [hw * 0.55, -hd * 0.55], [-hw * 0.55, hd * 0.55], [hw * 0.55, hd * 0.55]]) { add(new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.0, rh, 16), M({ color: 0xece4d0 })), x, rh / 2, z); col(x, z, 1.0, 1.0); }
     const winM = new THREE.MeshBasicMaterial({ color: 0xbfe0ff, toneMapped: false }); B.winM = winM; for (const s of [-1, 1]) for (let k = -2; k <= 2; k++) { const w2 = add(new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2.4), winM), s * (hw - 0.05), 6.2, k * 4); w2.rotation.y = -s * Math.PI / 2; }
+    // giriş: ayakkabılıklar
+    for (const s of [-1, 1]) { const rk = add(new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 0.5), M({ color: 0x6a4020 })), s * 4.5, 0.6, hd - 0.5); col(s * 4.5, hd - 0.5, 2.1, 0.35); for (let k = 0; k < 6; k++) add(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.1, 0.2), M({ color: [0x222222, 0x6a4424, 0xeeeeee][k % 3] })), s * 4.5 - 1.6 + k * 0.62, 0.95, hd - 0.42); }
+    // mahfil (arka duvar boyunca yükseltilmiş galeri)
+    const mf = add(new THREE.Mesh(new THREE.BoxGeometry(rw - 2, 0.4, 3.2), M({ color: 0xe8dcc0 })), 0, 3.6, hd - 3.0); for (let k = -6; k <= 6; k++) { add(new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 3.4, 10), M({ color: 0xe8dcc0 })), k * 2.4, 1.7, hd - 4.4); if (Math.abs(k * 2.4) > 2) col(k * 2.4, hd - 4.4, 0.25, 0.25); }
+    add(new THREE.Mesh(new THREE.BoxGeometry(rw - 2, 0.7, 0.08), M({ color: 0x7a5a30 })), 0, 4.15, hd - 4.55);
+    // rahleler (Kur'an rahlesi) ve ek avize
+    for (let i = -2; i <= 2; i++) { const r2 = add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.35), M({ color: 0x6a4020 })), i * 2.6, 0.2, -hd + 6); r2.rotation.x = 0.3; col(i * 2.6, -hd + 6, 0.3, 0.25); }
+    for (const [x, z] of [[-9, -6], [9, -6], [-9, 6], [9, 6]]) { const rg = add(new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.05, 6, 28), M({ color: 0x3a2a1a, metalness: 0.6 })), x, 3.0, z); rg.rotation.x = Math.PI / 2; for (let k = 0; k < 10; k++) { const a = k / 10 * TAU; add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), new THREE.MeshBasicMaterial({ color: 0xfff1c0 })), x + Math.cos(a) * 2.2, 2.88, z + Math.sin(a) * 2.2); } }
     B.sit = { x: -4, z: 2, y: 0.25 };
   } else if (B.style === "stad") {
     const pitch = (() => { const c = mkCanvas(512, 340), x = c.getContext("2d"); for (let i = 0; i < 12; i++) { x.fillStyle = i % 2 ? "#2f8a3a" : "#37983f"; x.fillRect(i * 512 / 12, 0, 512 / 12 + 1, 340); } x.strokeStyle = "#fff"; x.lineWidth = 3; x.strokeRect(20, 20, 472, 300); x.beginPath(); x.moveTo(256, 20); x.lineTo(256, 320); x.stroke(); x.beginPath(); x.arc(256, 170, 46, 0, TAU); x.stroke(); x.strokeRect(20, 100, 60, 140); x.strokeRect(432, 100, 60, 140); return canvasTex(c); })();
@@ -5621,10 +5675,52 @@ function makeBigRoom(B) {
 }
 function buildBigPlaces() {
   const L = n => LANDMARKS.find(l => l.name.includes(n));
-  const spots = [["cami", L("Sultanahmet"), "SULTANAHMET CAMİİ", "#1d4f7a"], ["cami", L("Süleymaniye"), "SÜLEYMANİYE CAMİİ", "#1d4f7a"], ["cami", L("Büyük Çamlıca"), "ÇAMLICA CAMİİ", "#1d4f7a"], ["stad", L("Stadı"), "STADYUM GİRİŞİ", "#c0262e"], ["avm", L("Levent"), "LEVENT AVM", "#6a4ab0"], ["avm", L("Kadıköy"), "KADIKÖY AVM", "#6a4ab0"]];
+  buildMosqueEntrances(); /* v.18: bütün camilerde gerçek giriş */
+  const spots = [["stad", L("Stadı"), "STADYUM GİRİŞİ", "#c0262e"], ["avm", L("Levent"), "LEVENT AVM", "#6a4ab0"], ["avm", L("Kadıköy"), "KADIKÖY AVM", "#6a4ab0"]];
   for (const [style, lm, label, col] of spots) { if (!lm) continue; const gt = gateNear(lm.x, lm.z, lm.r || 30); if (!gt) continue; const B = Object.assign({ b: null, style, doorK: 0, label }, gt); makeGate(B, label, col); makeBigRoom(B); BINS.push(B); }
 }
 function binExitQuiet(B) { G.indoor = null; B.roomG.visible = false; const w = G.walker; w.x = B.mx; w.z = B.mz; w.jy = 0; w.y = undefined; }
+/* =====================================================================
+   v.18: CAMİ GİRİŞLERİ — Eminönü Yeni Cami örneği: yola bakan cephede geniş
+   merdiven, yükseltilmiş taş avlu/revak, kemerli sütunlar, küçük kubbeler,
+   üç büyük ahşap kapı. Ortadaki kapıdan içeri girilir. Bütün camilerde.
+   ===================================================================== */
+const MOSQ_SIZE = { bluemosque: 40, suleymaniye: 36, yenicami: 26, ortakoy: 16, camlica: 46, mihrimah: 22, fatih: 32 };
+function buildMosqueEntrances() {
+  for (const id in MOSQ_SIZE) { const lm = LM[id]; if (!lm) continue; const s = MOSQ_SIZE[id];
+    // yola en yakın cephe (4 yönden)
+    let best = null, bd = 1e9; for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const px = lm.x + dx * (s / 2 + 10), pz = lm.z + dz * (s / 2 + 10); if (!isLand(px, pz)) continue; const ne = nearestEdge(px, pz, 120); const d = ne ? ne.d : 200; if (d < bd) { bd = d; best = [dx, dz]; } }
+    if (!best) continue; const [dx, dz] = best, ry = Math.atan2(dx, dz), D = 9, W = Math.min(s * 0.85, 30), Hp = 1.2;
+    const g = new THREE.Group(), stone = stdMat({ map: texMarble(), color: 0xf0e8d8, roughness: 0.55 }), wallM = stdMat({ color: 0xe6dccb, roughness: 0.7 }), domeM = stdMat({ color: 0x6f8eaa, metalness: 0.45, roughness: 0.35 }), wood = stdMat({ color: 0x5a3418, roughness: 0.5 }), gold = stdMat({ color: 0xd8b860, metalness: 0.8, roughness: 0.3 });
+    // yerel: z = dışarı (cepheden yola), x = cephe boyunca; cephe z = 0
+    const plat = new THREE.Mesh(new THREE.BoxGeometry(W, Hp, D), stone); plat.position.set(0, Hp / 2, D / 2); plat.receiveShadow = true; g.add(plat);
+    for (let k = 0; k < 5; k++) { const st = new THREE.Mesh(new THREE.BoxGeometry(W * 0.8, Hp * (k + 1) / 5, 0.42), stone); st.position.set(0, Hp * (k + 1) / 10, D + 2.1 - k * 0.42); st.receiveShadow = true; g.add(st); }
+    // revak: sütunlar + kemerler + çatı + küçük kubbeler
+    const nC = Math.max(4, Math.round(W / 5)), sp = (W - 2) / (nC - 1);
+    for (let i = 0; i < nC; i++) { const x = -W / 2 + 1 + i * sp; const c = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 4.6, 14), stone); c.position.set(x, Hp + 2.3, D - 1); c.castShadow = true; g.add(c); const cap = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 0.9), stone); cap.position.set(x, Hp + 4.7, D - 1); g.add(cap);
+      if (i < nC - 1) { const ar = new THREE.Mesh(new THREE.TorusGeometry(sp / 2 - 0.3, 0.22, 6, 18, Math.PI), wallM); ar.position.set(x + sp / 2, Hp + 4.7, D - 1); g.add(ar); const dm = new THREE.Mesh(new THREE.SphereGeometry(sp / 2 - 0.2, 18, 9, 0, TAU, 0, Math.PI / 2), domeM); dm.position.set(x + sp / 2, Hp + 6.2, D / 2 - 0.5); dm.castShadow = true; g.add(dm);
+        const fin = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 6), gold); fin.position.set(x + sp / 2, Hp + 6.2 + sp / 2, D / 2 - 0.5); g.add(fin); } }
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(W, 1.3, D - 0.6), wallM); roof.position.set(0, Hp + 5.5, D / 2 - 0.3); roof.castShadow = true; g.add(roof);
+    // cephe duvarı parçası + 3 büyük kemerli kapı (ortadaki açılır)
+    const fw = new THREE.Mesh(new THREE.BoxGeometry(W, 6, 0.6), wallM); fw.position.set(0, Hp + 3, 0.1); g.add(fw);
+    let piv = null; for (const x of [-W * 0.28, 0, W * 0.28]) { const big = x === 0, dw = big ? 2.6 : 2.0, dh = big ? 4.0 : 3.3;
+      const fr = new THREE.Mesh(new THREE.BoxGeometry(dw + 0.6, dh + 0.6, 0.12), stone); fr.position.set(x, Hp + (dh + 0.6) / 2, 0.45); g.add(fr);
+      const arch = new THREE.Mesh(new THREE.TorusGeometry(dw / 2 + 0.15, 0.16, 6, 16, Math.PI), gold); arch.position.set(x, Hp + dh, 0.5); g.add(arch);
+      const hole = new THREE.Mesh(new THREE.PlaneGeometry(dw, dh), new THREE.MeshBasicMaterial({ color: 0x120c08 })); hole.position.set(x, Hp + dh / 2, 0.52); g.add(hole);
+      const p2 = new THREE.Group(); p2.position.set(x - dw / 2, Hp, 0.55); g.add(p2); const lf = new THREE.Mesh(new THREE.BoxGeometry(dw, dh, 0.08), wood); lf.position.set(dw / 2, dh / 2, 0); p2.add(lf);
+      for (let k = 0; k < 3; k++) { const pn = new THREE.Mesh(new THREE.BoxGeometry(dw * 0.8, dh * 0.24, 0.02), stdMat({ color: 0x6a4020, roughness: 0.45 })); pn.position.set(dw / 2, dh * (0.2 + k * 0.3), 0.05); p2.add(pn); }
+      if (big) piv = p2; }
+    // tabela + şadırvan (avlu önünde)
+    const sw = Math.max(4, lm.name.length * 0.28), sg = new THREE.Mesh(new THREE.PlaneGeometry(sw, 0.7), new THREE.MeshBasicMaterial({ map: plainText(lm.name.toUpperCase(), "#f2e2b0", "#1d4f7a", Math.round(sw * 100), 64), toneMapped: false })); sg.position.set(0, Hp + 6.6, D - 0.6 + 0.02); g.add(sg);
+    const wx = lm.x + dx * (s / 2) , wz = lm.z + dz * (s / 2); g.position.set(wx, 0, wz); g.rotation.y = ry; scene.add(g);
+    // yürünebilir: platform + merdiven rampası
+    const W2 = (lx, lz) => [wx + Math.cos(ry) * lx + Math.sin(ry) * lz, wz - Math.sin(ry) * lx + Math.cos(ry) * lz];
+    { const [px, pz] = W2(0, D / 2), c = Math.cos(Math.atan2(dz, dx)), sn = Math.sin(Math.atan2(dz, dx)); PLATS.push({ x: px, z: pz, c, s: sn, l: D, w: W, h: Hp }); const [rx, rz] = W2(0, D + 0.9); RAMPS.push({ x: rx, z: rz, c: -c, s: -sn, l: 2.8, w: W * 0.8, h: Hp + 0.12 }); }
+    for (let i = 0; i < nC; i++) { const [cx, cz] = W2(-W / 2 + 1 + i * sp, D - 1); addSolidBox(cx, cz, 0.7, 0.7, 0); }
+    const [fx, fz] = W2(0, 0.55), [mx, mz] = W2(0, 2.2);
+    const B = { b: null, style: "cami", doorK: 0, label: lm.name.toUpperCase(), fx, fz, mx, mz, nx: dx, nz: dz, door: piv, g, mosque: id };
+    makeBigRoom(B); BINS.push(B); }
+}
 
 /* =====================================================================
    NAVİGASYON (v.15): büyük haritada istediğin yere dokun → hedef işaretlenir,
@@ -5728,8 +5824,11 @@ function updateRail(dt) {
 function buildOverpasses() {
   const cand = EDGES.filter(e => e.type === "ana" && e.len > 90 && !e.bridge).sort((a, b) => (a.a.x * 7 + a.a.z) % 97 - (b.a.x * 7 + b.a.z) % 97); const cells = new Set();
   const steel = stdMat({ color: 0x2f5a8a, metalness: 0.5, roughness: 0.4 }), deckM = stdMat({ color: 0x8a8e94, roughness: 0.8 }), glass = new THREE.MeshStandardMaterial({ color: 0x9ad0ff, transparent: true, opacity: 0.3, roughness: 0.1, metalness: 0.2 });
-  for (const e of cand) { if (OVERPASSES.length >= 5) break; const mx = e.a.x + e.dx * e.len / 2, mz = e.a.z + e.dz * e.len / 2, key = Math.floor(mx / 320) + "_" + Math.floor(mz / 320); if (cells.has(key)) continue;
-    const nx = -e.dz, nz = e.dx, half = e.hw + 3.2, H = 5.6; let ok = true; for (const s of [1, -1]) for (const t of [-6, 0, 6]) { const x = mx + nx * s * half + e.dx * t, z = mz + nz * s * half + e.dz * t; if (!isLand(x, z) || pointInBuilding(x, z) || onRoad(x, z)) ok = false; } if (!ok) continue;
+  const PROPS_NEAR = (x, z) => (typeof propFree === "function" ? !propFree(x, z, 0.6) : false);
+  for (const e of cand) { if (OVERPASSES.length >= 6) break; const mx = e.a.x + e.dx * e.len / 2, mz = e.a.z + e.dz * e.len / 2, key = Math.floor(mx / 320) + "_" + Math.floor(mz / 320); if (cells.has(key)) continue;
+    const nx = -e.dz, nz = e.dx, half = e.hw + 1.2, H = 5.6; let ok = true; /* v.17: kule + merdiven tamamen kaldırımda; binaya, yola taşmaz */
+    for (const s2 of [1, -1]) for (const lat of [e.hw + 1.1, e.hw + 2.0, e.hw + 2.9, e.hw + 3.8]) for (let t = -1.6; t <= 8.2; t += 0.8) { const x = mx + nx * s2 * lat - e.dx * t, z = mz + nz * s2 * lat - e.dz * t; if (!isLand(x, z) || pointInBuilding(x, z) || (lat > e.hw + 1.5 && onRoad(x, z)) || PROPS_NEAR(x, z)) ok = false; }
+    if (!ok) continue;
     if (SHOPS.some(q => dist(q.x, q.z, mx, mz) < 25) || CIVIC.some(q => dist(q.x, q.z, mx, mz) < 30)) continue;
     cells.add(key); const g = new THREE.Group(), a = Math.atan2(nz, nx), span = half * 2;
     // köprü: yol boyunca değil, yolu dik keser (yerel x = karşıya)
@@ -5828,6 +5927,205 @@ function updateShore(dt) {
   for (const d of SHORE.deb) { d.t += dt; d.vy -= 18 * dt; d.g.position.x += d.vx * dt; d.g.position.y += d.vy * dt; d.g.position.z += d.vz * dt; d.g.rotation.x += d.wx * dt; d.g.rotation.z += d.wz * dt;
     const fl = rAt(d.g.position.x, d.g.position.z) === 1 ? heightAt(d.g.position.x, d.g.position.z) + 0.05 : SEA_Y - 0.3; if (d.g.position.y < fl) { d.g.position.y = fl; d.vy *= -0.25; d.vx *= 0.6; d.vz *= 0.6; d.wx *= 0.5; d.wz *= 0.5; } }
   SHORE.deb = SHORE.deb.filter(d => { if (d.t > 12) { scene.remove(d.g); d.g.geometry.dispose(); return false; } return true; });
+}
+/* =====================================================================
+   v.17: SAHİL YÜRÜYÜŞ YOLU — korkuluğun iç tarafında kıyı boyunca giden
+   yürüyüş zinciri. Yayalar burada dolaşır; aralıklarla dondurmacı, simitçi,
+   kestaneci arabaları satış yapar. (Tüm modlarda, tüm kıyılarda.)
+   ===================================================================== */
+const PROM = { chains: [] };
+function buildPromenade() {
+  const P = SHORE.panels.concat(SHORE.ladders.map(l => ({ x: l.x, z: l.z, a: l.a, lad: 1 }))), used = new Set();
+  const nearIdx = new Map(); P.forEach((q, i) => { const k = Math.floor(q.x / 6) + "_" + Math.floor(q.z / 6); if (!nearIdx.has(k)) nearIdx.set(k, []); nearIdx.get(k).push(i); });
+  const nb = (q, cand) => { let best = -1, bd = 4.2; const cx = Math.floor(q.x / 6), cz = Math.floor(q.z / 6); for (let i = cx - 1; i <= cx + 1; i++) for (let j = cz - 1; j <= cz + 1; j++) for (const k of nearIdx.get(i + "_" + j) || []) { if (used.has(k) || !cand(k)) continue; const d = dist(q.x, q.z, P[k].x, P[k].z); if (d < bd) { bd = d; best = k; } } return best; };
+  const inl = q => [q.x - Math.cos(q.a) * 1.7, q.z - Math.sin(q.a) * 1.7], okPt = ([x, z]) => isLand(x, z) && !pointInBuilding(x, z) && !onRoad(x, z);
+  for (let s = 0; s < P.length; s++) { if (used.has(s) || !okPt(inl(P[s]))) continue; used.add(s); const fwd = [s], bwd = [];
+    for (const [arr, sg] of [[fwd, 1], [bwd, -1]]) { let cur = P[s]; for (let n = 0; n < 900; n++) { const tx = -Math.sin(cur.a) * sg, tz = Math.cos(cur.a) * sg; const k = nb(cur, k2 => (P[k2].x - cur.x) * tx + (P[k2].z - cur.z) * tz > 0.5 && okPt(inl(P[k2]))); if (k < 0) break; used.add(k); arr.push(k); cur = P[k]; } }
+    const ids = bwd.reverse().concat(fwd); if (ids.length < 14) continue;
+    const pts = ids.map(i => inl(P[i])); PROM.chains.push(pts); }
+  // kıyı satıcıları (dondurma ağırlıklı)
+  const kinds = ["dondurma", "dondurma", "simit", "kestane"]; let n = 0;
+  for (const ch of PROM.chains) for (let i = 10; i < ch.length - 10; i += 40) { const [x, z] = ch[i], [x2, z2] = ch[i + 1], a = Math.atan2(z2 - z, x2 - x), ix = x - Math.sin(a) * -1.4, iz = z + Math.cos(a) * -1.4;
+    if (!isLand(ix, iz) || pointInBuilding(ix, iz) || onRoad(ix, iz) || VENDORS.some(v => dist(v.x, v.z, ix, iz) < 30)) continue; addCoastVendor(ix, iz, a, kinds[n++ % kinds.length]); }
+}
+function addCoastVendor(x, z, a, kind) {
+  const mat = W3.vendMat || (W3.vendMat = stdMat({ vertexColors: true, roughness: 0.6, side: THREE.DoubleSide })), g = new THREE.Mesh(vendorGeo(kind), mat);
+  g.position.set(x, CURB, z); g.rotation.y = -a; g.castShadow = true; scene.add(g);
+  const vd = { kind, x, z, a, mesh: g, up: true, fall: 0 }; VENDORS.push(vd); PEXCL.push([x, z, 1.8]);
+  addProp("cart", x + Math.cos(a) * 0.35, z + Math.sin(a) * 0.35, { vendor: vd }); addProp("cart", x - Math.cos(a) * 0.35, z - Math.sin(a) * 0.35, { vendor: vd });
+  const nx = Math.sin(a), nz = -Math.cos(a), p = makePerson(x + nx * 0.85, z + nz * 0.85); p.state = "idle"; p.home = true; p.e = null; p.a = Math.atan2(-nz, -nx); p.shirt = 0xf2f2f0; p.jacket = null; p.bag = null; p.pants = 0x2a2a30; p.vendor = vd; vd.p = p; STAND_PEOPLE.push(p);
+}
+/* sahil yayası: zincir boyunca yürür, ucunda geri döner, ara sıra durup denize bakar */
+function promWalk(p, dt) {
+  const ch = PROM.chains[p.prom.c]; if (!ch) { p.prom = null; return false; }
+  if (p.prom.wait > 0) { p.prom.wait -= dt; p.vx = 0; return true; }
+  let k = p.prom.k + p.prom.d * p.spd * dt / 3.0; if (k >= ch.length - 1 || k <= 0) { p.prom.d *= -1; k = clamp(k, 0, ch.length - 1.001); if (gr() < 0.5) { p.prom.wait = GR(2, 6); } }
+  if (gr() < dt * 0.02) p.prom.wait = GR(3, 8);
+  p.prom.k = k; const i = Math.floor(k), f = k - i, A = ch[i], B = ch[Math.min(ch.length - 1, i + 1)], lat = p.prom.lat;
+  const dx = B[0] - A[0], dz = B[1] - A[1], L = Math.hypot(dx, dz) || 1, nx = -dz / L, nz = dx / L;
+  const x = lerp(A[0], B[0], f) + nx * lat, z = lerp(A[1], B[1], f) + nz * lat; p.vx = (x - p.x) / Math.max(dt, 1e-3); p.vz = (z - p.z) / Math.max(dt, 1e-3); p.x = x; p.z = z; p.a = Math.atan2(dz * p.prom.d, dx * p.prom.d); p.walk += dt * p.spd * 2.4; p.ox = p.oz = 0;
+  return true;
+}
+function spawnProm(fx, fz) {
+  if (!PROM.chains.length) return; const near = G.peds.filter(p => p.prom).length; if (near >= (IS_MOBILE ? 14 : 24)) return;
+  for (let t = 0; t < 6; t++) { const c = Math.floor(gr() * PROM.chains.length), ch = PROM.chains[c], k = Math.floor(gr() * ch.length), [x, z] = ch[k]; if (dist(x, z, fx, fz) > 260 || dist(x, z, fx, fz) < 40) continue;
+    const p = makePerson(x, z); p.e = null; p.state = "walk"; p.prom = { c, k, d: gr() < 0.5 ? 1 : -1, lat: GR(-0.7, 0.7), wait: 0 }; G.peds.push(p); return; }
+}
+
+/* =====================================================================
+   PARKLAR v.18 — çocuk bahçeleri genişledi: tahterevalli, yaylı atlar,
+   dönme platform, tırmanma kubbesi, kum havuzu; çevresinde çit, banklar,
+   çiçek tarhları; parkın ortasında havuzlu çeşme ve ağaçlık yollar.
+   Oynayan çocuklar (koşan, tahterevallide, yaylı atta, dönme platformda)
+   ve onları banklardan izleyen anne-babalar. Bütün parklarda.
+   ===================================================================== */
+const PARKX = { zones: [], anim: [] };
+function pm(c, o) { return stdMat(Object.assign({ color: c, roughness: 0.6 }, o || {})); }
+function buildParks2() {
+  const steel = pm(0xcfd3d8, { metalness: 0.5, roughness: 0.35 }), wood = pm(0x8a5a32), cols = [0xd8202c, 0x2e7dd1, 0xf2c94c, 0x3aa876, 0xff7a1a, 0x8a4ab0];
+  for (const f of FUN_ZONES) { if (!/^oyun/.test(f.id)) continue; const y0 = heightAt(f.x, f.z), ang = 0.3 + (f.x % 3), ca = Math.cos(ang), sa = Math.sin(ang), P = (lx, lz) => [f.x + ca * lx - sa * lz, f.z + sa * lx + ca * lz], R = f.r;
+    const Z = { f, P, ang, y0, seats: [], benches: [], kids: [] }; PARKX.zones.push(Z);
+    const put = (g, lx, lz, rot) => { const [x, z] = P(lx, lz); g.position.set(x, y0, z); g.rotation.y = -ang + (rot || 0); g.traverse(o => { if (o.isMesh) o.castShadow = true; }); scene.add(g); return g; };
+    // tahterevalli
+    { const g = new THREE.Group(), base = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.6, 0.5), pm(0x2e7dd1)); base.position.y = 0.3; g.add(base); const plank = new THREE.Group(); plank.position.y = 0.62; g.add(plank);
+      plank.add(new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 0.32), pm(0xf2c94c))); for (const s of [-1, 1]) { const h = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 6).rotateX(Math.PI / 2), steel); h.position.set(s * 1.4, 0.3, 0); plank.add(h); for (const z of [-0.2, 0.2]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.3, 6), steel); p.position.set(s * 1.4, 0.15, z); plank.add(p); } }
+      const lx = 0, lz = -R * 0.5; put(g, lx, lz); PARKX.anim.push({ k: "seesaw", plank, t: gr() * 6 }); Z.seesaw = { plank, x: lx, z: lz }; addSolidBox(...P(lx, lz), 0.5, 0.5, 0); }
+    // yaylı atlar
+    Z.springs = []; for (const [lx, lz, c] of [[-R * 0.5, -R * 0.35, 0xd8202c], [-R * 0.58, R * 0.2, 0x3aa876]]) { const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+      const spr = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.45, 10, 4, true), steel); spr.position.y = 0.22; g.add(spr);
+      { const bd = new THREE.Mesh(roundBox(0.9, 0.35, 0.3, 0.1), pm(c)); bd.position.set(0, 0.62, 0); body.add(bd); } const hd = new THREE.Mesh(roundBox(0.3, 0.45, 0.24, 0.08), pm(c)); hd.position.set(0.42, 0.9, 0); hd.rotation.z = -0.3; body.add(hd); const hn = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.45, 6).rotateX(Math.PI / 2), steel); hn.position.set(0.32, 0.98, 0); body.add(hn);
+      put(g, lx, lz, 0.8); PARKX.anim.push({ k: "spring", body, t: gr() * 6, on: false }); Z.springs.push({ body, x: lx, z: lz, rot: 0.8 }); addSolidBox(...P(lx, lz), 0.6, 0.6, 0); }
+    // dönme platform
+    { const g = new THREE.Group(), top = new THREE.Group(); top.position.y = 0.35; g.add(top); const disc = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, 0.1, 24), pm(0x2e7dd1)); top.add(disc);
+      for (let k = 0; k < 4; k++) { const a = k / 4 * TAU, b = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.03, 6, 12, Math.PI), pm(cols[k])); b.position.set(Math.cos(a) * 0.7, 0.5, Math.sin(a) * 0.7); b.rotation.y = -a; top.add(b); }
+      const ax = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.35, 8), steel); ax.position.y = 0.17; g.add(ax); const lx = R * 0.5, lz = -R * 0.3; put(g, lx, lz); const A = { k: "mgr", top, rot: 0, sp: 1.2 }; PARKX.anim.push(A); Z.mgr = { A, x: lx, z: lz }; addSolidBox(...P(lx, lz), 1.0, 1.0, 0); }
+    // tırmanma kubbesi
+    { const g = new THREE.Group(), r = 1.5; for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI; const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.035, 5, 22, Math.PI), pm(cols[i % 6])); t.rotation.y = a; g.add(t); } for (const h of [0.5, 1.0]) { const t = new THREE.Mesh(new THREE.TorusGeometry(Math.sqrt(r * r - h * h), 0.035, 5, 24), steel); t.rotation.x = Math.PI / 2; t.position.y = h; g.add(t); }
+      const lx = -R * 0.12, lz = R * 0.55; put(g, lx, lz); addSolidBox(...P(lx, lz), 1.6, 1.6, 0); Z.dome = { x: lx, z: lz }; }
+    // kum havuzu
+    { const g = new THREE.Group(); for (const [w, d, x, z] of [[3, 0.2, 0, 1.4], [3, 0.2, 0, -1.4], [0.2, 3, 1.4, 0], [0.2, 3, -1.4, 0]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, 0.3, d), wood); b.position.set(x, 0.15, z); g.add(b); }
+      const sand = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.18, 2.6), pm(0xe8d49a, { roughness: 1 })); sand.position.y = 0.09; g.add(sand); const bk = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.1, 0.2, 10), pm(0xd8202c)); bk.position.set(0.5, 0.28, 0.3); g.add(bk); const sh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.04, 0.3), pm(0x2e7dd1)); sh.position.set(-0.4, 0.2, -0.2); g.add(sh);
+      put(g, R * 0.48, R * 0.42); Z.sand = { x: R * 0.48, z: R * 0.42 }; }
+    // çevre: alçak çit (giriş boşluklu), banklar, çiçek tarhları
+    { const parts = []; for (let i = 0; i < 64; i++) { const a = i / 64 * TAU; if (Math.abs(Math.sin(a)) > 0.97) continue; const x = Math.cos(a) * (R - 0.3), z = Math.sin(a) * (R - 0.3); const pk = new THREE.BoxGeometry(0.08, 0.7, 0.08); pk.translate(x, 0.35, z); parts.push(pk); }
+      for (let i = 0; i < 64; i++) { const a0 = i / 64 * TAU, a1 = (i + 1) / 64 * TAU; if (Math.abs(Math.sin(a0)) > 0.97) continue; const x0 = Math.cos(a0) * (R - 0.3), z0 = Math.sin(a0) * (R - 0.3), x1 = Math.cos(a1) * (R - 0.3), z1 = Math.sin(a1) * (R - 0.3), L = Math.hypot(x1 - x0, z1 - z0); for (const h of [0.25, 0.55]) { const r2 = new THREE.BoxGeometry(L, 0.05, 0.04); r2.rotateY(-Math.atan2(z1 - z0, x1 - x0)); r2.translate((x0 + x1) / 2, h, (z0 + z1) / 2); parts.push(r2); } }
+      const fence = new THREE.Mesh(mergeGeos(parts), pm(0xf4f2ee)); fence.position.set(f.x, y0, f.z); scene.add(fence); }
+    for (let i = 0; i < 5; i++) { const a = -Math.PI * 0.85 + i * 0.42, bx = Math.cos(a) * (R - 1.6), bz = Math.sin(a) * (R - 1.6), g = new THREE.Group();
+      const seat = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.08, 0.45), wood); seat.position.y = 0.45; g.add(seat); const back = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, 0.06), wood); back.position.set(0, 0.7, -0.22); g.add(back); for (const s of [-0.7, 0.7]) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.45, 0.45), pm(0x2a2a2e)); l.position.set(s, 0.22, 0); g.add(l); }
+      const [wx, wz] = P(bx, bz), face = Math.atan2(-bz, -bx) + ang; g.position.set(wx, y0, wz); g.rotation.y = -face + Math.PI / 2; scene.add(g); Z.benches.push({ x: wx, z: wz, a: face }); addSolidBox(wx, wz, 0.9, 0.5, face); }
+    flowerRing(f.x, f.z, R + 1.4, y0, 12);
+  }
+  // her parkın ortasında (oyun alanı/lunapark değilse) havuzlu çeşme + çiçekler
+  for (const pk of PARKS) { let x = pk.x, z = pk.z; if (inFun(x, z, 6)) { const a = 2.2; x = pk.x + Math.cos(a) * pk.r * 0.45; z = pk.z + Math.sin(a) * pk.r * 0.45; if (inFun(x, z, 6) || !isLand(x, z) || pointInBuilding(x, z)) continue; }
+    const y0 = heightAt(x, z), g = new THREE.Group(), stone = pm(0xd8d2c4, { map: texMarble() }); const bowl = new THREE.Mesh(new THREE.CylinderGeometry(3.0, 3.2, 0.6, 32), stone); bowl.position.y = 0.3; g.add(bowl);
+    const wat = new THREE.Mesh(new THREE.CylinderGeometry(2.7, 2.7, 0.05, 32), new THREE.MeshStandardMaterial({ color: 0x3aa8d8, roughness: 0.05, metalness: 0.2 })); wat.position.y = 0.57; g.add(wat);
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.35, 1.6, 12), stone); col.position.y = 1.1; g.add(col); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.5, 0.25, 16), stone); top.position.y = 1.95; g.add(top);
+    const jet = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.4, 12, 1, true), new THREE.MeshBasicMaterial({ color: 0xcfefff, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false })); jet.position.y = 2.7; jet.rotation.x = Math.PI; g.add(jet); PARKX.anim.push({ k: "jet", jet });
+    g.position.set(x, y0, z); scene.add(g); addSolidBox(x, z, 6.2, 6.2, 0); flowerRing(x, z, 4.6, y0, 10); }
+}
+function flowerRing(cx, cz, r, y0, n) {
+  const fl = [], cols = [0xff4a6a, 0xffd24a, 0xffffff, 0xb05aff, 0xff8a3a, 0x4ab0ff];
+  for (let i = 0; i < n; i++) { const a = i / n * TAU + 0.15, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r; if (!isLand(x, z) || pointInBuilding(x, z) || onRoad(x, z)) continue;
+    const bed = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.0, 0.25, 12), pm(0x5a3a24, { roughness: 1 })); bed.position.set(x, heightAt(x, z) + 0.12, z); scene.add(bed);
+    for (let k = 0; k < 9; k++) { const u = k / 9 * TAU, rr = 0.25 + (k % 3) * 0.22, g = new THREE.SphereGeometry(0.12, 6, 4); g.translate(x + Math.cos(u) * rr, heightAt(x, z) + 0.36 + (k % 2) * 0.05, z + Math.sin(u) * rr); const c = new THREE.Color(cols[(i + k) % 6]); const ca = []; for (let q = 0; q < g.attributes.position.count; q++) ca.push(c.r, c.g, c.b); g.setAttribute("color", new THREE.Float32BufferAttribute(ca, 3)); fl.push(g); }
+    for (let k = 0; k < 6; k++) { const u = k / 6 * TAU + 0.3, g = new THREE.ConeGeometry(0.1, 0.35, 4); g.translate(x + Math.cos(u) * 0.55, heightAt(x, z) + 0.4, z + Math.sin(u) * 0.55); const ca = []; for (let q = 0; q < g.attributes.position.count; q++) ca.push(0.2, 0.5, 0.2); g.setAttribute("color", new THREE.Float32BufferAttribute(ca, 3)); fl.push(g); } }
+  if (fl.length) scene.add(new THREE.Mesh(mergeGeos(fl), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 })));
+}
+/* ---- çocuklar ve aileler ---- */
+function kidLook() { const L = randomLook(gr() < 0.5 ? "f" : "m"); L.h = GR(0.52, 0.64); L.old = false; L.beard = false; L.must = false; L.jacket = gr() < 0.2 ? L.jacket : null; L.bag = null; L.skirt = null; if (L.pants === L.skin) L.pants = gpick([0x2a4a7a, 0xd8202c, 0x3aa876, 0x1c2c4c]); if (L.hs === "scarf" || L.hs === "bald") L.hs = "short"; L.shirt = gpick([0xd8202c, 0x2e7dd1, 0xf2c94c, 0x3aa876, 0xff7a1a, 0xd6457a, 0xffffff]); return L; }
+function parkGroups(fx, fz) {
+  for (const Z of PARKX.zones) { const d = dist(Z.f.x, Z.f.z, fx, fz);
+    if (Z.kids.length && !Z.kids.some(p => G.peds.includes(p))) Z.kids = [];
+    if (Z.kids.length || d > 200) continue;
+    const add = (p, act) => { p.e = null; p.state = "walk"; p.parkAct = Object.assign({ Z, t: 0 }, act); G.peds.push(p); Z.kids.push(p); return p; };
+    const [sx, sz] = Z.P(Z.seesaw.x, Z.seesaw.z); for (const s of [-1, 1]) add(makePerson(sx, sz, kidLook()), { m: "seesaw", s });
+    { const S = Z.springs[0], [x, z] = Z.P(S.x, S.z); add(makePerson(x, z, kidLook()), { m: "spring", S }); }
+    { const [x, z] = Z.P(Z.mgr.x, Z.mgr.z); add(makePerson(x, z, kidLook()), { m: "mgr", ph: 0 }); add(makePerson(x, z, kidLook()), { m: "mgr", ph: Math.PI }); }
+    for (let k = 0; k < 3; k++) { const [x, z] = Z.P(GR(-6, 6), GR(-6, 6)); add(makePerson(x, z, kidLook()), { m: "run", tx: x, tz: z, w: 0 }); }
+    { const [x, z] = Z.P(Z.sand.x, Z.sand.z); add(makePerson(x, z, kidLook()), { m: "sand" }); }
+    for (let k = 0; k < Math.min(3, Z.benches.length); k++) { const B = Z.benches[k * 2 % Z.benches.length]; add(makePerson(B.x, B.z), { m: "bench", B }); }
+    { const [x, z] = Z.P(Z.f.r * 0.7, 0); add(makePerson(x, z), { m: "watch" }); }
+  }
+}
+function parkActUpdate(p, dt) {
+  const A = p.parkAct, Z = A.Z, y0 = Z.y0; A.t += dt; p.ox = p.oz = 0; p.vx = p.vz = 0;
+  const sitAt = (x, z, y, a) => { p.x = x; p.z = z; p.a = a; p.sitK = 1; p.still = true; p.jy = y - heightAt(x, z) + 0.12 - HIP_Y * 0.9 * (p.h || 1); };
+  if (A.m === "seesaw") { const th = Z.seesaw.plank.rotation.z, ca = Math.cos(Z.ang), sa = Math.sin(Z.ang), [cx, cz] = Z.P(Z.seesaw.x, Z.seesaw.z), lx = A.s * 1.4 * Math.cos(th); sitAt(cx + ca * lx, cz + sa * lx, y0 + 0.66 + A.s * 1.4 * Math.sin(th) + 0.05, Z.ang + (A.s > 0 ? Math.PI : 0)); return true; }
+  if (A.m === "spring") { const b = A.S.body, [x, z] = Z.P(A.S.x, A.S.z); sitAt(x, z, y0 + 0.62 + b.position.y + 0.12, Z.ang - A.S.rot + Math.PI / 2 * 0 ); p.a = Z.ang + A.S.rot * 0 - A.S.rot; return true; }
+  if (A.m === "mgr") { const M = Z.mgr, [cx, cz] = Z.P(M.x, M.z), a = M.A.rot + A.ph; sitAt(cx + Math.cos(-a) * 0.75, cz + Math.sin(-a) * 0.75, y0 + 0.42, -a + Math.PI / 2); return true; }
+  if (A.m === "sand") { const [x, z] = Z.P(Z.sand.x, Z.sand.z); p.x = x; p.z = z; p.sitK = 0.9; p.jy = 0.18 - HIP_Y * 0.4 * (p.h || 1); p.a += Math.sin(A.t) * dt * 0.3; p.eatT = (A.t % 4 < 2) ? 3 : 0; return true; }
+  if (A.m === "bench") { const B = A.B; sitAt(B.x - Math.cos(B.a) * 0.05, B.z - Math.sin(B.a) * 0.05, y0 + 0.5, B.a); return true; }
+  if (A.m === "watch") { p.still = true; p.sitK = 0; const [x, z] = Z.P(0, 0); p.a = Math.atan2(z - p.z, x - p.x); return true; }
+  if (A.m === "run") { if (A.w > 0) { A.w -= dt; p.still = true; return true; } const d = dist(p.x, p.z, A.tx, A.tz); if (d < 0.6) { if (gr() < 0.3) A.w = GR(0.5, 2); const r = GR(2, Z.f.r - 3), u = gr() * TAU, [x, z] = [Z.f.x + Math.cos(u) * r, Z.f.z + Math.sin(u) * r]; if (!pointInBuilding(x, z)) { A.tx = x; A.tz = z; } return true; }
+    const sp = 2.6, ux = (A.tx - p.x) / d, uz = (A.tz - p.z) / d; p.x += ux * sp * dt; p.z += uz * sp * dt; p.vx = ux * sp; p.vz = uz * sp; p.a = Math.atan2(uz, ux); p.run = true; p.still = false; p.sitK = 0; p.walk += dt * sp * 2.8; return true; }
+  return false;
+}
+function updatePark(dt) {
+  for (const a of PARKX.anim) { if (a.k === "seesaw") { a.t += dt; a.plank.rotation.z = Math.sin(a.t * 1.7) * 0.28; } else if (a.k === "spring") { a.t += dt; a.body.position.y = Math.abs(Math.sin(a.t * 3.2)) * 0.12; a.body.rotation.z = Math.sin(a.t * 3.2) * 0.12; } else if (a.k === "mgr") { a.rot += a.sp * dt; a.top.rotation.y = a.rot; } else if (a.k === "jet") { a.jet.scale.y = 1 + Math.sin(G.t * 6) * 0.08; } }
+  const f = focusPt(); if (f) parkGroups(f.x, f.z);
+}
+
+/* =====================================================================
+   GÖRÜNÜM v.19 — "altın saat" atmosferi, kodla üretilmiş dokulara
+   derinlik (normal map), dolgu ışığı (gölgede kalan cepheler simsiyah
+   olmasın), daha geniş gölgeler, rüzgârda sallanan ağaçlar, ağaç
+   diplerinde çalılar, kaldırımlarda yangın muslukları. Bütün haritada.
+   ===================================================================== */
+/* eski kayıtlar: bir kereye mahsus varsayılan ışık altın saat olsun */
+if (!SV.set.v19look) { SV.set.v19look = 1; if (!SV.set.time || SV.set.time === "gunduz") SV.set.time = "altin"; }
+const NRM_CACHE = new Map();
+function nrmFromImage(img, k) {
+  if (NRM_CACHE.has(img)) return NRM_CACHE.get(img);
+  const W = img.width, H = img.height, c0 = mkCanvas(W, H), g0 = c0.getContext("2d"); g0.drawImage(img, 0, 0); const d = g0.getImageData(0, 0, W, H).data;
+  const L = new Float32Array(W * H); for (let i = 0; i < W * H; i++) L[i] = (d[i * 4] * 0.3 + d[i * 4 + 1] * 0.59 + d[i * 4 + 2] * 0.11) / 255;
+  const c = mkCanvas(W, H), g = c.getContext("2d"), out = g.createImageData(W, H), h = (x, y) => L[((y + H) % H) * W + ((x + W) % W)];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const dx = (h(x + 1, y - 1) + 2 * h(x + 1, y) + h(x + 1, y + 1) - h(x - 1, y - 1) - 2 * h(x - 1, y) - h(x - 1, y + 1)) * 2.0, dy = (h(x - 1, y + 1) + 2 * h(x, y + 1) + h(x + 1, y + 1) - h(x - 1, y - 1) - 2 * h(x, y - 1) - h(x + 1, y - 1)) * 2.0, n = Math.hypot(dx, dy, 1), i = (y * W + x) * 4;
+    out.data[i] = (-dx / n * 0.5 + 0.5) * 255; out.data[i + 1] = (dy / n * 0.5 + 0.5) * 255; out.data[i + 2] = (1 / n * 0.5 + 0.5) * 255; out.data[i + 3] = 255; }
+  g.putImageData(out, 0, 0); const t = canvasTex(c, true, true); NRM_CACHE.set(img, t); return t;
+}
+const NRM_TEX = new Map();
+function nrmFor(tex) { if (NRM_TEX.has(tex)) return NRM_TEX.get(tex); const base = nrmFromImage(tex.image), n = base.clone(); n.wrapS = tex.wrapS; n.wrapT = tex.wrapT; n.repeat.copy(tex.repeat); n.offset.copy(tex.offset); n.rotation = tex.rotation; n.center.copy(tex.center); n.needsUpdate = true; NRM_TEX.set(tex, n); return n; }
+function applyLookPass(root) {
+  if ((SV.set.quality || "ultra") === "dusuk") return;
+  (root || scene).traverse(o => { if (!o.isMesh) return; const ms = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of ms) { if (!m || !m.isMeshStandardMaterial) continue; const t = m.map; if (t && t.userData && t.userData.nrm && !m.normalMap && t.image) { m.normalMap = nrmFor(t); const k = t.userData.nrm; m.normalScale.set(k, -k); m.needsUpdate = true; } }
+    if (!o.isInstancedMesh && !o.material.transparent && o.material.isMeshStandardMaterial) { o.receiveShadow = true; if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere(); if (o.geometry.boundingSphere && o.geometry.boundingSphere.radius < 25 && o.position.y < 300) o.castShadow = true; } });
+}
+/* kauçuk oyun zemini dokusu (EPDM benekli karolar) */
+function texRubber() { const S = 256, c = mkCanvas(S, S), g = c.getContext("2d"), r = mulberry32(31337); g.fillStyle = "#2c6e48"; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 2600; i++) { const v = r(); g.fillStyle = v < 0.15 ? "#1e5636" : v < 0.25 ? "#3f8a5c" : v < 0.3 ? "#e8d050" : v < 0.34 ? "#d84a3a" : "#34784f"; g.fillRect(r() * S, r() * S, 1.5 + r() * 2, 1.5 + r() * 2); }
+  g.strokeStyle = "rgba(0,0,0,.28)"; g.lineWidth = 2; for (let k = 0; k <= S; k += 128) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, S); g.moveTo(0, k); g.lineTo(S, k); g.stroke(); }
+  return nrmTag(canvasTex(c, true), 0.9); }
+/* ağaç diplerine çalılar + kaldırımlara yangın muslukları */
+function buildLookProps() {
+  const rs = mulberry32(1919), bush = [], bushG = new THREE.IcosahedronGeometry(0.7, 1), cols = [[0.22, 0.42, 0.18], [0.28, 0.5, 0.2], [0.18, 0.36, 0.16], [0.35, 0.48, 0.22]];
+  { const p = bushG.attributes.position; for (let i = 0; i < p.count; i++) { const k = 0.82 + ((Math.sin(p.getX(i) * 9.1) + Math.cos(p.getZ(i) * 7.3 + p.getY(i) * 5)) * 0.09); p.setXYZ(i, p.getX(i) * k, Math.max(-0.05, p.getY(i) * k * 0.75), p.getZ(i) * k); } bushG.computeVertexNormals(); bushG.translate(0, 0.32, 0); }
+  for (const t of TREES) { if (rs() < 0.45) continue; const n = 1 + (rs() < 0.5 ? 1 : 0); for (let k = 0; k < n; k++) { const a = rs() * TAU, d = 0.9 + rs() * 0.8, x = t.x + Math.cos(a) * d, z = t.z + Math.sin(a) * d; if (onRoad(x, z) || pointInBuilding(x, z) || !isLand(x, z)) continue; bush.push([x, z, 0.6 + rs() * 0.7, cols[Math.floor(rs() * 4)]]); } }
+  if (bush.length) { const M = new THREE.InstancedMesh(bushG, stdMat({ roughness: 0.9, map: W3.grassDet }), bush.length); M.castShadow = true; M.receiveShadow = true; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(), c = new THREE.Color();
+    bush.forEach(([x, z, sc, col], i) => { v.set(x, heightAt(x, z), z); q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 1.7); s.set(sc, sc, sc); m4.compose(v, q, s); M.setMatrixAt(i, m4); M.setColorAt(i, c.setRGB(col[0] * 2.2, col[1] * 2.2, col[2] * 2.2)); }); scene.add(M); W3.bushes = M; }
+  const hy = []; for (const e of LIVE_EDGES) { if (e.bridge || e.type === "kopru" || e.type === "sahil") continue; for (let t = e.a.r + 22; t < e.len - e.b.r - 12; t += 85 + rs() * 40) { const s = rs() < 0.5 ? 1 : -1, nx = -e.dz, nz = e.dx, off = e.hw + 0.7, x = e.a.x + e.dx * t + nx * off * s, z = e.a.z + e.dz * t + nz * off * s; if (!propFree(x, z, 1.0) || pointInBuilding(x, z) || !isLand(x, z)) continue; hy.push([x, z]); PEXCL.push([x, z, 0.6]); } }
+  if (hy.length) { const parts = [], red = [0.78, 0.1, 0.08], cap = [0.85, 0.75, 0.2], col = (g, c) => { const a = []; for (let i = 0; i < g.attributes.position.count; i++) a.push(...c); g.setAttribute("color", new THREE.Float32BufferAttribute(a, 3)); return g; };
+    parts.push(col(new THREE.CylinderGeometry(0.17, 0.2, 0.62, 12).translate(0, 0.31, 0), red), col(new THREE.SphereGeometry(0.18, 12, 6, 0, TAU, 0, Math.PI / 2).translate(0, 0.62, 0), cap), col(new THREE.CylinderGeometry(0.24, 0.24, 0.06, 12).translate(0, 0.05, 0), red), col(new THREE.CylinderGeometry(0.08, 0.08, 0.5, 8).rotateZ(Math.PI / 2).translate(0, 0.42, 0), red), col(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 8).rotateX(Math.PI / 2).translate(0, 0.42, 0.18), cap), col(new THREE.CylinderGeometry(0.035, 0.035, 0.06, 6).translate(0, 0.83, 0), cap));
+    const M = new THREE.InstancedMesh(mergeGeos(parts), stdMat({ vertexColors: true, roughness: 0.45, metalness: 0.3 }), hy.length); M.castShadow = true; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3(1, 1, 1);
+    hy.forEach(([x, z], i) => { v.set(x, CURB, z); q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 0.9); m4.compose(v, q, s); M.setMatrixAt(i, m4); addProp("hydrant", x, z, { mesh: M, idx: i, y0: CURB, lie: 0.2 }); }); M.instanceMatrix.setUsage(THREE.DynamicDrawUsage); scene.add(M); W3.hydrants = M; }
+}
+/* rüzgâr: ağaç tepeleri ve çalılar hafifçe sallanır (kök sabit) */
+const WIND = { value: 0 };
+function windify(mat, h0, amp) { const prev = mat.onBeforeCompile; mat.onBeforeCompile = (sh, r) => { if (prev) prev(sh, r); sh.uniforms.uWind = WIND;
+  sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nuniform float uWind;").replace("#include <begin_vertex>", `#include <begin_vertex>
+#ifdef USE_INSTANCING
+{ vec3 ip = instanceMatrix[3].xyz; float sw = max(0.0, transformed.y - ${h0.toFixed(2)}) * ${amp.toFixed(3)}; float ph = ip.x * 0.13 + ip.z * 0.07; transformed.x += (sin(uWind * 1.6 + ph) + 0.35 * sin(uWind * 4.1 + ph * 3.0)) * sw; transformed.z += (cos(uWind * 1.25 + ph * 1.3) + 0.3 * sin(uWind * 3.7 + ph)) * sw * 0.7; }
+#endif`); }; mat.customProgramCacheKey = () => "wind" + h0 + amp; mat.needsUpdate = true; }
+function initLook() {
+  for (const k in (W3.treeLow || {})) { const m = W3.treeLow[k].material; if (!m.userData.wind) { m.userData.wind = 1; windify(m, 1.6, 0.045); } }
+  if (W3.bushes) windify(W3.bushes.material, 0.15, 0.06);
+  W3.fill = new THREE.DirectionalLight(0xbcd2ff, 0.5); scene.add(W3.fill); scene.add(W3.fill.target);
+  if (!IS_MOBILE || (SV.set.quality || "ultra") === "ultra") { const sc = W3.sun.shadow.camera; sc.left = sc.bottom = -95; sc.right = sc.top = 95; sc.updateProjectionMatrix(); if ((SV.set.quality || "ultra") === "ultra") { W3.sun.shadow.mapSize.set(3072, 3072); } W3.sun.shadow.radius = 3; }
+  applyLookPass();
+}
+function updateLook(dt) {
+  WIND.value += dt; if (!W3.fill || !W3.sunDir) return; const sd = W3.sunDir; W3.fill.position.set(camera.position.x - sd.x * 100, camera.position.y + 60, camera.position.z - sd.z * 100); W3.fill.target.position.copy(camera.position);
+  W3.fill.intensity = (1 - NIGHT) * 0.55 + NIGHT * 0.12; W3.fill.color.copy(W3.skyU.top.value).lerp(_c2.set("#ffffff"), 0.45);
 }
 
 /* =====================================================================
@@ -5937,9 +6235,10 @@ function drawHUD() {
     const y0 = CH * (port ? 0.3 : IS_TOUCH ? 0.34 : 0.24) + slot * (t.size + 10) - k * 18; neonText(c, t.txt, CW / 2, y0, (small ? t.size * 0.78 : t.size) * pop, t.col); if (t.sub) neonText(c, t.sub, CW / 2, y0 + t.size * 0.8, small ? 13 : 16, "#ffffff"); c.globalAlpha = 1; slot += t.sub ? 1.6 : 1; }
   if (G.pv && G.drift.t > 0.5 && G.pv.slip > 2.4) neonText(c, "DRİFT " + G.drift.t.toFixed(1) + "s", CW / 2, CH * 0.6, 20, "#ff2bd6");
   if (G.pv && G.pv.air > 0.3) neonText(c, "HAVADA " + G.pv.air.toFixed(1) + "s", CW / 2, CH * 0.55, 22, "#00e5ff");
-  if (G.hintT > 0 && G.hint && !freeCamOn()) { c.globalAlpha = Math.min(1, G.hintT * 2); const y = IS_TOUCH ? CH * (port ? 0.56 : 0.5) : CH - 120; c.font = "800 14px system-ui"; let w = c.measureText(G.hint).width + 26; if (w > CW - 12) { c.font = "800 " + Math.max(9, Math.floor(14 * (CW - 12) / w)) + "px system-ui"; w = c.measureText(G.hint).width + 26; } c.fillStyle = "rgba(10,6,24,.75)"; rr(c, CW / 2 - w / 2, y - 15, w, 30, 15); c.fill(); c.fillStyle = "#fff"; c.textAlign = "center"; c.fillText(G.hint, CW / 2, y + 1); c.globalAlpha = 1; }
-  if (G.walker && G.interact && G.state === "play" && !G.seq && !G.vend) { c.font = "900 " + (small ? 15 : 18) + "px system-ui"; c.textAlign = "center"; c.textBaseline = "middle"; const tw = c.measureText(G.interact.txt).width + 36, yy = CH * 0.4 + (G.enterPrompt ? 62 : 0); c.fillStyle = "rgba(6,4,16,.8)"; rr(c, CW / 2 - tw / 2, yy - 22, tw, 44, 14); c.fill(); c.strokeStyle = G.interact.col || "#2bff7a"; c.lineWidth = 2; c.stroke(); c.fillStyle = G.interact.col || "#2bff7a"; c.fillText(G.interact.txt, CW / 2, yy); }
-  if (G.walker && G.enterPrompt && G.state === "play" && !G.seq) { c.font = "900 " + (small ? 16 : 20) + "px system-ui"; c.textAlign = "center"; c.textBaseline = "middle"; const tw = c.measureText(G.enterPrompt).width + 36, yy = CH * 0.4; c.fillStyle = "rgba(6,4,16,.78)"; rr(c, CW / 2 - tw / 2, yy - 24, tw, 48, 14); c.fill(); c.strokeStyle = "#ffd000"; c.lineWidth = 2; c.stroke(); c.fillStyle = "#ffd000"; c.fillText(G.enterPrompt, CW / 2, yy); if (G.enterCar) { c.font = "700 12px system-ui"; c.fillStyle = "#fff"; c.fillText(G.enterCar, CW / 2, yy + 36); } }
+  if (G.hintT > 0 && G.hint && !freeCamOn()) { c.globalAlpha = Math.min(1, G.hintT * 2); const y = (IS_TOUCH ? 58 : 70) + (G.wanted > 0 ? 50 : 0); c.font = "800 13px system-ui"; let w = c.measureText(G.hint).width + 26; if (w > CW - 12) { c.font = "800 " + Math.max(9, Math.floor(14 * (CW - 12) / w)) + "px system-ui"; w = c.measureText(G.hint).width + 26; } c.fillStyle = "rgba(10,6,24,.75)"; rr(c, CW / 2 - w / 2, y - 15, w, 30, 15); c.fill(); c.fillStyle = "#fff"; c.textAlign = "center"; c.fillText(G.hint, CW / 2, y + 1); c.globalAlpha = 1; }
+  if (G.walker && G.interact && G.state === "play" && !G.seq && !G.vend) { c.font = "900 " + (small ? 15 : 18) + "px system-ui"; c.textAlign = "center"; c.textBaseline = "middle"; const tw = c.measureText(G.interact.txt).width + 36, yy = (IS_TOUCH ? 96 : 110) + (G.wanted > 0 ? 50 : 0) + (G.enterPrompt && (G.epT || 0) < 3.5 ? 46 : 0); c.fillStyle = "rgba(6,4,16,.8)"; rr(c, CW / 2 - tw / 2, yy - 22, tw, 44, 14); c.fill(); c.strokeStyle = G.interact.col || "#2bff7a"; c.lineWidth = 2; c.stroke(); c.fillStyle = G.interact.col || "#2bff7a"; c.fillText(G.interact.txt, CW / 2, yy); }
+  if (G.enterPrompt !== G.epLast) { G.epLast = G.enterPrompt; G.epT = 0; } G.epT = (G.epT || 0) + 1 / 60;
+  if (G.walker && G.enterPrompt && G.state === "play" && !G.seq && G.epT < 3.5) { c.globalAlpha = clamp((3.5 - G.epT) * 2, 0, 1); c.font = "900 " + (small ? 14 : 18) + "px system-ui"; c.textAlign = "center"; c.textBaseline = "middle"; const tw = c.measureText(G.enterPrompt).width + 36, yy = (IS_TOUCH ? 96 : 110) + (G.wanted > 0 ? 50 : 0); c.fillStyle = "rgba(6,4,16,.78)"; rr(c, CW / 2 - tw / 2, yy - 24, tw, 48, 14); c.fill(); c.strokeStyle = "#ffd000"; c.lineWidth = 2; c.stroke(); c.fillStyle = "#ffd000"; c.fillText(G.enterPrompt, CW / 2, yy); if (G.enterCar) { c.font = "700 12px system-ui"; c.fillStyle = "#fff"; c.fillText(G.enterCar, CW / 2, yy + 34); } c.globalAlpha = 1; }
   if (G.bust) { const k = Math.min(1, G.bust.t * 2) * Math.min(1, (5.6 - G.bust.t) * 2), h = CH * 0.11 * Math.max(0, k); c.fillStyle = "#000"; c.fillRect(0, 0, CW, h); c.fillRect(0, CH - h, CW, h); if (G.bust.t < 2.3) neonText(c, "POLİS DURDURDU", CW / 2, CH - h / 2, 18, "#3a78ff"); }
   if (SV.set.fps) { c.font = "700 11px monospace"; c.fillStyle = "#0f0"; c.textAlign = "left"; c.fillText(FPS.toFixed(0) + " fps", 8, CH - 8); }
 }
@@ -6066,7 +6365,8 @@ function syncToggles() {
   document.querySelectorAll("[data-tog]").forEach(b => { const k = b.dataset.tog; b.classList.toggle("off", !SV.set[k]); });
   document.querySelectorAll("[data-time]").forEach(b => b.classList.toggle("sel", b.dataset.time === SV.set.time));
   document.querySelectorAll("[data-ctl]").forEach(b => b.classList.toggle("sel", b.dataset.ctl === (SV.set.ctrl || "joy")));
-  document.querySelectorAll("[data-q]").forEach(b => b.classList.toggle("sel", b.dataset.q === SV.set.quality));
+  if (!SV.set.quality || SV.set.quality === "auto") SV.set.quality = "ultra"; if (!SV.set.sens) SV.set.sens = "orta";
+  document.querySelectorAll("[data-q]").forEach(b => b.classList.toggle("sel", b.dataset.q === SV.set.quality)); document.querySelectorAll("[data-sens]").forEach(b => b.classList.toggle("sel", b.dataset.sens === SV.set.sens));
   document.querySelectorAll("[data-w]").forEach(b => b.classList.toggle("sel", b.dataset.w === (SV.set.weather || "acik")));
   document.querySelectorAll("[data-cam]").forEach(b => b.classList.toggle("sel", +b.dataset.cam === (SV.set.cam || 0)));
 }
@@ -6081,7 +6381,7 @@ function buildScores() {
   let h = `<tr><th colspan="5">ÇILGIN TAKSİ</th></tr>`;
   if (!SV.taxiScores.length) h += `<tr><td colspan="5" class="empty">Henüz rekor yok</td></tr>`;
   else h += SV.taxiScores.map((s, i) => `<tr class="${i === 0 ? "top" : ""}"><td>${i + 1}</td><td>${esc(s.name)}</td><td>${s.pax} yolcu</td><td>${s.date}</td><td class="m">${money(s.money)}</td></tr>`).join("");
-  h += `<tr><th colspan="5">BLİTZ & YARIŞ</th></tr>` + ROUTES.map(r => `<tr><td colspan="2">${r.name}</td><td>Blitz ${SV.blitz[r.id] ? fmtTime(SV.blitz[r.id]) : "-"}</td><td>Yarış ${SV.race[r.id] && SV.race[r.id].best ? fmtTime(SV.race[r.id].best) : "-"}</td><td class="m">${SV.race[r.id] ? SV.race[r.id].wins : 0} 🏆</td></tr>`).join("");
+  h += `<tr><th colspan="5">YARIŞ</th></tr>` + ROUTES.map(r => `<tr><td colspan="2">${r.name}</td><td>${0 ? fmtTime(SV.blitz[r.id]) : "-"}</td><td>Yarış ${SV.race[r.id] && SV.race[r.id].best ? fmtTime(SV.race[r.id].best) : "-"}</td><td class="m">${SV.race[r.id] ? SV.race[r.id].wins : 0} 🏆</td></tr>`).join("");
   t.innerHTML = h;
 }
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
@@ -6176,7 +6476,7 @@ function buildGarage() {
   const cp = $("customPaint"); if (cp) cp.addEventListener("input", e => { SV.paint[gSel] = e.target.value; persist(); showCar(gSel, e.target.value); });
 }
 document.addEventListener("click", e => {
-  const b = e.target.closest("[data-spaint],[data-cm],[data-drv],[data-scar],[data-act],[data-buy],[data-car],[data-paint],[data-buycar],[data-pickcar],[data-route],[data-time],[data-ctl],[data-tog],[data-q],[data-cam]"); if (!b || b.disabled) return; auInit();
+  const b = e.target.closest("[data-spaint],[data-sens],[data-cm],[data-drv],[data-scar],[data-act],[data-buy],[data-car],[data-paint],[data-buycar],[data-pickcar],[data-route],[data-time],[data-ctl],[data-tog],[data-q],[data-cam]"); if (!b || b.disabled) return; auInit();
   const d = b.dataset;
   if (d.cm !== undefined) { setCam(+d.cm); return; }
   if (d.drv) { SV.driver = d.drv; persist(); sfxClick(); buildSelect(); return buildDrvEdit(); }
@@ -6192,6 +6492,7 @@ document.addEventListener("click", e => {
   if (d.ctl) { SV.set.ctrl = d.ctl; persist(); applyCtrl(); return syncToggles(); }
   if (d.tog) { SV.set[d.tog] = !SV.set[d.tog]; if (d.tog === "music") setMusic(SV.set.music); if (d.tog === "sfx") setSfx(SV.set.sfx); persist(); return syncToggles(); }
   if (d.q) { SV.set.quality = d.q; persist(); applyQuality(); return syncToggles(); }
+  if (d.sens) { SV.set.sens = d.sens; persist(); sfxClick(); return syncToggles(); }
   if (d.w) { SV.set.weather = d.w; persist(); return syncToggles(); }
   if (d.cam !== undefined && b.dataset.cam !== undefined && !d.act) { SV.set.cam = +d.cam; G.cam.mode = +d.cam; persist(); return syncToggles(); }
   const a = d.act; sfxClick();
@@ -6224,7 +6525,7 @@ $("btnPause").addEventListener("click", () => { auInit(); pauseGame(); });
 /* ---------------- Başlangıç ---------------- */
 function init() {
   IS_TOUCH = (window.matchMedia && matchMedia("(pointer:coarse)").matches) || "ontouchstart" in window; if (IS_TOUCH) document.body.classList.add("touch");
-  buildWorld(); initPeople(); initFX(); initShowroom(); buildMapImage();
+  buildWorld(); buildLookProps(); initLook(); initPeople(); initFX(); initShowroom(); buildMapImage();
   applyQuality(); addEventListener("resize", resize); addEventListener("orientationchange", () => setTimeout(resize, 250));
   applyCtrl(); if (SV.set.time !== "dinamik") setTimeMode(); else G.tod = 17.2;
   G.falling = []; camera.position.set(950, 80, 520); camera.lookAt(930, 0, 400);
