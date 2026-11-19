@@ -436,7 +436,7 @@ return {ACESFilmicToneMapping:et,AddEquation:y,AddOperation:J,AdditiveAnimationB
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.20";
+const VER = "v.22";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -1068,6 +1068,9 @@ function buildGround() {
 }
 
 /* ---------------- Yollar, kaldırımlar, bordürler ---------------- */
+/* v.22: nokta başka bir yolun asfaltında ya da kavşak dairesinde mi (kendi yolu hariç) */
+function onOtherRoad(x, z, self, m) { for (const o of edgesNear(x, z)) { if (o === self || o.dead) continue; if (segDist(x, z, o.a.x, o.a.z, o.b.x, o.b.z) < o.hw + (m || 0)) return true; for (const n of [o.a, o.b]) if (dist(x, z, n.x, n.z) < n.r - 0.3) return true; }
+  if (self) for (const n of [self.a, self.b]) if (dist(x, z, n.x, n.z) < n.r - 0.3) return true; return false; }
 function nodeGaps(n) { return n.e.filter(e => !e.dead).map(e => { const o = e.a === n ? e.b : e.a; return { a: Math.atan2(o.z - n.z, o.x - n.x), w: Math.atan2(e.hw + 0.3, n.r + 1.5) }; }); }
 function buildRoads() {
   const tex = { ana: texAsphalt("ana"), cadde: texAsphalt("cadde"), cobble: texCobble() };
@@ -1075,9 +1078,11 @@ function buildRoads() {
   const curbC = colOf("#b8b4aa");
   for (const e of LIVE_EDGES) {
     const tt = e.type === "cadde" ? "cadde" : "ana", sk = SIDE_K[Math.floor(hash2(Math.floor((e.a.x + e.b.x) / 300), Math.floor((e.a.z + e.b.z) / 300)) * 3) % 3], /* v.17: araba yolu hep asfalt; yaya yolu parke / mermer / renkli */ nx = -e.dz, nz = e.dx, a0 = e.a.r * 0.7, a1 = e.len - e.b.r * 0.7, s0 = e.a.r + 0.2, s1 = e.len - e.b.r - 0.2;
-    const seg = e.bridge && e.bridge.h ? 40 : 1, hw = e.hw, sw = hw + 3;
+    const dbT = e.bridge && !e.bridge.h ? [a0, e.len / 2 - DBG, e.len / 2 + DBG, a1] : null; /* v.22: açılır köprünün orta bölümü ayrı (kalkan kanatlar) */
+    const seg = e.bridge && e.bridge.h ? 40 : dbT ? 3 : 1, hw = e.hw, sw = hw + 3;
     for (let i = 0; i < seg; i++) {
-      const t0 = lerp(a0, a1, i / seg), t1 = lerp(a0, a1, (i + 1) / seg);
+      if (dbT && i === 1) continue;
+      const t0 = dbT ? dbT[i] : lerp(a0, a1, i / seg), t1 = dbT ? dbT[i + 1] : lerp(a0, a1, (i + 1) / seg);
       const p0x = e.a.x + e.dx * t0, p0z = e.a.z + e.dz * t0, p1x = e.a.x + e.dx * t1, p1z = e.a.z + e.dz * t1;
       const h0 = e.bridge ? bridgeH(e.bridge, t0 / e.len) + 0.05 : 0.06, h1 = e.bridge ? bridgeH(e.bridge, t1 / e.len) + 0.05 : 0.06;
       B[tt].quad([p0x + nx * hw, h0, p0z + nz * hw], [p0x - nx * hw, h0, p0z - nz * hw], [p1x - nx * hw, h1, p1z - nz * hw], [p1x + nx * hw, h1, p1z + nz * hw], WHITE, [[0, t0 / 16], [1, t0 / 16], [1, t1 / 16], [0, t1 / 16]], UP);
@@ -1092,17 +1097,20 @@ function buildRoads() {
       }
     }
     if (!e.bridge) for (const sd of [1, -1]) { // kaldırım + bordür
-      const q0x = e.a.x + e.dx * s0, q0z = e.a.z + e.dz * s0, q1x = e.a.x + e.dx * s1, q1z = e.a.z + e.dz * s1, i0 = hw * sd, o0 = sw * sd;
+      const S0 = s0, S1 = s1, NS = Math.max(1, Math.ceil((S1 - S0) / 2.5)); for (let k = 0; k < NS; k++) { const ss0 = lerp(S0, S1, k / NS), ss1 = lerp(S0, S1, (k + 1) / NS), sm = (ss0 + ss1) / 2, lm = (hw + sw) / 2 * sd; if (onOtherRoad(e.a.x + e.dx * sm + nx * lm, e.a.z + e.dz * sm + nz * lm, e, 0.4) || onOtherRoad(e.a.x + e.dx * sm + nx * (hw + 0.4) * sd, e.a.z + e.dz * sm + nz * (hw + 0.4) * sd, e, 0.2)) continue; /* v.22: başka yolun asfaltına taşan kaldırım parçası çizilmez */
+      const q0x = e.a.x + e.dx * ss0, q0z = e.a.z + e.dz * ss0, q1x = e.a.x + e.dx * ss1, q1z = e.a.z + e.dz * ss1, i0 = hw * sd, o0 = sw * sd, s0 = ss0, s1 = ss1;
       B[sk].quad([q0x + nx * i0, CURB, q0z + nz * i0], [q0x + nx * o0, CURB, q0z + nz * o0], [q1x + nx * o0, CURB, q1z + nz * o0], [q1x + nx * i0, CURB, q1z + nz * i0], WHITE, [[0, s0 / 4], [0.75, s0 / 4], [0.75, s1 / 4], [0, s1 / 4]], UP);
       B.curb.quad([q0x + nx * i0, 0.0, q0z + nz * i0], [q1x + nx * i0, 0.0, q1z + nz * i0], [q1x + nx * i0, CURB, q1z + nz * i0], [q0x + nx * i0, CURB, q0z + nz * i0], curbC, null, [-nx * sd, 0, -nz * sd]);
       B.curb.quad([q0x + nx * (i0 + 0.25 * sd), CURB + 0.001, q0z + nz * (i0 + 0.25 * sd)], [q1x + nx * (i0 + 0.25 * sd), CURB + 0.001, q1z + nz * (i0 + 0.25 * sd)], [q1x + nx * i0, CURB + 0.001, q1z + nz * i0], [q0x + nx * i0, CURB + 0.001, q0z + nz * i0], curbC, null, UP);
-    }
+    } }
     for (const [n, t] of [[e.a, a0], [e.b, a1]]) {
       if (e.bridge || n.e.filter(x => !x.dead).length < 3) continue;
       const s = n === e.a ? 1 : -1, c0 = t + s * 0.6, c1 = t + s * 3.8, px0 = e.a.x + e.dx * c0, pz0 = e.a.z + e.dz * c0, px1 = e.a.x + e.dx * c1, pz1 = e.a.z + e.dz * c1;
       B.zebra.quad([px0 + nx * hw, 0.075, pz0 + nz * hw], [px0 - nx * hw, 0.075, pz0 - nz * hw], [px1 - nx * hw, 0.075, pz1 - nz * hw], [px1 + nx * hw, 0.075, pz1 + nz * hw], WHITE, [[0, 0], [hw * 2 / 1.6, 0], [hw * 2 / 1.6, 1], [0, 1]], UP);
     }
   }
+  for (const e of LIVE_EDGES) { const zs = midZebra(e); if (zs == null) continue; const nx = -e.dz, nz = e.dx, hw = e.hw, c0 = zs - 1.6, c1 = zs + 1.6, px0 = e.a.x + e.dx * c0, pz0 = e.a.z + e.dz * c0, px1 = e.a.x + e.dx * c1, pz1 = e.a.z + e.dz * c1; /* v.22: cadde ortası yaya geçidi */
+    B.zebra.quad([px0 + nx * hw, 0.075, pz0 + nz * hw], [px0 - nx * hw, 0.075, pz0 - nz * hw], [px1 - nx * hw, 0.075, pz1 - nz * hw], [px1 + nx * hw, 0.075, pz1 + nz * hw], WHITE, [[0, 0], [hw * 2 / 1.6, 0], [hw * 2 / 1.6, 1], [0, 1]], UP); }
   for (const n of LIVE_NODES) {
     const seg = 40, gaps = nodeGaps(n);
     for (let i = 0; i < seg; i++) {
@@ -1110,9 +1118,9 @@ function buildRoads() {
       B.disc.quad([n.x, 0.07, n.z], [n.x + Math.cos(a1) * r, 0.07, n.z + Math.sin(a1) * r], [n.x + Math.cos(a0) * r, 0.07, n.z + Math.sin(a0) * r], [n.x, 0.07, n.z], WHITE, [[0.5, 0.5], [0.5, 0.5], [0.5, 0.5], [0.5, 0.5]], UP);
       if (gaps.some(g => Math.abs(angDiff(am, g.a)) < g.w + 0.08)) continue;
       const p = (a, rr) => [n.x + Math.cos(a) * rr, n.z + Math.sin(a) * rr];
-      const A = p(a0, r), Bp = p(a1, r), Cc = p(a1, R2), D = p(a0, R2);
-      B[SIDE_K[Math.floor(hash2(Math.floor(n.x / 300), Math.floor(n.z / 300)) * 3) % 3]].quad([A[0], CURB, A[1]], [Bp[0], CURB, Bp[1]], [Cc[0], CURB, Cc[1]], [D[0], CURB, D[1]], WHITE, [[A[0] / 4, A[1] / 4], [Bp[0] / 4, Bp[1] / 4], [Cc[0] / 4, Cc[1] / 4], [D[0] / 4, D[1] / 4]], UP);
-      B.curb.quad([A[0], 0, A[1]], [Bp[0], 0, Bp[1]], [Bp[0], CURB, Bp[1]], [A[0], CURB, A[1]], curbC, null, [-Math.cos(am), 0, -Math.sin(am)]);
+      const A = p(a0, r), Bp = p(a1, r), Cc = p(a1, R2), D = p(a0, R2), Mc = p(am, (r + R2) / 2); if (onOtherRoad(Mc[0], Mc[1], null, 0.2)) continue;
+      /* v.21: köşe kaldırımı yol kaldırımının 8 mm üstünde — iki desen üst üste binince titremesin */ const CY = CURB + 0.008; B[SIDE_K[Math.floor(hash2(Math.floor(n.x / 300), Math.floor(n.z / 300)) * 3) % 3]].quad([A[0], CY, A[1]], [Bp[0], CY, Bp[1]], [Cc[0], CY, Cc[1]], [D[0], CY, D[1]], WHITE, [[A[0] / 4, A[1] / 4], [Bp[0] / 4, Bp[1] / 4], [Cc[0] / 4, Cc[1] / 4], [D[0] / 4, D[1] / 4]], UP);
+      B.curb.quad([A[0], 0, A[1]], [Bp[0], 0, Bp[1]], [Bp[0], CY, Bp[1]], [A[0], CY, A[1]], curbC, null, [-Math.cos(am), 0, -Math.sin(am)]);
     }
   }
   const zc = mkCanvas(64, 64), zg = zc.getContext("2d"); zg.drawImage(noiseCanvas(64, [62, 62, 66], 40, 3), 0, 0); zg.fillStyle = "rgba(245,245,240,.92)"; zg.fillRect(8, 0, 32, 64);
@@ -1207,10 +1215,31 @@ function buildBuildings() {
     const shop = style !== "tower" && style !== "color" && H > 9 && b.seed < 0.8, g0 = shop ? 4.2 : 0;
     let along = 0;
     const dark = colOf(b.col, 0.55); // zemin kararması (ambient occlusion etkisi)
+    const insetC = cs.map(([x, z]) => { const dx = x - b.x, dz = z - b.z, ca = Math.cos(b.a), sa = Math.sin(b.a), lx = dx * ca + dz * sa, lz = -dx * sa + dz * ca, sx = Math.sign(lx) * 0.2, sz = Math.sign(lz) * 0.2; return [x - (ca * sx - sa * sz), z - (sa * sx + ca * sz)]; });
     for (let i = 0; i < 4; i++) {
       const p = cs[i], q = cs[(i + 1) % 4], L = dist(p[0], p[1], q[0], q[1]), out = [(p[0] + q[0]) / 2 - b.x, 0, (p[1] + q[1]) / 2 - b.z];
       C.wall[style].quad([q[0], g0, q[1]], [p[0], g0, p[1]], [p[0], H, p[1]], [q[0], H, q[1]], [shop ? col : dark, shop ? col : dark, col, col], [[uo + (along + L) / tile, g0 / tile], [uo + along / tile, g0 / tile], [uo + along / tile, H / tile], [uo + (along + L) / tile, H / tile]], out);
-      if (shop) { const so = Math.floor(b.seed * 8) / 8; C.shop.quad([q[0], 0, q[1]], [p[0], 0, p[1]], [p[0], g0, p[1]], [q[0], g0, q[1]], [colOf("#ffffff", 0.75), colOf("#ffffff", 0.75), WHITE, WHITE], (((q[0] - p[0]) * out[2] - (q[1] - p[1]) * out[0]) > 0 ? [[so + (along + L) / 40, 0], [so + along / 40, 0], [so + along / 40, 1], [so + (along + L) / 40, 1]] : [[so + along / 40, 0], [so + (along + L) / 40, 0], [so + (along + L) / 40, 1], [so + along / 40, 1]]), out); }
+      if (shop) { const so = Math.floor(b.seed * 8) / 8, cr = ((q[0] - p[0]) * out[2] - (q[1] - p[1]) * out[0]) > 0, uAt = t => cr ? so + (along + (1 - t) * L) / 40 : so + (along + t * L) / 40;
+        /* v.21: 3D dükkân cephesi — vitrin 20 cm içeri gömülü, üstte çıkıntılı ışıklı tabela kutusu, eğimli çizgili tente, aralarda taş pervaz/sütun */
+        { const ol0 = Math.hypot(out[0], out[2]) || 1; addShopFace({ px: p[0], pz: p[1], qx: q[0], qz: q[1], nx: out[0] / ol0, nz: out[2] / ol0, so, along, L, cr }); } /* v.22: her vitrine girilsin */
+        const ol = Math.hypot(out[0], out[2]) || 1, nx = out[0] / ol, nz = out[2] / ol, IN = 0.2, ip = insetC[i], iq = insetC[(i + 1) % 4], ux0 = uAt(0), ux1 = uAt(1), wc = colOf("#ffffff", 0.75);
+        C.shop.quad([iq[0], 0, iq[1]], [ip[0], 0, ip[1]], [ip[0], g0, ip[1]], [iq[0], g0, iq[1]], [wc, wc, WHITE, WHITE], [[ux0, 0], [ux1, 0], [ux1, 1], [ux0, 1]], out);
+        C.roof.quad([q[0], g0, q[1]], [p[0], g0, p[1]], [ip[0], g0, ip[1]], [iq[0], g0, iq[1]], colOf("#3a3632"), null, [0, -1, 0]);
+        const dx = (p[0] - q[0]) / L, dz = (p[1] - q[1]) / L, A = (t, o, y) => [q[0] + dx * t * L + nx * o, y, q[1] + dz * t * L + nz * o], e0 = Math.min(0.45, 0.4 / L * L) / L, t0 = 0.3 / L, t1 = 1 - 0.3 / L, ua = uAt(t0), ub = uAt(t1);
+        if (L > 2.5) { const so2 = 0.14, y0 = 3.18, y1 = 4.14, dk = colOf("#2a2826");
+          C.shop.quad(A(t0, so2, y0), A(t1, so2, y0), A(t1, so2, y1), A(t0, so2, y1), WHITE, [[ua, 0.757], [ub, 0.757], [ub, 0.985], [ua, 0.985]], out);
+          C.shop.quad(A(t0, 0, y1), A(t1, 0, y1), A(t1, so2, y1), A(t0, so2, y1), dk, [[ua, 0.99], [ub, 0.99], [ub, 0.99], [ua, 0.99]], [0, 1, 0]);
+          C.shop.quad(A(t0, 0, y0), A(t1, 0, y0), A(t1, so2, y0), A(t0, so2, y0), dk, [[ua, 0.76], [ub, 0.76], [ub, 0.76], [ua, 0.76]], [0, -1, 0]);
+          for (const [tt, uu, sg] of [[t0, ua, -1], [t1, ub, 1]]) C.shop.quad(A(tt, 0, y0), A(tt, so2, y0), A(tt, so2, y1), A(tt, 0, y1), dk, [[uu, 0.8], [uu, 0.8], [uu, 0.95], [uu, 0.95]], [dx * sg, 0, dz * sg]);
+          const aw = 1.15, ya = 3.08, yb = 2.52, yv = 2.3;
+          C.shop.quad(A(t0, 0, ya), A(t1, 0, ya), A(t1, aw, yb), A(t0, aw, yb), WHITE, [[ua, 0.734], [ub, 0.734], [ub, 0.645], [ua, 0.645]], [nx * 0.45, 0.9, nz * 0.45]);
+          C.shop.quad(A(t0, aw, yb), A(t1, aw, yb), A(t1, aw, yv), A(t0, aw, yv), WHITE, [[ua, 0.70], [ub, 0.70], [ub, 0.645], [ua, 0.645]], out);
+          C.shop.quad(A(t0, 0, ya), A(t1, 0, ya), A(t1, aw, yb), A(t0, aw, yb), colOf("#ffffff", 0.55), [[ua, 0.734], [ub, 0.734], [ub, 0.645], [ua, 0.645]], [-nx * 0.45, -0.9, -nz * 0.45]);
+          for (const [tt, uu, sg] of [[t0, ua, -1], [t1, ub, 1]]) C.shop.quad(A(tt, 0, ya), A(tt, aw, yb), A(tt, aw, yv), A(tt, 0, yv), WHITE, [[uu, 0.734], [uu, 0.645], [uu, 0.645], [uu, 0.645]], [dx * sg, 0, dz * sg]); }
+        { const pc = colOf("#d6cdbd"), pier = (t, w) => { const h = 3.05, a = A(t - w / L, -IN, 0), bb = A(t + w / L, -IN, 0), c2 = A(t + w / L, 0.08, 0), d2 = A(t - w / L, 0.08, 0); const up = v => [v[0], h, v[2]];
+            C.roof.quad(d2, c2, up(c2), up(d2), pc, null, out); C.roof.quad(a, d2, up(d2), up(a), pc, null, [-dx, 0, -dz]); C.roof.quad(c2, bb, up(bb), up(c2), pc, null, [dx, 0, dz]); C.roof.quad(up(d2), up(c2), up(bb), up(a), pc, null, UP); };
+          const lo = Math.min(ux0, ux1) * 8, hi = Math.max(ux0, ux1) * 8; for (let k = Math.ceil(lo + 0.05); k <= Math.floor(hi - 0.05); k++) { const t = (k / 8 - ux0) / (ux1 - ux0); if (t * L > 0.7 && (1 - t) * L > 0.7) pier(t, 0.2); }
+          pier(0.22 / L, 0.22); pier(1 - 0.22 / L, 0.22); } }
       along += L;
     }
     if (style !== "tower") decorateBuilding(b, C, cs, H, style, col, tile, uo, shop ? 4.2 : 0);
@@ -1240,7 +1269,7 @@ function buildBuildings() {
   }
   W3.wallMats = {};
   for (const st of WIN_STYLES) W3.wallMats[st] = stdMat({ map: texFacade(st, false), vertexColors: true, emissiveMap: texFacade(st, true), emissive: 0xffffff, emissiveIntensity: 0, roughness: st === "tower" ? 0.2 : 0.85, metalness: st === "tower" ? 0.55 : 0, envMapIntensity: st === "tower" ? 1.2 : 0.5 });
-  W3.shopMat = stdMat({ map: texShops(false), emissiveMap: texShops(true), emissive: 0xffc890, emissiveIntensity: 0, vertexColors: true, roughness: 0.6 });
+  W3.shopMat = stdMat({ map: texShops(false), emissiveMap: texShops(true), emissive: 0xffc890, emissiveIntensity: 0, vertexColors: true, roughness: 0.32, metalness: 0.12, envMapIntensity: 1.1, side: THREE.DoubleSide });
   W3.roofMat = stdMat({ vertexColors: true, roughness: 0.9 });
   W3.extraMat = stdMat({ color: 0x9a9690, roughness: 0.7, metalness: 0.3 });
   for (const C of chunks.values()) {
@@ -1374,7 +1403,7 @@ function binGeo() {
   return mergeGeos(P);
 }
 function buildProps() {
-  buildShops(); buildCivic(); buildFun(); buildPool(); buildBoats(); buildBina(); buildRail(); buildOverpasses(); buildShore(); buildPromenade(); buildParks2();
+  buildShops(); buildCivic(); buildFun(); buildPool(); buildBoats(); buildBina(); buildRail(); buildOverpasses(); buildShore(); buildPromenade(); buildParks2(); buildDrawbridges();
   planBusStops();
   const tp = [];
   for (const e of LIVE_EDGES) { if (e.type === "kopru" || (e.type === "ana" && rnd() < 0.5)) continue; const nx = -e.dz, nz = e.dx; for (let t = e.a.r + 6; t < e.len - e.b.r - 6; t += R(11, 18)) for (const s of [1, -1]) { if (rnd() < 0.45) continue; const x = e.a.x + e.dx * t + nx * (e.hw + 2.2) * s, z = e.a.z + e.dz * t + nz * (e.hw + 2.2) * s; if (isLand(x, z) && propFree(x, z, 1.5)) tp.push([x, z, 1, "street"]); } }
@@ -1389,7 +1418,7 @@ function buildProps() {
   buildTrees(TREES);
   // sokak lambaları (çarpınca devrilir)
   const lp = [];
-  for (const e of LIVE_EDGES) { const nx = -e.dz, nz = e.dx; for (let t = e.a.r + 8; t < e.len - e.b.r - 4; t += 34) for (const s of [1, -1]) { const off = e.bridge ? e.hw + 0.6 : e.hw + 2.7, x = e.a.x + e.dx * t + nx * off * s, z = e.a.z + e.dz * t + nz * off * s, y = e.bridge ? bridgeH(e.bridge, t / e.len) : CURB; if (!propFree(x, z, 1)) continue; lp.push({ x, z, y, a: Math.atan2(nz * s, nx * s), up: true, fall: 0, fa: 0 }); } }
+  for (const e of LIVE_EDGES) { const nx = -e.dz, nz = e.dx; for (let t = e.a.r + 8; t < e.len - e.b.r - 4; t += 34) for (const s of [1, -1]) { if (e.bridge && !e.bridge.h && Math.abs(t - e.len / 2) < DBG + 2) continue; /* v.22: açılan bölümde lamba yok */ const off = e.bridge ? e.hw + 0.6 : e.hw + 2.7, x = e.a.x + e.dx * t + nx * off * s, z = e.a.z + e.dz * t + nz * off * s, y = e.bridge ? bridgeH(e.bridge, t / e.len) : CURB; if (!propFree(x, z, 1)) continue; lp.push({ x, z, y, a: Math.atan2(nz * s, nx * s), up: true, fall: 0, fa: 0 }); } }
   const L = lp.length;
   const lampMat = stdMat({ vertexColors: true, metalness: 0.55, roughness: 0.42 }); W3.lampPole = inst(lampGeo(false), lampMat, L, true); W3.lampPole.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   W3.LAMP_HI = 170; W3.lampSlot = new Int32Array(L).fill(-1); W3.lampHiList = [];
@@ -1552,7 +1581,7 @@ function applyTimeOfDay(h) {
   if (NIGHT > 0.6) { W3.sun.intensity = 0.35; W3.sun.color.set(0x8aa0ff); }
   scene.fog.density = lerp(0.0021, 0.0034, Math.max(NIGHT * 0.6, RAIN));
   for (const st in W3.wallMats) W3.wallMats[st].emissiveIntensity = NIGHT * (st === "tower" ? 0.75 : 0.62);
-  W3.shopMat.emissiveIntensity = NIGHT * 0.16; W3.neonMat.opacity = NIGHT; W3.stars.material.opacity = NIGHT * (1 - RAIN);
+  W3.shopMat.emissiveIntensity = 0.1 + NIGHT * 0.2; /* v.21: vitrin içi gündüz de sıcak ışık */ W3.neonMat.opacity = NIGHT; W3.stars.material.opacity = NIGHT * (1 - RAIN);
   W3.moon.material.opacity = NIGHT * (1 - RAIN); W3.moon.position.set(camera.position.x + 600, 700, camera.position.z - 900);
   W3.poolMat.opacity = NIGHT * 0.55; W3.lampHeadMat.emissiveIntensity = NIGHT * 2.5;
   for (const k in W3.glowMat) W3.glowMat[k].opacity = NIGHT * 0.9;
@@ -1588,11 +1617,11 @@ function updateWeather(dt) {
 function updateFerries(dt) {
   for (const f of W3.ferries) {
     if (f.wait > 0) f.wait -= dt;
-    else { const n = f.pts[f.i + f.dn]; if (!n) { f.dn = -f.dn; f.wait = 6; } else { const dx = n.x - f.x, dz = n.z - f.z, d = Math.hypot(dx, dz); if (d < 4) { f.i += f.dn; if (f.i === 0 || f.i === f.pts.length - 1) { f.dn = -f.dn; f.wait = 8; } } else { f.a += angDiff(f.a, Math.atan2(dz, dx)) * Math.min(1, dt * 0.6); const sp = f.spd * clamp(d / 40, 0.35, 1); f.x += Math.cos(f.a) * sp * dt; f.z += Math.sin(f.a) * sp * dt; } } }
+    else if (dbHoldFerry(f)) { /* v.22: köprünün açılmasını bekle */ } else { const n = f.pts[f.i + f.dn]; if (!n) { f.dn = -f.dn; f.wait = 6; } else { const dx = n.x - f.x, dz = n.z - f.z, d = Math.hypot(dx, dz); if (d < 4) { f.i += f.dn; if (f.i === 0 || f.i === f.pts.length - 1) { f.dn = -f.dn; f.wait = 8; } } else { f.a += angDiff(f.a, Math.atan2(dz, dx)) * Math.min(1, dt * 0.6); const sp = f.spd * clamp(d / 40, 0.35, 1); f.x += Math.cos(f.a) * sp * dt; f.z += Math.sin(f.a) * sp * dt; } } }
     f.g.position.set(f.x, -0.6 + Math.sin(G.t * 1.3 + f.x) * 0.15, f.z); f.g.rotation.y = -f.a; f.g.rotation.z = Math.sin(G.t * 0.9 + f.z) * 0.02;
   }
   if (W3.beamPivot) W3.beamPivot.rotation.y = G.t * 0.9;
-  updateTreesLOD(dt); updateLampLOD(dt); updateSecrets(dt); updateVendors(dt); updateHeadPools(); updateDamage(dt); updateArea(dt); updateSpray(dt); updateCivicFx(dt); updateFun(dt); updateShops(dt); updateBoats(dt); updateBina(dt); updateNav(dt); updateRail(dt); updateShore(dt); updatePark(dt); updateLook(dt);
+  updateTreesLOD(dt); updateLampLOD(dt); updateSecrets(dt); updateVendors(dt); updateHeadPools(); updateDamage(dt); updateArea(dt); updateSpray(dt); updateCivicFx(dt); updateFun(dt); updateShops(dt); updateBoats(dt); updateBina(dt); updateNav(dt); updateRail(dt); updateShore(dt); updatePark(dt); updateLook(dt); updateDrawbridge(dt);
   W3.waterN.offset.set(G.t * 0.004, G.t * 0.0025); if (W3.waterU) W3.waterU.time.value = G.t; W3.cloudTex.offset.set(G.t * 0.0006, G.t * 0.0003);
   W3.clouds.position.x = camera.position.x; W3.clouds.position.z = camera.position.z; W3.cloudTex.offset.x += camera.position.x / 5000 * 3 * 0;
   updateTrafficLights(dt); updateWeather(dt);
@@ -1839,10 +1868,17 @@ function treeGeo(type, hi) {
   // taç
   const leafCol = (k, y0) => (x, y, z) => { const t = clamp((y - y0) / 4 + 0.65, 0.55, 1.15) * (0.9 + k * 0.03); return T.leaf.map(c => c * t); };
   const BL = []; if (hi) { const rq = mulberry32(type.length * 977); for (const [bx, by, bz, r] of T.blobs) { BL.push([bx, by, bz, r * 0.86]); if (type === "servi") continue; for (let q = 0; q < 3; q++) { const u = rq() * TAU, v = rq() * 0.9 - 0.2, rr = r * (0.45 + rq() * 0.2); BL.push([bx + Math.cos(u) * Math.cos(v) * r * 0.8, by + Math.sin(v) * r * 0.75, bz + Math.sin(u) * Math.cos(v) * r * 0.8, rr]); } } }
+  /* v.21: gövdeden ayrılan gerçek ana dallar (taç kümelerine uzanır, kökten uca incelir) */
+  if (hi && type !== "servi") { const limb = (a, b2, r0, r1) => { const d = new THREE.Vector3().subVectors(b2, a), L = d.length(), g = new THREE.CylinderGeometry(r1, r0, L, 6, 1).translate(0, L / 2, 0); g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize())); g.translate(a.x, a.y, a.z); parts.push(col(g, (x, y) => T.trunkC.map(c => c * (0.78 + y / (T.trunkH * 2) * 0.3)), true)); };
+    const top = new THREE.Vector3(0, T.trunkH * 0.92, 0), main = T.blobs.slice(1, 5);
+    main.forEach(([bx, by, bz, r], k) => { const tip = new THREE.Vector3(bx * 0.78, by - r * 0.35, bz * 0.78), mid = new THREE.Vector3(bx * 0.42, T.trunkH + (by - T.trunkH) * 0.35, bz * 0.42); limb(top.clone().setY(T.trunkH * (0.7 + k * 0.06)), mid, T.trunkR * 0.42, T.trunkR * 0.28); limb(mid, tip, T.trunkR * 0.28, T.trunkR * 0.12); }); }
+  /* v.21: yapraklar keskin yüzlü (low-poly) bozulmuş çokgen kümeleri, koyu-açık yeşil ton geçişli */
   if (hi) BL.forEach(([bx, by, bz, r], k) => {
-    const g = new THREE.IcosahedronGeometry(r, (type === "servi" || k % 4 === 0) ? 2 : 1), p = g.attributes.position, nrm = g.attributes.normal;
-    for (let i = 0; i < p.count; i++) { const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), n = 0.9 + 0.14 * hash2(Math.round(vx * 9) + k * 31 + type.length, Math.round(vy * 9) * 7 + Math.round(vz * 9)); p.setXYZ(i, vx * n + bx, vy * n * (T.stretch || 1) * (T.flat ? T.flat * 1.6 : 0.9) + by, vz * n + bz); nrm.setXYZ(i, vx / r, vy / r * (T.flat ? 2 : 1.1), vz / r); }
-    parts.push(col(g, leafCol(k, by)));
+    let g = (type === "servi" ? new THREE.IcosahedronGeometry(r, 1) : k % 3 === 1 ? new THREE.DodecahedronGeometry(r, 0) : new THREE.IcosahedronGeometry(r, k % 4 === 0 ? 1 : 0)).toNonIndexed(); const p = g.attributes.position;
+    const key = v => Math.round(v * 40);
+    for (let i = 0; i < p.count; i++) { const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), n = 0.8 + 0.34 * hash2(key(vx) + k * 31 + type.length, key(vy) * 7 + key(vz)); p.setXYZ(i, vx * n + bx, vy * n * (T.stretch || 1) * (T.flat ? T.flat * 1.6 : 0.92) + by, vz * n + bz); }
+    g.computeVertexNormals(); const tone = 0.72 + 0.5 * hash2(k * 13 + 5, type.length * 7);
+    parts.push(col(g, (x, y, z) => { const t = clamp((y - by) / (r * 2) + 0.62, 0.45, 1.2) * tone; return T.leaf.map(c => c * t); }));
   });
   else { const [bx, by, bz, r, sy] = T.low; const g = type === "servi" ? new THREE.ConeGeometry(r, r * 7, 7).translate(bx, by + 0.3, bz) : new THREE.IcosahedronGeometry(r, 0).scale(1, sy, 1).translate(bx, by, bz); parts.push(col(g, leafCol(0, by))); }
   return mergeGeos(parts);
@@ -1858,7 +1894,7 @@ function treeAtlas() {
   g.fillStyle = "#b0b0b0"; g.fillRect(0, H / 2, W, H / 2);
   for (let i = 0; i < 260; i++) { const x = r() * W, y = H / 2 + r() * H / 2, h = 10 + r() * 40, l = 70 + r() * 70; g.strokeStyle = `rgb(${l},${l},${l})`; g.lineWidth = 1 + r() * 3; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - 0.5) * 6, y + h); g.stroke(); }
   for (let i = 0; i < 90; i++) { const x = r() * W, y = H / 2 + r() * H / 2, l = 200 + r() * 55; g.fillStyle = `rgba(${l},${l},${l},.6)`; g.beginPath(); g.ellipse(x, y, 4 + r() * 10, 3 + r() * 8, 0, 0, TAU); g.fill(); }
-  const t = canvasTex(c, true); t.wrapT = THREE.ClampToEdgeWrapping; return t;
+  const t = nrmTag(canvasTex(c, true), 1.6); t.wrapT = THREE.ClampToEdgeWrapping; return t;
 }
 function buildTrees(list) {
   const mat = stdMat({ vertexColors: true, roughness: 0.85, map: treeAtlas() }), byType = {};
@@ -2337,7 +2373,7 @@ function buildCarGeos(type) {
 }
 function makeCarMesh(type, color, rotWheels, livery) {
   const G0 = buildCarGeos(type), P = G0.P, top = new THREE.Group(), g = new THREE.Group(), t = VT[type];
-  const mk = rotWheels ? o => new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.42, roughness: 0.27, clearcoat: 1, clearcoatRoughness: 0.025, specularIntensity: 1, envMapIntensity: 1.55 }, o)) /* v.20: metalik boya + vernik */ : o => new THREE.MeshStandardMaterial(Object.assign({ color, metalness: 0.62, roughness: 0.2, envMapIntensity: 1.55 }, o)); /* metalik boya, gökyüzü yansıması */
+  const mk = rotWheels ? o => new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.42, roughness: 0.27, clearcoat: 1, clearcoatRoughness: 0.025, specularIntensity: 1, envMapIntensity: 1.55 }, o)) /* v.20: metalik boya + vernik */ : o => ((SV.set.quality || "ultra") === "ultra" ? new THREE.MeshPhysicalMaterial(Object.assign({ color, metalness: 0.5, roughness: 0.25, clearcoat: 0.8, clearcoatRoughness: 0.05, envMapIntensity: 1.5 }, o)) : new THREE.MeshStandardMaterial(Object.assign({ color, metalness: 0.62, roughness: 0.2, envMapIntensity: 1.55 }, o))); /* v.21: trafik araçları da vernikli */ /* metalik boya, gökyüzü yansıması */
   const bodySide = mk({ map: G0.sideTex }), body = mk({});
   const glassUse = rotWheels && G0.cabin && !G0.cabin.open ? cmat("glassPlayer", () => new THREE.MeshPhysicalMaterial({ color: 0x111827, metalness: 0.35, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 2.4, transparent: true, opacity: 0.66, depthWrite: false, side: THREE.DoubleSide })) : cmat("glass2", () => new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.8, roughness: 0.06, envMapIntensity: 2.8, side: THREE.DoubleSide }));
   const det = cmat("det", () => new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.45, roughness: 0.45, side: THREE.DoubleSide }));
@@ -2420,8 +2456,11 @@ function makeCarMesh(type, color, rotWheels, livery) {
   if (type === "metrobus") { const bm2 = cmat("mbTxt", () => new THREE.MeshStandardMaterial({ map: texText("34  METROBÜS", "#ff5040", "#111", 512, 64), emissive: 0xffffff, emissiveMap: texText("34  METROBÜS", "#ff5040", "#000", 512, 64), emissiveIntensity: 0.6 })); const m = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.24).rotateY(Math.PI / 2).translate(P.L / 2 + 0.02, 3.0, 0), bm2); g.add(m); }
   if (type === "bus") { const bm2 = cmat("busTxt", () => new THREE.MeshStandardMaterial({ map: texText("34  TAKSİM", "#ffb020", "#111", 512, 64), emissive: 0xffffff, emissiveMap: texText("34  TAKSİM", "#ffb020", "#000", 512, 64), emissiveIntensity: 0.6 })); const m = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.24).rotateY(Math.PI / 2).translate(P.L / 2 + 0.02, 3.0, 0), bm2); g.add(m); }
   // gölge
-  const sm = cmat("shadow", () => new THREE.MeshBasicMaterial({ map: texRadial("rgba(0,0,0,0.7)"), transparent: true, depthWrite: false }));
-  const shp = new THREE.Mesh(CGEO.shadow || (CGEO.shadow = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), sm); shp.scale.set(t.l * 1.2, 1, t.w * 1.6); shp.position.y = 0.03; top.add(shp);
+  /* v.21: temas gölgesi — gövde altına oturan yumuşak dikdörtgen (ambient occlusion) + tekerlek altı koyu lekeler */
+  const sm = cmat("shadowAO", () => { const c = mkCanvas(256, 128), x = c.getContext("2d"); x.filter = "blur(14px)"; x.fillStyle = "rgba(0,0,0,0.55)"; x.beginPath(); x.roundRect ? x.roundRect(34, 30, 188, 68, 26) : x.rect(34, 30, 188, 68); x.fill(); x.filter = "blur(6px)"; x.fillStyle = "rgba(0,0,0,0.5)"; x.beginPath(); x.roundRect ? x.roundRect(52, 42, 152, 44, 16) : x.rect(52, 42, 152, 44); x.fill(); x.filter = "none";
+    const t = canvasTex(c); return new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6 }); });
+  const shp = new THREE.Mesh(CGEO.shadow || (CGEO.shadow = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), sm); shp.scale.set(t.l * 1.32, 1, t.w * 1.75); shp.position.y = 0.035; shp.renderOrder = 1; top.add(shp);
+  if (G0.wheelPos) { const tm2 = cmat("tireAO", () => new THREE.MeshBasicMaterial({ map: texRadial("rgba(0,0,0,0.85)"), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -7, polygonOffsetUnits: -7 })); for (const [wx, , wz] of G0.wheelPos) { const m = new THREE.Mesh(CGEO.shadow, tm2); m.scale.set(G0.P.R * 2.0, 1, G0.P.R * 1.3); m.position.set(wx, 0.04, wz); m.renderOrder = 1; top.add(m); } }
   g.userData.shadow = shp; g.userData.tail = tail; g.userData.body = body; g.userData.bodySide = bodySide; top.userData = g.userData;
   for (const k of ["gr", "gb"]) if (g.userData[k]) { g.remove(g.userData[k]); top.add(g.userData[k]); }
   if (g.userData.flame) { g.remove(g.userData.flame); top.add(g.userData.flame); }
@@ -2656,8 +2695,10 @@ function aiUpdate(v, dt) {
   { let human = false; const chk = (x, z, wd) => { const rx = x - v.x - v.ox, rz = z - v.z - v.oz; if (Math.abs(rx) > look + 4 || Math.abs(rz) > look + 4) return; const ah = rx * fx + rz * fz, lat = Math.abs(-rx * fz + rz * fx); if (ah > -0.5 && ah < look && lat < v.w / 2 + wd) { want = Math.min(want, Math.max(0, (ah - v.l / 2 - 1.6) * 1.1)); human = true; } };
     const me = G.walker; if (me) chk(me.x, me.z, me.state === "walk" || !me.state ? 0.5 : 1.1);
     for (const p of G.downPeds || []) chk(p.x + (p.ox || 0), p.z + (p.oz || 0), 1.1);
+    for (const p of G.crossPeds || []) chk(p.x, p.z, 1.0); /* v.22: yaya geçidinden geçene yol ver */
     if (human) { ai.ignore = 0; if (want < 1) { ai.hw = (ai.hw || 0) + dt; if (ai.hw > 3) { ai.hw = -4; if (G.state === "play" && dist(v.x, v.z, camera.position.x, camera.position.z) < 60) sfxHorn(0.2); } } } }
   if (blocked && want < 1) { ai.wait = (ai.wait || 0) + dt; if (ai.wait > 5) { ai.ignore = 1.5; ai.wait = 0; if (G.state === "play" && dist(v.x, v.z, camera.position.x, camera.position.z) < 80) sfxHorn(0.25); } } else ai.wait = 0;
+  want = dbAiLimit(ai, want); /* v.22: açılır köprü bariyeri */
   if (v.stun > 0) want = 0;
   v.brakeOn = want < v.spd - 1.5;
   v.spd += clamp(want - v.spd, -14 * dt, 5 * dt); v.spd = Math.max(0, v.spd);
@@ -2945,9 +2986,17 @@ function pedUpdate(p, dt) {
       else p.dir = -p.dir;
     }
     const E = p.e; p.avT = (p.avT || 0) - dt; if (p.avT <= 0) { p.avT = 0.12 + gr() * 0.06; p.latT = pedAvoid(p, E); }
-    p.lat = (p.lat || 0) + ((p.latT || 0) - (p.lat || 0)) * Math.min(1, dt * 3.2); const Lw = E.hw + 1.6 + p.lat;
-    p.x = E.a.x + E.dx * p.s - E.dz * Lw * p.side; p.z = E.a.z + E.dz * p.s + E.dx * Lw * p.side;
-    p.a = Math.atan2(E.dz * p.dir, E.dx * p.dir); p.walk += dt * p.spd * 5;
+    p.lat = (p.lat || 0) + ((p.latT || 0) - (p.lat || 0)) * Math.min(1, dt * 3.2); let Lw = E.hw + 1.6 + p.lat;
+    /* v.22: yaya geçidi — ara sıra karşıya geçer (arabalar durur) */
+    const zs = midZebra(E); if (p.crossK === undefined && zs != null && Math.abs(p.s - zs) < 0.5 && !(p.crossCD > 0) && gr() < 0.45) { p.crossK = 0; p.s = zs; (G.crossPeds || (G.crossPeds = [])).push(p); }
+    if (p.crossCD > 0) p.crossCD -= dt;
+    if (p.crossK !== undefined) { p.s -= p.dir * p.spd * dt; p.crossK += dt * p.spd / (2 * Lw); const k = Math.min(1, p.crossK), lw = Lw * (1 - 2 * k); p.x = E.a.x + E.dx * p.s - E.dz * lw * p.side; p.z = E.a.z + E.dz * p.s + E.dx * lw * p.side; p.a = Math.atan2(-E.dx * p.side, E.dz * p.side) ; p.walk += dt * p.spd * 5;
+      if (k >= 1) { p.side = -p.side; p.crossK = undefined; p.crossCD = 12; const i = G.crossPeds.indexOf(p); if (i >= 0) G.crossPeds.splice(i, 1); } }
+    else {
+    let px = E.a.x + E.dx * p.s - E.dz * Lw * p.side, pz = E.a.z + E.dz * p.s + E.dx * Lw * p.side;
+    if (pointInBuilding(px, pz)) { Lw = E.hw + 0.7; px = E.a.x + E.dx * p.s - E.dz * Lw * p.side; pz = E.a.z + E.dz * p.s + E.dx * Lw * p.side; if (pointInBuilding(px, pz)) { p.s -= p.dir * p.spd * dt * 2; p.dir = -p.dir; px = p.x; pz = p.z; } } /* v.22: duvarın içinden geçmez */
+    p.x = px; p.z = pz;
+    p.a = Math.atan2(E.dz * p.dir, E.dx * p.dir); p.walk += dt * p.spd * 5; }
   }
   // tehlike: kenara kaç
   const th = G.pv ? [G.pv] : []; for (const v of G.veh) if (v.chase || v.racer || (v.ai && v.spd > 4)) th.push(v);
@@ -4391,6 +4440,7 @@ function updateShops(dt) {
   if (bldInteract(w)) return;
   if (boatInteract(w)) return;
   if (funInteract(w)) return;
+  if (facadeInteract(w)) return; /* v.22: caddedeki her dükkân */
   vendorInteract(w);
 }
 function interact() { if (G.ride) { endRide(); return; } if (G.state === "shop") { closeShop(); return; } if (G.interact && G.state === "play") G.interact.fn(); }
@@ -5046,9 +5096,9 @@ const BOAT_T = {
   tour: { name: "Tur Teknesi", len: 11, wid: 3.6, vmax: 12, acc: 3.2, turn: 0.75, seat: [-3.45, 0.78], cam: [15, 5.5], sit: 0, col: "#ffd040" }
 };
 function onPier(x, z) { for (const p of PIERS) { const dx = x - p.x, dz = z - p.z, lx = dx * p.c + dz * p.s, lz = -dx * p.s + dz * p.c; if (Math.abs(lx) < p.l / 2 && Math.abs(lz) < p.w / 2) return p; } return null; }
-function walkAt(x, z) { const r = rAt(x, z); if (r === 2 && !bridgeDeckAt(x, z, -0.4)) return 0; return r || (PIERS.length && onPier(x, z) ? 1 : 0); } /* v.18: köprüde korkuluğun dışına çıkılmaz */
+function walkAt(x, z) { const r = rAt(x, z); if (r === 2 && !bridgeDeckAt(x, z, -0.4)) return 0; if (r === 2) { const db = dbInGap(x, z, 0, 0); if (db && db.lift > 0.02) return 0; } return r || (PIERS.length && onPier(x, z) ? 1 : 0); } /* v.18: köprüde korkuluğun dışına çıkılmaz */
 function inShip(x, z, pad) { for (const s of SHIPS) { const dx = x - s.x, dz = z - s.z, lx = dx * s.c + dz * s.s, lz = -dx * s.s + dz * s.c; if (Math.abs(lx) < s.l / 2 + pad && Math.abs(lz) < s.w / 2 + pad) return true; } return false; }
-function boatWater(x, z) { if (x < 4 || z < 4 || x > MW - 4 || z > MH - 4) return false; const r = rAt(x, z); if (r === 1) return false; if (onPier(x, z) || inShip(x, z, 0.5)) return false; return true; }
+function boatWater(x, z) { if (x < 4 || z < 4 || x > MW - 4 || z > MH - 4) return false; const r = rAt(x, z); if (r === 1) return false; if (r === 2 && !dbBoatPass(x, z)) return false; /* v.22: köprü altı kapalı, açılınca geçilir */ if (onPier(x, z) || inShip(x, z, 0.5)) return false; return true; }
 function seaRect(x, z, a, l, w) { const c = Math.cos(a), s = Math.sin(a); for (let i = -1; i <= 1; i += 0.25) for (let j = -1; j <= 1; j += 0.5) { const lx = i * l / 2, lz = j * w / 2; if (rAt(x + c * lx - s * lz, z + s * lx + c * lz) !== 0) return false; } return true; }
 function findShore(ax, az) {
   for (let r = 0; r < 160; r += 3) {
@@ -6126,6 +6176,87 @@ function initLook() {
 function updateLook(dt) {
   WIND.value += dt; if (!W3.fill || !W3.sunDir) return; const sd = W3.sunDir; W3.fill.position.set(camera.position.x - sd.x * 100, camera.position.y + 60, camera.position.z - sd.z * 100); W3.fill.target.position.copy(camera.position);
   W3.fill.intensity = (1 - NIGHT) * 0.55 + NIGHT * 0.12; W3.fill.color.copy(W3.skyU.top.value).lerp(_c2.set("#ffffff"), 0.45);
+}
+
+/* =====================================================================
+   v.22 — AÇILIR KAPANIR KÖPRÜLER, YAYA GEÇİTLERİ, CADDE DÜKKÂNLARI
+   - Galata, Unkapanı ve Haliç köprülerinin orta bölümü (gerçek Galata
+     Köprüsü gibi) vapur/tekne yaklaşınca kalkar; trafik bariyerde
+     bekler, gemi geçer, köprü iner. Gemi artık köprünün içinden geçmez.
+   - Uzun caddelerin ortasına yaya geçidi; yayalar karşıya geçer, arabalar
+     durur. Yayalar duvar/bina içine girmez.
+   - Caddedeki her dükkân cephesine (TERZİ, SİMİT, FIRIN, BERBER...)
+     girilir: alışveriş, yemek, kuaför. Bütün haritada.
+   ===================================================================== */
+const DBG = 13; /* açılan bölümün yarı uzunluğu (m) */
+const DBRIDGES = BRIDGES.filter(bd => !bd.h);
+function dbInfo(bd) { const e = bd.edge, mid = e.len / 2; return { e, mid, cx: e.a.x + e.dx * mid, cz: e.a.z + e.dz * mid, nx: -e.dz, nz: e.dx }; }
+function dbLocal(bd, x, z) { const e = bd.edge, rx = x - e.a.x, rz = z - e.a.z; return { s: rx * e.dx + rz * e.dz, lat: -rx * e.dz + rz * e.dx }; }
+function dbInGap(x, z, pad, latPad) { for (const bd of DBRIDGES) { const L = dbLocal(bd, x, z), e = bd.edge; if (Math.abs(L.lat) < e.hw + (latPad ?? 1.2) && Math.abs(L.s - e.len / 2) < DBG + (pad || 0)) return bd; } return null; }
+/* vapur rotaları köprüyü kesiyorsa açılan bölümün tam ortasından geçsin */
+(function routeThroughGaps() {
+  const X = (a, b, c, d) => { const r = (p, q, s) => (q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0]); return r(a, b, c) * r(a, b, d) < 0 && r(c, d, a) * r(c, d, b) < 0; };
+  for (const R of FERRY_ROUTES) for (let i = 0; i < R.pts.length - 1; i++) for (const bd of DBRIDGES) { const e = bd.edge, I = dbInfo(bd);
+    if (!X(R.pts[i], R.pts[i + 1], [e.a.x, e.a.z], [e.b.x, e.b.z])) continue; const sg = Math.sign((R.pts[i][0] - I.cx) * I.nx + (R.pts[i][1] - I.cz) * I.nz) || 1;
+    R.pts.splice(i + 1, 0, [I.cx + I.nx * 40 * sg, I.cz + I.nz * 40 * sg], [I.cx - I.nx * 40 * sg, I.cz - I.nz * 40 * sg]); i += 2; }
+})();
+function buildDrawbridges() {
+  const asph = texAsphalt("ana"); asph.repeat.set(1, 1); const deckM = stdMat({ map: asph, roughness: 0.8 }), railM = stdMat({ color: 0x8a8f9a, metalness: 0.5, roughness: 0.4 }), steel = stdMat({ color: 0x5a6068, metalness: 0.6, roughness: 0.4 }), tw = stdMat({ color: 0xd8d2c4, roughness: 0.7 });
+  const lightM = new THREE.MeshStandardMaterial({ color: 0x400000, emissive: 0xff2010, emissiveIntensity: 0 }); W3.dbLight = lightM;
+  for (const bd of DBRIDGES) { const I = dbInfo(bd), e = I.e, hw = e.hw, y0 = bridgeH(bd, 0.5) + 0.05, ang = Math.atan2(e.dz, e.dx);
+    const root = new THREE.Group(); root.position.set(I.cx, y0, I.cz); root.rotation.y = -ang; scene.add(root); bd.leaves = [];
+    for (const sd of [-1, 1]) { const piv = new THREE.Group(); piv.position.x = sd * DBG; root.add(piv);
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(DBG, 0.7, hw * 2), deckM); deck.position.set(-sd * DBG / 2, -0.35, 0); deck.castShadow = true; deck.receiveShadow = true; piv.add(deck);
+      for (const s2 of [-1, 1]) { const r = new THREE.Mesh(new THREE.BoxGeometry(DBG, 0.08, 0.08), railM); r.position.set(-sd * DBG / 2, 1.1, s2 * hw); piv.add(r); const r2 = r.clone(); r2.position.y = 0.55; piv.add(r2); for (let k = 0; k <= 4; k++) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.08, 1.1, 0.08), railM); p.position.set(-sd * (k / 4) * DBG, 0.55, s2 * hw); piv.add(p); } }
+      const ln = new THREE.Mesh(new THREE.BoxGeometry(DBG, 0.02, 0.25), stdMat({ color: 0xf2c230 })); ln.position.set(-sd * DBG / 2, 0.01, 0); piv.add(ln);
+      bd.leaves.push({ piv, sd });
+      /* kule (makine dairesi) ve bariyerler */
+      for (const s2 of [-1, 1]) { const t = new THREE.Mesh(new THREE.BoxGeometry(2.4, 7, 2.4), tw); t.position.set(sd * (DBG + 1.4), 3.0, s2 * (hw + 1.6)); t.castShadow = true; root.add(t); const cap = new THREE.Mesh(new THREE.ConeGeometry(1.9, 1.6, 4), steel); cap.rotation.y = Math.PI / 4; cap.position.set(sd * (DBG + 1.4), 7.3, s2 * (hw + 1.6)); root.add(cap);
+        const lt = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), lightM); lt.position.set(sd * (DBG + 6), 2.3, s2 * (hw + 0.4)); root.add(lt); const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.2, 6), steel); pl.position.set(sd * (DBG + 6), 1.1, s2 * (hw + 0.4)); root.add(pl); }
+      const gp = new THREE.Group(); gp.position.set(sd * (DBG + 6), 1.0, sd * hw); root.add(gp); const c = mkCanvas(128, 16), x = c.getContext("2d"); for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? "#ffffff" : "#d8202c"; x.fillRect(i * 16, 0, 16, 16); }
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, hw * 2 - 0.4), stdMat({ map: canvasTex(c) })); arm.position.z = -sd * (hw - 0.2); gp.add(arm); bd.leaves[bd.leaves.length - 1].gate = gp; }
+    bd.lift = 0; bd.req = false; bd.reqT = 0; bd.gateK = 0; }
+}
+function dbGapBusy(bd) { const chk = (x, z) => dbLocal(bd, x, z); const e = bd.edge;
+  for (const v of G.veh) { const L = chk(v.x, v.z); if (Math.abs(L.lat) < e.hw + 2 && Math.abs(L.s - e.len / 2) < DBG + v.l / 2 + 1.5) return true; }
+  const w = G.walker; if (w) { const L = chk(w.x, w.z); if (Math.abs(L.lat) < e.hw + 2 && Math.abs(L.s - e.len / 2) < DBG + 1.5) return true; } return false; }
+/* vapur köprüye yaklaşınca: açılmasını iste, açılmadıysa bekle */
+function dbHoldFerry(f) { for (const bd of DBRIDGES) { const I = dbInfo(bd), d = dist(f.x, f.z, I.cx, I.cz); if (d > 75) continue; bd.req = true; if (bd.lift > 0.97) continue;
+    const L = dbLocal(bd, f.x, f.z); if (Math.abs(L.lat) < 26 && Math.abs(L.lat) > 6 && ((L.lat > 0) === ((Math.cos(f.a) * I.nx + Math.sin(f.a) * I.nz) < 0))) return true; } return false; }
+function updateDrawbridge(dt) {
+  if (!DBRIDGES.length || !DBRIDGES[0].leaves) return;
+  for (const b of BOATS) { for (const bd of DBRIDGES) { const I = dbInfo(bd), dx = I.cx - b.x, dz = I.cz - b.z, d = Math.hypot(dx, dz); if (d < 55 && (Math.cos(b.a) * dx + Math.sin(b.a) * dz) / d > 0.4) bd.req = true; else if (d < 22) bd.req = true; } }
+  let anyGate = 0;
+  for (const bd of DBRIDGES) {
+    if (bd.req) bd.reqT = 2.5; else bd.reqT -= dt; const want = bd.reqT > 0;
+    bd.gateK = clamp(bd.gateK + (want || bd.lift > 0.01 ? 1 : -1) * dt * 0.9, 0, 1);
+    if (want && bd.gateK >= 1 && (bd.lift > 0.01 || !dbGapBusy(bd))) bd.lift = Math.min(1, bd.lift + dt * 0.2); else if (!want) bd.lift = Math.max(0, bd.lift - dt * 0.2);
+    for (const L of bd.leaves) { L.piv.rotation.z = -L.sd * bd.lift * 1.22; L.gate.rotation.x = L.sd * (1 - bd.gateK) * 1.45; }
+    anyGate = Math.max(anyGate, bd.gateK * (dist(bd.edge.a.x, bd.edge.a.z, camera.position.x, camera.position.z) < 300 ? 1 : 0));
+    if (bd.lift > 0.01 && bd.lift < 0.99 && Math.random() < dt * 2 && dist(dbInfo(bd).cx, dbInfo(bd).cz, camera.position.x, camera.position.z) < 120) G.shake = Math.max(G.shake || 0, 0.04);
+    bd.req = false;
+  }
+  if (W3.dbLight) W3.dbLight.emissiveIntensity = anyGate > 0 && Math.sin(G.t * 7) > 0 ? 2.5 : 0;
+  /* açıkken boşluğa kimse giremez: araba/yürüyen bariyerde durur */
+  const stop = (o, l) => { for (const bd of DBRIDGES) { if (bd.lift < 0.01 && bd.gateK < 0.5) continue; const e = bd.edge, L = dbLocal(bd, o.x, o.z), lim = DBG + 6 + (l || 0) / 2; if (Math.abs(L.lat) > e.hw + 1.5 || Math.abs(L.s - e.len / 2) > lim) continue; if (bd.lift < 0.01 && Math.abs(L.s - e.len / 2) < DBG + 4) continue; /* kapanmak üzere, içerideyse çıksın */
+      const sg = Math.sign(L.s - e.len / 2) || 1, ns = e.len / 2 + sg * lim, dd = ns - L.s; o.x += e.dx * dd; o.z += e.dz * dd; if (o.vx !== undefined) { const vp = o.vx * e.dx + o.vz * e.dz; if (vp * sg < 0) { o.vx -= e.dx * vp * 1.4; o.vz -= e.dz * vp * 1.4; if (o.vf !== undefined) o.vf *= -0.2; } } if (o === G.pv && Math.random() < 0.05) hint("Köprü açık — gemi geçiyor, bekle!", 1.6); } };
+  if (G.pv) stop(G.pv, G.pv.l); else if (G.walker) stop(G.walker, 0);
+}
+/* AI araç: köprü açılacaksa / açıksa bariyerin önünde dur */
+function dbAiLimit(ai, want) { const bd = ai.e.bridge; if (!bd || bd.h || !bd.leaves || (bd.gateK < 0.05 && bd.reqT <= 0 && bd.lift < 0.01)) return want; const rem = ai.e.len / 2 - DBG - 7 - ai.s; if (rem > -1) return Math.min(want, Math.max(0, rem * 0.9)); return want; }
+/* tekne için: köprü altı ancak açılan bölüm tam açıkken geçilir */
+function dbBoatPass(x, z) { const bd = dbInGap(x, z, -1.5, 0.5); return !!(bd && bd.lift > 0.95); }
+/* ---------------- yaya geçitleri (cadde ortası) ---------------- */
+function midZebra(e) { if (e.zebraS !== undefined) return e.zebraS; e.zebraS = null; if (e.bridge || e.dead || e.type === "sahil" || e.len < 110) return null; const s = e.len / 2 + (hash2(Math.floor(e.a.x), Math.floor(e.b.z)) - 0.5) * 20; e.zebraS = s; return s; }
+/* ---------------- cadde dükkânları: her vitrine girilir ---------------- */
+const SHOPFACES = [], SFGRID = new Map(), SF_NAMES = ["BERBER", "ÇAY OCAĞI", "FIRIN", "BÜFE", "KAFE", "LOKANTA", "TERZİ", "SİMİTÇİ"], SF_TYPE = ["kuafor", "lokanta", "lokanta", "lokanta", "lokanta", "lokanta", "butik", "lokanta"];
+function addShopFace(f) { SHOPFACES.push(f); const k0 = Math.floor(Math.min(f.px, f.qx) / 40), k1 = Math.floor(Math.max(f.px, f.qx) / 40), j0 = Math.floor(Math.min(f.pz, f.qz) / 40), j1 = Math.floor(Math.max(f.pz, f.qz) / 40); for (let i = k0; i <= k1; i++) for (let j = j0; j <= j1; j++) { const k = i * 1000 + j; if (!SFGRID.has(k)) SFGRID.set(k, []); SFGRID.get(k).push(f); } }
+function facadeInteract(w) {
+  const arr = SFGRID.get(Math.floor(w.x / 40) * 1000 + Math.floor(w.z / 40)); if (!arr) return false; let best = null, bd = 2.0, bt = 0;
+  for (const f of arr) { const dx = f.px - f.qx, dz = f.pz - f.qz, L2 = dx * dx + dz * dz, t = clamp(((w.x - f.qx) * dx + (w.z - f.qz) * dz) / L2, 0.03, 0.97), cx = f.qx + dx * t, cz = f.qz + dz * t, out = (w.x - cx) * f.nx + (w.z - cz) * f.nz; if (out < 0 || out > bd) continue; bd = out; best = f; bt = t; }
+  if (!best) return false; const f = best, u = f.cr ? f.so + (f.along + (1 - bt) * f.L) / 40 : f.so + (f.along + bt * f.L) / 40, slot = Math.floor((((u % 1) + 1) % 1) * 8) % 8, name = SF_NAMES[slot], type = SF_TYPE[slot];
+  const cx = f.qx + (f.px - f.qx) * bt, cz = f.qz + (f.pz - f.qz) * bt, T = SHOP_TYPES[type];
+  G.interact = { txt: (IS_TOUCH ? "[AL/GİR] " : "[E] ") + name + " — içeri gir, " + (type === "butik" ? "kıyafet al" : type === "kuafor" ? "saç-sakal" : "ye-iç"), col: T.mini, fn: () => openShop({ type, x: cx + f.nx * 1.2, z: cz + f.nz * 1.2, nx: f.nx, nz: f.nz, a: Math.atan2(f.nz, f.nx), name }) }; return true;
 }
 
 /* =====================================================================
