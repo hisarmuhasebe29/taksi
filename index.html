@@ -233,6 +233,17 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
 #drvEdit .deTx{font:inherit;font-size:11px;font-weight:800;padding:4px 8px;border-radius:9px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#fff;cursor:pointer}#drvEdit .deTx.sel{border-color:#2bff7a;color:#2bff7a}
 #drvEdit .deOk{width:auto!important;color:#2bff7a!important;margin-left:6px}
 
+/* v.39: yön tuşu — sol altta duran yarı saydam daire + 4 yön oku; dokununca parmağın altına gelir */
+#joyBase{display:block;left:calc(max(18px,env(safe-area-inset-left)) + 80px);top:calc(100% - max(18px,env(safe-area-inset-bottom)) - 80px);width:150px;height:150px;margin:-75px 0 0 -75px;border:2px solid rgba(255,255,255,.55);background:radial-gradient(circle,rgba(255,255,255,.16),rgba(255,255,255,.07) 70%,rgba(255,255,255,.04));box-shadow:0 4px 18px rgba(0,0,0,.25),inset 0 0 18px rgba(255,255,255,.08);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:.92}
+body:not(.touch) #joyBase{display:none}
+#joyBase .joyArr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#joyKnob{width:54px;height:54px;margin:-27px 0 0 -27px;background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.75),rgba(255,255,255,.35));box-shadow:0 2px 10px rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.7)}
+body.ctrlBtn.driving #joyBase{display:none!important}
+/* v.39: arabaya bin/in düğmesi — yuvarlatılmış kare, kapı simgesi */
+.tbtn.sm.enter{width:66px;height:66px;border-radius:16px;border:2px solid rgba(255,255,255,.6)!important;background:rgba(255,255,255,.14)!important;box-shadow:0 4px 14px rgba(0,0,0,.28)!important;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.tbtn.sm.enter:active{background:rgba(255,255,255,.3)}
+@media (max-height:430px){.tbtn.sm.enter{width:58px;height:58px}}
+
 </style>
 </head>
 <body>
@@ -397,7 +408,7 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
 </div>
 
 <div id="touch">
-  <div id="joyBase"><div id="joyKnob"></div></div>
+  <div id="joyBase"><svg class="joyArr" viewBox="0 0 100 100"><g fill="rgba(255,255,255,.85)"><path d="M50 9 L58 21 L42 21 Z"/><path d="M50 91 L58 79 L42 79 Z"/><path d="M9 50 L21 42 L21 58 Z"/><path d="M91 50 L79 42 L79 58 Z"/></g></svg><div id="joyKnob"></div></div>
   <div id="camBar"><span>KAMERA</span><button data-cm="0">Yakın</button><button data-cm="1">Uzak</button><button data-cm="4">Yayın</button><button data-cm="5">Kokpit</button><button data-cm="2">Kaput</button><button data-cm="3">Tepeden</button><button data-cm="6">Gezinti</button><button class="camX" data-act="camClose">✕ KAPAT</button></div>
   <div id="camBack"></div>
   <div id="camDrop"><button id="polTog" title="Polis gelsin / gelmesin">👮 <b id="polTxt">POLİS AÇIK</b></button><button id="camMain">📷 <b id="camName">Yakın</b> ▾</button><button id="polEsc">🚨 POLİSTEN KURTUL</button></div>
@@ -415,7 +426,7 @@ body.shopping #camDrop,body.garaging #camDrop{display:none!important}
   <div class="tb tbS">
     <button class="tbtn sm" data-k="horn"><i>📯</i><s>KORNA</s></button>
     <button class="tbtn sm crouch" data-k="crouch" style="display:none"><i>🧎</i><s>ÇÖMEL/OTUR</s></button>
-    <button class="tbtn sm enter" data-k="enter"><i>🚪</i><s>İN/BİN</s></button>
+    <button class="tbtn sm enter" data-k="enter" aria-label="Arabaya bin / in"><svg viewBox="0 0 48 48" width="34" height="34"><path d="M9 26 L17 11 Q18.5 9 21 9 L39 9 Q41 9 41 11 L41 39 Q41 41 39 41 L11 41 Q9 41 9 39 Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/><path d="M14 25 L20 14 Q21 13 22.5 13 L36 13 Q37 13 37 14 L37 25 Z" fill="rgba(255,255,255,.9)"/><rect x="29" y="29" width="8" height="3.2" rx="1.6" fill="#fff"/></svg></button>
   </div>
 </div>
 <button id="btnPause" aria-label="Duraklat">❚❚</button>
@@ -7081,7 +7092,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.38";
+const VER = "v.39";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -9255,7 +9266,8 @@ function makeCarMesh(type, color, rotWheels, livery) {
     for (const [x, y] of [[Lh - 0.08, G0.P.hl], [-Lh + 0.08, G0.P.tl]]) for (const s of [1, -1]) { const sp = new THREE.Sprite(sm); const hz = G0.halfW(x * 0.96, y) - 0.06; sp.position.set(x, y, s * Math.max(0.3, hz)); sp.scale.set(1.05, 1.05, 1); sp.visible = false; top.add(sp); sig[s > 0 ? "L" : "R"].push(sp); }
     g.userData.sig = sig; }
   vehExtras(type, G0, g); /* v.26 */
-  if (rotWheels) { top.add(g); if (glbHas(type)) glbCarSkin(type, color, livery, g, top, true); return top; }
+  if (rotWheels) { top.add(g); if (autoHas(type)) autoSkin(type, color, livery, g, top, true); else if (glbHas(type)) glbCarSkin(type, color, livery, g, top, true); return top; }
+  if (autoHas(type) && autoSkin(type, color, livery, g, top, false)) { top.add(g); top.userData.lowGeo = null; return top; } /* v.39: kavisli profil gövde (taksi, sedan, SUV, polis) */
   if (glbHas(type) && glbCarSkin(type, color, livery, g, top, false)) { top.add(g); top.userData.lowGeo = null; return top; } /* v.37: hazır GLB model (Kenney Car Kit, CC0) */
   const lo = G0.low, col = new THREE.Color(color), C = new Float32Array(lo.C.length); for (let i = 0; i < lo.M.length; i++) { if (lo.M[i] > 0.5) { const k = lo.C[i * 3]; C[i * 3] = col.r * k; C[i * 3 + 1] = col.g * k; C[i * 3 + 2] = col.b * k; } else { C[i * 3] = lo.C[i * 3]; C[i * 3 + 1] = lo.C[i * 3 + 1]; C[i * 3 + 2] = lo.C[i * 3 + 2]; } }
   const lg = new THREE.BufferGeometry(); lg.setAttribute("position", new THREE.BufferAttribute(lo.P, 3)); lg.setAttribute("normal", new THREE.BufferAttribute(lo.N, 3)); lg.setAttribute("color", new THREE.BufferAttribute(C, 3)); lg.computeBoundingSphere();
@@ -10367,7 +10379,7 @@ function resize() {
   hud.width = Math.round(CW * HDPR); hud.height = Math.round(CH * HDPR); hud.style.width = CW + "px"; hud.style.height = CH + "px";
   camera.aspect = CW / CH; camera.updateProjectionMatrix(); SHOW.cam.aspect = CW / CH; SHOW.cam.updateProjectionMatrix(); if (typeof SHOPST !== "undefined" && SHOPST) placeShopCam();
 }
-function applyQuality() { const q = SV.set.quality || "ultra", low = q === "dusuk", dpr = window.devicePixelRatio || 1, hi = !low; renderer.setPixelRatio(low ? 1 : q === "yuksek" ? Math.min(dpr, 1.5) : Math.min(dpr, 3)); /* v.18: Ultra HD = ekranın gerçek çözünürlüğü */
+function applyQuality() { const q = SV.set.quality || "ultra", low = q === "dusuk", dpr = window.devicePixelRatio || 1, hi = !low; renderer.setPixelRatio(low ? 1 : q === "yuksek" ? Math.min(dpr, 1.5) : Math.min(dpr, IS_MOBILE ? 2 : 3)); /* v.39: telefonda en fazla 2x (bellek taşmasın) */ /* v.18: Ultra HD = ekranın gerçek çözünürlüğü */
   W3.shadowsOn = !low; W3.sun.castShadow = !low; const ms = hi ? 2048 : 1024; if (W3.sun.shadow.mapSize.x !== ms) { W3.sun.shadow.mapSize.set(ms, ms); if (W3.sun.shadow.map) { W3.sun.shadow.map.dispose(); W3.sun.shadow.map = null; } } const ext = hi ? 75 : 50, sc = W3.sun.shadow.camera; sc.left = sc.bottom = -ext; sc.right = sc.top = ext; sc.updateProjectionMatrix(); camera.far = low ? 1500 : 2400; camera.updateProjectionMatrix(); const k = camera.far * 0.8 / 2000; W3.sky.scale.setScalar(k); W3.stars.scale.setScalar(k); resize(); }
 
 /* ---------------- Klavye ---------------- */
@@ -10415,7 +10427,7 @@ addEventListener("blur", () => { for (const k in KEY) KEY[k] = false; for (const
 let joyId = null, joyX = 0, joyY = 0; const JR = 55;
 hud.addEventListener("pointerdown", e => {
   auInit(); document.body.classList.remove("camList"); if (inMinimap(e.clientX, e.clientY)) { e.stopImmediatePropagation(); openMap(); return; } if (G.state !== "play" || e.pointerType === "mouse") return;
-  if (joyId === null && e.clientX < CW * 0.55 && !(document.body.classList.contains("ctrlBtn") && G.pv && !freeCamOn())) { joyId = e.pointerId; joyX = e.clientX; joyY = e.clientY; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; const b = $("joyBase"); b.style.display = "block"; b.style.left = joyX + "px"; b.style.top = joyY + "px"; $("joyKnob").style.transform = ""; try { hud.setPointerCapture(e.pointerId); } catch (er) { } }
+  if (joyId === null && e.clientX < CW * 0.55 && !(document.body.classList.contains("ctrlBtn") && G.pv && !freeCamOn())) { joyId = e.pointerId; joyX = e.clientX; joyY = e.clientY; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; const b = $("joyBase"); b.style.left = joyX + "px"; b.style.top = joyY + "px"; $("joyKnob").style.transform = ""; try { hud.setPointerCapture(e.pointerId); } catch (er) { } }
 });
 hud.addEventListener("pointermove", e => {
   if (e.pointerId !== joyId) return; let dx = e.clientX - joyX, dy = e.clientY - joyY, m = Math.hypot(dx, dy);
@@ -10423,7 +10435,7 @@ hud.addEventListener("pointermove", e => {
   TOUCH.jx = clamp(dx / JR, -1, 1); TOUCH.jy = clamp(dy / JR, -1, 1); TOUCH.jm = Math.min(1, m / JR);
   const kx = m > JR ? dx / m * JR : dx, ky = m > JR ? dy / m * JR : dy; $("joyKnob").style.transform = `translate(${kx}px,${ky}px)`;
 });
-function joyEnd(e) { if (e.pointerId !== joyId) return; joyId = null; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; $("joyBase").style.display = "none"; }
+function joyEnd(e) { if (e.pointerId !== joyId) return; joyId = null; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; const b = $("joyBase"); b.style.left = b.style.top = b.style.display = ""; $("joyKnob").style.transform = ""; } /* v.39: bırakınca sol alttaki yerine döner */
 hud.addEventListener("pointerup", joyEnd); hud.addEventListener("pointercancel", joyEnd);
 document.querySelectorAll(".tbtn").forEach(b => {
   const k = b.dataset.k;
@@ -10789,7 +10801,7 @@ function updateTOD(dt) {
 /* ---------------- Ana güncelleme ---------------- */
 function update(dt) {
   { const pul = !!(G.walker && G.enterPrompt && !G.seq) || !!(G.pv && !G.fare && G.mode !== "race" && G.mode !== "blitz" && Math.hypot(G.pv.vx, G.pv.vz) < 0.5 && G.t - (G.stopT || 0) > 6); if (G.pv && Math.hypot(G.pv.vx, G.pv.vz) > 0.5) G.stopT = G.t; if (G.pulse !== pul) { G.pulse = pul; const eb = document.querySelector('[data-k="enter"]'); if (eb) eb.classList.toggle("pulse", pul); } }
-  { const dr = !!G.pv && G.state === "play"; if (G.drvCls !== dr) { G.drvCls = dr; document.body.classList.toggle("driving", dr); if (dr && document.body.classList.contains("ctrlBtn")) { joyId = null; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; $("joyBase").style.display = "none"; } } }
+  { const dr = !!G.pv && G.state === "play"; if (G.drvCls !== dr) { G.drvCls = dr; document.body.classList.toggle("driving", dr); if (dr && document.body.classList.contains("ctrlBtn")) { joyId = null; TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; const b = $("joyBase"); b.style.left = b.style.top = ""; } } }
   { const wk = !!G.walker; if (G.wkLbl !== wk) { G.wkLbl = wk; const q = k => document.querySelector('[data-k="' + k + '"]'); const L2 = (k, ic, tx) => { const b = q(k); if (b) b.innerHTML = '<i>' + (ic === '✋' ? ICO_ALGIR : ic) + '</i><s>' + tx + '</s>'; }; if (q('nitro')) { L2('nitro', wk ? '🏃' : '🔥', wk ? 'KOŞ' : 'NİTRO'); L2('hb', wk ? '⬆️' : '↪️', wk ? 'ZIPLA' : 'DRİFT'); L2('brake', wk ? '👊' : '🛑', wk ? 'VUR' : 'FREN'); L2('horn', wk ? '✋' : '📯', wk ? 'AL/GİR' : 'KORNA'); } { const cb = q('crouch'); if (cb) cb.style.display = wk ? '' : 'none'; } } }
   G.t += dt; if (saveTimer > 0) { saveTimer -= dt; if (saveTimer <= 0) persist(true); }
   const live = G.state === "play" || G.state === "menu";
@@ -10858,8 +10870,9 @@ setInterval(() => { document.body.classList.toggle("wanted", G.state === "play" 
 
 /* v.18: AL/GİR ve İN/BİN için çizilmiş semboller (emoji yerine) */
 const ICO_INBIN = '<svg viewBox="0 0 48 32" width="34" height="23" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h4l3-8c1-2 2-3 5-3h10c3 0 4 1 6 3l4 4h4c2 0 3 1 3 3v1h-3"/><circle cx="13" cy="24" r="3.4"/><circle cx="34" cy="24" r="3.4"/><path d="M20 11v8h8" stroke="#ffd000"/><path d="M27 6l4 4-4 4" stroke="#ffd000"/><path d="M31 10h-9" stroke="#ffd000"/></svg>';
+const ICO_DOOR = '<svg viewBox="0 0 48 48" width="36" height="36"><path d="M9 26 L17 11 Q18.5 9 21 9 L39 9 Q41 9 41 11 L41 39 Q41 41 39 41 L11 41 Q9 41 9 39 Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/><path d="M14 25 L20 14 Q21 13 22.5 13 L36 13 Q37 13 37 14 L37 25 Z" fill="rgba(255,255,255,.9)"/><rect x="29" y="29" width="8" height="3.2" rx="1.6" fill="#fff"/></svg>';
 const ICO_ALGIR = '<svg viewBox="0 0 40 32" width="30" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="20" y="4" width="15" height="24" rx="2"/><circle cx="31" cy="17" r="1.4" fill="currentColor"/><path d="M4 16h12" stroke="#2bff7a"/><path d="M11 10l6 6-6 6" stroke="#2bff7a"/></svg>';
-{ const eb = document.querySelector('[data-k="enter"]'); if (eb) eb.innerHTML = '<i>' + ICO_INBIN + '</i><s>İN/BİN</s>'; }
+{ const eb = document.querySelector('[data-k="enter"]'); if (eb) eb.innerHTML = ICO_DOOR; } /* v.39: yuvarlatılmış kare + araba kapısı simgesi */
 
 /* =====================================================================
    GİZLİ PARA PAKETLERİ + POLİSTEN SAKLANMA (v.08)
@@ -10936,7 +10949,7 @@ function carLocal(v, lx, lz) { const ca = Math.cos(v.a), sa = Math.sin(v.a); ret
 function cabinOf(v) { return v.mesh.userData.cabin || null; }
 function standPoint(v) { const ci = cabinOf(v); const st = ci ? ci.stand : [0, -(v.w / 2 + 0.8)]; return carLocal(v, st[0], st[1]); }
 function seatPoint(v) { const ci = cabinOf(v); const s = ci ? ci.seat : [0, 0.6, -0.38]; const [x, z] = carLocal(v, s[0], s[2]); return [x, v.y + s[1], z]; }
-function setDoor(v, k) { v.door = clamp(k, 0, 1); const ud = v.mesh.userData; if (ud.door) { const e = v.door < 0.5 ? 2 * v.door * v.door : 1 - Math.pow(-2 * v.door + 2, 2) / 2; ud.door.rotation.y = -e * DOOR_OPEN; ud.doorPatch.visible = v.door > 0.02; } }
+function setDoor(v, k) { v.door = clamp(k, 0, 1); const ud = v.mesh.userData; if (ud.door) { const e = v.door < 0.5 ? 2 * v.door * v.door : 1 - Math.pow(-2 * v.door + 2, 2) / 2; ud.door.rotation.y = -e * (ud.doorMax || DOOR_OPEN); ud.doorPatch.visible = v.door > 0.02; } }
 /* oyuncunun arabasını detaylı modele çevir (kapı + iç mekan) */
 function upgradeMesh(v) {
   if (v.mesh.userData.cabin || !v.mesh.userData.lowGeo && v.mesh.userData.wheels.length) return;
@@ -13724,7 +13737,7 @@ function updatePedLife(dt) { PLIFE.t -= dt; const f = focusPt(); if (!f || !G.pe
 function initPedLife() { PLIFE.plz = []; for (const l of LANDMARKS) { if (!l.r || l.park || l.id === "stadium") continue; PLIFE.plz.push({ y0: heightAt(l.x, l.z), f: { x: l.x, z: l.z, r: l.r * 0.85 }, list: [], chat: 0 }); } for (const p of PARKS) PLIFE.plz.push({ y0: heightAt(p.x, p.z), f: { x: p.x, z: p.z, r: p.r * 0.8 }, list: [], chat: 1 }); }
 /* ---------------- v.27 kurulum + güncelleme kancaları ---------------- */
 function buildCity27() { const T = (n, f) => { try { f(); } catch (e) { console.error("v27 " + n, e); } }; T("park", buildParkLandscape); T("stad", buildStadiumPlus); T("fans", buildFanStuff); T("stad28", buildStadium28); T("ped", initPedLife); T("bus", initBusLife); T("civic", () => { for (const C of CIVIC) { if (!C.lot) continue; if (C.kind === "hastane") hospitalExtras(C); else if (C.kind === "karakol") policeExtras(C); } for (const R of CIVIC_RES) if (!R.used) buildPublicLot(R); }); T("avm", () => { for (const B of BINS) if (B.style === "avm") avmFacade(B); }); T("play36", buildPlay36); }
-function updateCity27(dt) { updatePlay36(dt); updateParkLandscape(); updateStadiumPlus(dt); updateStadium28(dt); updateFans(); updateTraffic27(); updatePedLife(dt); updateAvmX(dt); updateStandX(); updateBusLife(dt); updateCivX(dt); }
+function updateCity27(dt) { updatePlay36(dt); autoUpdate(dt); updateParkLandscape(); updateStadiumPlus(dt); updateStadium28(dt); updateFans(); updateTraffic27(); updatePedLife(dt); updateAvmX(dt); updateStandX(); updateBusLife(dt); updateCivX(dt); }
 /* ---------------- 7 BÜYÜK AVM: 3 kat, atrium, yürüyen merdiven, mağazalar, yemek katı ---------------- */
 const AVM_SHOPS = [
   [["TEKNOLOJİ", "#1d4fd8", null, "📱 💻 🎧 📺"], ["MODA", "#d6457a", "butik", "👕 👗 👜"], ["SPOR", "#e2512a", "butik", "👟 ⚽ 🏀"], ["KİTABEVİ", "#3aa876", null, "📚 📖 ✏"], ["KAFE", "#6a4420", "lokanta", "☕ 🍰 🥐"]],
@@ -14345,7 +14358,145 @@ function glbCarSkin(type, color, livery, g, top, rot) { const C = GLBX.cars[GLB_
     if (tb) { const c = tb.getCenter(new THREE.Vector3()); for (const k of ["gr", "gb"]) if (g.userData[k]) g.userData[k].position.set(c.x, tb.max.y + 0.08, k === "gr" ? -0.35 : 0.35); } }
   if (type === "dolmus") { const dm = cmat("dolmusTxt", () => new THREE.MeshStandardMaterial({ map: plainText("DOLMUŞ", "#111111", "#ffd000", 256, 64), roughness: 0.4 })); const s2 = new THREE.Mesh(geoBox(0.08, 0.28, 1.0), dm); s2.position.set(hl * 0.55, H + 0.16, 0); g.add(s2); }
   return true; }
-function glbRefreshCars() { if (!G.veh) return; for (const v of G.veh) { if (!glbHas(v.type) || !v.mesh || v.mesh.userData.glb) continue; const rot = !!v.mesh.userData.cabin, old = v.mesh; v.mesh = makeCarMesh(v.type, v.color, rot, v.isTaxi && v.type !== "taxi"); scene.add(v.mesh); const cone = makeHeadCone(); v.mesh.add(cone); cone.position.x = VT[v.type].l / 2 - 0.3; v.cone = cone; scene.remove(old); if (old.userData.lowGeo) old.userData.lowGeo.dispose(); if (old.userData.seated) old.userData.seated = null; syncMesh(v); } }
+function glbRefreshCars() { if (!G.veh) return; for (const v of G.veh) { if (autoHas(v.type) || !glbHas(v.type) || !v.mesh || v.mesh.userData.glb) continue; const rot = !!v.mesh.userData.cabin, old = v.mesh; v.mesh = makeCarMesh(v.type, v.color, rot, v.isTaxi && v.type !== "taxi"); scene.add(v.mesh); const cone = makeHeadCone(); v.mesh.add(cone); cone.position.x = VT[v.type].l / 2 - 0.3; v.cone = cone; scene.remove(old); if (old.userData.lowGeo) old.userData.lowGeo.dispose(); if (old.userData.seated) old.userData.seated = null; syncMesh(v); } }
+
+/* =====================================================================
+   v.39 — YENİ ARAÇ GÖVDELERİ (kutu yok): yandan tek parça kavisli profil
+   (THREE.Shape + bezierCurveTo) → ExtrudeGeometry (bevel 4 kademe).
+   • Tesla Model Y/3 tarzı TAKSİ: fastback, tek parça siyah panoramik cam
+     tavan, kapalı burun, ince LED farlar, LED stop barı, 10 kollu jant,
+     ışıklı TAKSİ tabelası, kapılarda TAKSİ yazısı, sarı arka plaka,
+     sürücü kapısı ve sağ arka yolcu kapısı 45° açılır.
+   • Spor sedan (sedan, hatchback, klasik, spor, cabrio): alçak burun,
+     yatık cam, boyalı tavan, bagaj spoyleri; trafikte gece mavisi, gümüş,
+     bordo, beyaz, siyah tonları.
+   • SUV / cip: yüksek şasi, büyük teker, siyah çamurluk kemerleri, krom
+     tavan rayları, koyu camlar, arkada yedek lastik.
+   • Polis: spor sedan gövde, beyaz + lacivert/mavi şerit, POLİS yazısı,
+     yıldız amblemi, şeffaf kasalı LED çakar, asfalta kırmızı-mavi yansıma.
+   Hepsinde: tekerlek merkezi y = r, alt temas gölgesi, ayna, plaka, cam
+   ardında koltuk + direksiyon silüeti. Işık / sinyal / fren / hasar /
+   kabin sistemleri eski araçtaki gibi çalışır.
+   ===================================================================== */
+const AUTO_MAP = { taxi: "tesla", sedan: "sedan", hatch: "sedan", klasik: "sedan", sport: "sedan", cabrio: "sedan", police: "police", suv: "suv" };
+const AUTO = { geo: {}, mat: {} };
+const AUTO_PAL = ["#1b2a4a", "#b8bec8", "#6a1426", "#f2f2f4", "#121216", "#24365e", "#8d939c", "#3a3d44"];
+function autoHas(type) { return !!AUTO_MAP[type]; }
+function autoMat(k, f) { if (AUTO.mat[k]) return AUTO.mat[k]; const m = AUTO.mat[k] = f(); if (m && m.isMaterial) CMAT["auto_" + k] = m; else if (m) for (const q in m) if (m[q] && m[q].isMaterial) CMAT["auto_" + k + "_" + q] = m[q]; return m; } /* ortak malzemeler: araç silinince yok edilmesin */
+
+/* ---- profiller (x: ileri +, y: yukarı; bevel 0.1 hesaba katılmış) ---- */
+function autoDims(type) { const t = VT[type], k = AUTO_MAP[type], suv = k === "suv";
+  const L = t.l, W = t.w, H = suv ? Math.max(1.72, t.h) : Math.max(1.4, Math.min(1.48, t.h + 0.02)), r = suv ? 0.42 : 0.345, yb = suv ? 0.4 : 0.2, xf = L / 2, xr = -L / 2;
+  return { L, W, H, r, yb, xf, xr, xF: xf - (suv ? 0.92 : 0.9), xR: xr + (suv ? 0.95 : 0.98), suv, kind: k }; }
+function autoBodyShape(D) { const { xf, xr, xF, xR, r, H, suv, kind } = D, ra = r + 0.06, yb = D.yb + 0.1, s = new THREE.Shape(), b = 0.1;
+  const X = x => x > 0 ? x - b : x + b; /* bevel payı */
+  if (suv) { const belt = 1.12;
+    s.moveTo(X(xr) + 0.2, yb); s.lineTo(xR - ra, yb); s.lineTo(xR - ra, r); s.absarc(xR, r, ra, Math.PI, 0, true); s.lineTo(xF - ra, yb); s.lineTo(xF - ra, r); s.absarc(xF, r, ra, Math.PI, 0, true); s.lineTo(X(xf) - 0.25, yb);
+    s.bezierCurveTo(X(xf) - 0.05, yb, X(xf), yb + 0.12, X(xf), 0.6); s.bezierCurveTo(X(xf), 0.92, X(xf) - 0.06, 1.02, X(xf) - 0.3, 1.06);
+    s.bezierCurveTo(X(xf) - 0.7, 1.1, X(xf) - 1.0, 1.12, X(xf) - 1.28, belt); s.lineTo(X(xr) + 0.2, belt + 0.02); s.bezierCurveTo(X(xr) + 0.05, belt + 0.02, X(xr), belt - 0.06, X(xr), 0.95);
+    s.lineTo(X(xr), 0.6); s.bezierCurveTo(X(xr), yb + 0.1, X(xr) + 0.05, yb, X(xr) + 0.2, yb); return { s, belt, xW: X(xf) - 1.28 }; }
+  const tesla = kind === "tesla", belt = tesla ? 0.9 : 0.86, xW = X(xf) - (tesla ? 1.38 : 1.48);
+  s.moveTo(X(xr) + 0.3, yb); s.lineTo(xR - ra, yb); s.lineTo(xR - ra, r); s.absarc(xR, r, ra, Math.PI, 0, true); s.lineTo(xF - ra, yb); s.lineTo(xF - ra, r); s.absarc(xF, r, ra, Math.PI, 0, true); s.lineTo(X(xf) - 0.35, yb);
+  /* alçak yuvarlak burun → kaput → ön cam dibi */
+  s.bezierCurveTo(X(xf) - 0.08, yb, X(xf), yb + 0.12, X(xf), tesla ? 0.42 : 0.4); s.bezierCurveTo(X(xf), tesla ? 0.6 : 0.56, X(xf) - 0.16, tesla ? 0.68 : 0.64, X(xf) - 0.5, tesla ? 0.72 : 0.68);
+  s.bezierCurveTo(X(xf) - 0.9, tesla ? 0.77 : 0.73, xW + 0.25, belt - 0.03, xW, belt);
+  /* bel çizgisi → bagaj → kalkık spoyler dudağı */
+  const xd = X(xr) + (tesla ? 0.34 : 0.62); s.lineTo(xd, belt + (tesla ? 0.12 : 0.1)); s.bezierCurveTo(xd - 0.12, belt + 0.13, X(xr) + 0.1, belt + 0.13, X(xr) + 0.04, belt + 0.19);
+  s.bezierCurveTo(X(xr) - 0.02, belt + 0.12, X(xr), belt, X(xr), belt - 0.15); s.lineTo(X(xr), 0.45); s.bezierCurveTo(X(xr), yb + 0.08, X(xr) + 0.08, yb, X(xr) + 0.3, yb);
+  return { s, belt, xW, xd }; }
+function autoGlassShape(D, B) { const { xr, H, suv, kind } = D, s = new THREE.Shape(), xW = B.xW, belt = B.belt, top = H - 0.12;
+  if (suv) { s.moveTo(xW + 0.06, belt - 0.04); s.bezierCurveTo(xW - 0.25, belt + 0.2, xW - 0.5, top - 0.06, xW - 0.82, top); s.lineTo(xr + 0.55, top - 0.03); s.bezierCurveTo(xr + 0.32, top - 0.05, xr + 0.24, top - 0.2, xr + 0.2, belt + 0.02); s.lineTo(xr + 0.2, belt - 0.04); s.closePath(); return s; }
+  if (kind === "tesla") { s.moveTo(xW + 0.08, belt - 0.04); s.bezierCurveTo(xW - 0.3, belt + 0.18, xW - 0.62, top - 0.02, xW - 1.05, top); s.bezierCurveTo(xW - 1.75, top + 0.01, B.xd + 0.85, top - 0.12, B.xd + 0.05, belt + 0.12); s.lineTo(B.xd + 0.05, belt - 0.04); s.closePath(); return s; }
+  s.moveTo(xW + 0.08, belt - 0.04); s.bezierCurveTo(xW - 0.32, belt + 0.16, xW - 0.62, top - 0.03, xW - 1.0, top); s.bezierCurveTo(xW - 1.6, top + 0.01, B.xd + 0.7, top - 0.06, B.xd + 0.05, belt + 0.1); s.lineTo(B.xd + 0.05, belt - 0.04); s.closePath(); return s; }
+let AUTO_LITE = false; function autoExtrude(shape, depth, bev) { const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: bev ? bev[0] : 0.12, bevelSize: bev ? bev[1] : 0.1, bevelSegments: AUTO_LITE ? 2 : 4, curveSegments: AUTO_LITE ? 5 : 9 }); g.translate(0, 0, -depth / 2); g.computeVertexNormals(); return g; }
+/* tavan kabuğu (boyalı tavan): cam üst kavisini izleyen ince şerit */
+function autoRoofShape(D, B) { const { xr, H } = D, xW = B.xW, top = H - 0.12 + 0.02, s = new THREE.Shape(), a = D.suv ? xW - 0.85 : xW - 0.95, e = D.suv ? xr + 0.5 : B.xd + 0.75; s.moveTo(a, top - 0.05); s.lineTo(a + 0.05, top + 0.035); s.bezierCurveTo((a + e) / 2 + 0.3, top + 0.06, (a + e) / 2 - 0.3, top + 0.06, e, top - (D.suv ? 0.0 : 0.06)); s.lineTo(e - 0.05, top - 0.1); s.bezierCurveTo((a + e) / 2, top - 0.02, (a + e) / 2, top - 0.02, a, top - 0.05); return s; }
+function autoWheelGeos(r, spokes) { const w = 0.25, Ls = AUTO_LITE, tire = new THREE.CylinderGeometry(r, r, w, Ls ? 12 : 20, 1).rotateX(Math.PI / 2), side = Ls ? new THREE.CylinderGeometry(r * 0.9, r * 0.9, 0.01, 12).rotateX(Math.PI / 2).translate(0, 0, w / 2 + 0.002) : new THREE.TorusGeometry(r * 0.83, r * 0.14, 4, 20).translate(0, 0, w / 2 - 0.02),
+    rimL = []; rimL.push(new THREE.CylinderGeometry(r * 0.7, r * 0.7, 0.03, Ls ? 12 : 20).rotateX(Math.PI / 2).translate(0, 0, w / 2 - 0.035)); if (!Ls) rimL.push(new THREE.TorusGeometry(r * 0.66, 0.018, 4, 20).translate(0, 0, w / 2 + 0.005)); if (Ls) spokes = Math.min(spokes, 5);
+    for (let k = 0; k < spokes; k++) { const a = k / spokes * TAU; rimL.push(new THREE.BoxGeometry(r * 0.56, 0.045, 0.03).translate(r * 0.33, 0, 0).rotateZ(a).translate(0, 0, w / 2 + 0.005)); }
+    rimL.push(new THREE.CylinderGeometry(r * 0.14, r * 0.16, 0.06, 8).rotateX(Math.PI / 2).translate(0, 0, w / 2 + 0.01));
+    const hub = new THREE.CylinderGeometry(r * 0.64, r * 0.64, 0.02, 14).rotateX(Math.PI / 2).translate(0, 0, w / 2 - 0.05);
+    return { tire: mergeGeos([tire, side].map(g => g.index ? g.toNonIndexed() : g)), rim: mergeGeos(rimL.map(g => g.index ? g.toNonIndexed() : g)), hub }; }
+function autoGeos(type, lite) { const key = type + (lite ? "_l" : ""); if (AUTO.geo[key]) return AUTO.geo[key]; AUTO_LITE = !!lite; const D = autoDims(type), B = autoBodyShape(D), body = autoExtrude(B.s, D.W - 0.24), gs = autoGlassShape(D, B), Wg = D.W * (D.suv ? 0.84 : 0.8), glass = autoExtrude(gs, Wg - 0.24),
+    roof = D.kind === "tesla" ? null : autoExtrude(autoRoofShape(D, B), Wg * 0.94 - 0.24, [0.12, 0.03]), wh = autoWheelGeos(D.r, D.kind === "tesla" ? 10 : D.suv ? 5 : 10);
+  /* iç mekân silüeti: koltuklar + direksiyon */ const xW = B.xW, ins = [], sy = B.belt - 0.38; for (const z of [-0.36, 0.36]) { ins.push(new THREE.BoxGeometry(0.16, 0.6, 0.46).translate(xW - 0.95, sy + 0.32, z)); ins.push(new THREE.BoxGeometry(0.5, 0.12, 0.46).translate(xW - 0.72, sy, z)); }
+  ins.push(new THREE.BoxGeometry(0.16, 0.55, D.W * 0.72).translate(xW - 1.85, sy + 0.28, 0)); ins.push(new THREE.TorusGeometry(0.17, 0.025, 4, 12).rotateY(Math.PI / 2).rotateZ(-0.45).translate(xW - 0.38, B.belt + 0.02, -0.36)); ins.push(new THREE.BoxGeometry(0.4, 0.14, D.W * 0.8).translate(xW - 0.15, B.belt - 0.12, 0));
+  const interior = mergeGeos(ins.map(g => g.index ? g.toNonIndexed() : g));
+  const wheels = [[D.xF, D.r, D.W / 2 - 0.16, 1], [D.xF, D.r, -(D.W / 2 - 0.16), -1], [D.xR, D.r, D.W / 2 - 0.16, 1], [D.xR, D.r, -(D.W / 2 - 0.16), -1]];
+  const merged = {}; for (const k of ["tire", "rim", "hub"]) merged[k] = mergeGeos(wheels.map(([x, y, z, s]) => { let q = wh[k].clone(); if (q.index) q = q.toNonIndexed(); if (s < 0) q.rotateY(Math.PI); return q.translate(x, y, z); }));
+  AUTO_LITE = false; return (AUTO.geo[key] = { D, B, body, glass, roof, wh, interior, wheels, merged, Wg }); }
+
+/* ---- malzemeler ---- */
+function autoPaint(col, taxi) { return autoMat("paint" + col + (taxi ? "t" : ""), () => new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col), metalness: taxi ? 0.15 : 0.38, roughness: taxi ? 0.18 : 0.2, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.5 })); }
+function autoMats() { return autoMat("base", () => ({
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x0a0f18, metalness: 0.55, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.02, envMapIntensity: 2.2, transparent: true, opacity: 0.86 }),
+  trim: new THREE.MeshStandardMaterial({ color: 0x0c0d10, roughness: 0.85, metalness: 0.1 }), tire: new THREE.MeshStandardMaterial({ color: 0x1b1c1f, roughness: 0.92 }), hub: new THREE.MeshStandardMaterial({ color: 0x2a2c31, roughness: 0.6, metalness: 0.4 }),
+  rim: new THREE.MeshStandardMaterial({ color: 0xdfe3ea, metalness: 0.92, roughness: 0.16, envMapIntensity: 1.8 }), chrome: new THREE.MeshStandardMaterial({ color: 0xe8ebf0, metalness: 0.95, roughness: 0.12 }),
+  led: new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xeef6ff, emissiveIntensity: 1.6, roughness: 0.2 }), inside: new THREE.MeshStandardMaterial({ color: 0x1c1d22, roughness: 0.8 }),
+  plateW: new THREE.MeshStandardMaterial({ map: autoPlateTex("#f4f4f4", "34 ABC 26"), roughness: 0.5 }), plateY: new THREE.MeshStandardMaterial({ map: autoPlateTex("#ffd21f", "34 T 2026"), roughness: 0.5 }),
+  shadowAO: null })); }
+function autoPlateTex(bg, txt) { const c = mkCanvas(256, 56), x = c.getContext("2d"); x.fillStyle = bg; x.fillRect(0, 0, 256, 56); x.fillStyle = "#2a56c6"; x.fillRect(0, 0, 30, 56); x.fillStyle = "#fff"; x.font = "700 16px sans-serif"; x.fillText("TR", 4, 46); x.fillStyle = "#111"; x.font = "900 34px sans-serif"; x.textAlign = "center"; x.fillText(txt, 143, 41); x.strokeStyle = "#111"; x.lineWidth = 3; x.strokeRect(1.5, 1.5, 253, 53); return canvasTex(c); }
+function autoDecalTex(key, draw, w, h) { return autoMat("tex" + key, () => { const c = mkCanvas(w, h), x = c.getContext("2d"); draw(x, w, h); return canvasTex(c); }); }
+
+/* ---- kapı paneli (yan yüzeye oturan ince kabuk) ---- */
+function autoDoorGeo(D, B, x0, x1, side) { const s = new THREE.Shape(), yb = D.yb + 0.14, bt = B.belt; s.moveTo(x0, yb); s.lineTo(x1, yb); s.lineTo(x1, bt - 0.02); s.lineTo(x0, bt - 0.02); s.closePath(); const g = new THREE.ExtrudeGeometry(s, { depth: 0.035, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.02, bevelSegments: 2 }); g.translate(-x1, 0, side > 0 ? 0 : -0.035); return g; }
+
+/* ---- ana giydirme: eski aracın sistemleri kalır, dış görünüş değişir ---- */
+function autoSkin(type, color, livery, g, top, rot) { const A = autoGeos(type, !rot), D = A.D, B = A.B, M = autoMats(), kind = D.kind, taxi = type === "taxi" || livery, police = kind === "police";
+  const keepM = [cmat("interior", () => null), cmat("beam", () => null)]; for (const o of g.children) { if (o === g.userData.door) { o.traverse(q => { if (q.isMesh) q.visible = false; }); continue; } if (o.isMesh && keepM.includes(o.material)) continue; o.visible = false; }
+  let col = color; if (type === "taxi") col = "#f5b800"; else if (police) col = "#f6f7fb"; else if (!rot && AUTO_MAP[type] === "sedan") { let h = 0; for (const ch of String(color)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; col = AUTO_PAL[h % AUTO_PAL.length]; }
+  const paint = rot ? new THREE.MeshPhysicalMaterial({ color: new THREE.Color(col), metalness: taxi ? 0.15 : 0.38, roughness: taxi ? 0.18 : 0.2, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.5 }) : autoPaint(col, taxi);
+  const S = new THREE.Group(); S.name = "autoSkin"; g.add(S); const add = (geo, m, cast) => { const o = new THREE.Mesh(geo, m); o.castShadow = cast !== false; o.receiveShadow = true; S.add(o); return o; };
+  add(A.body, paint); const gl = add(A.glass, M.glass); gl.renderOrder = 2; if (A.roof) add(A.roof, paint); add(A.interior, M.inside, false);
+  /* bel çizgisi + kapı aralığı trim (mat siyah) */ const half = D.W / 2, xW = B.xW, bt = B.belt, xd = B.xd || D.xr + 0.25;
+  for (const sd of [1, -1]) { const tr = new THREE.Mesh(new THREE.BoxGeometry(xW - xd, 0.045, 0.03), M.trim); tr.position.set((xW + xd) / 2, bt + 0.01, sd * (A.Wg / 2 + 0.005)); S.add(tr);
+    for (const xs of [xW - 1.15, xW - 2.15]) { if (D.suv && xs < D.xr + 0.6) continue; const sl = new THREE.Mesh(new THREE.BoxGeometry(0.018, bt - D.yb - 0.18, 0.012), M.trim); sl.position.set(xs, (bt + D.yb + 0.18) / 2, sd * (half + 0.004)); S.add(sl); }
+    const bp = new THREE.Mesh(new THREE.BoxGeometry(0.07, H0(D) - bt - 0.1, 0.02), M.trim); bp.position.set(xW - 1.15, bt + (H0(D) - bt - 0.1) / 2, sd * (A.Wg / 2 + 0.01)); S.add(bp);
+    /* ayna */ const mr = new THREE.Mesh(roundBox(0.2, 0.12, 0.14, 0.05), paint); mr.position.set(xW - 0.12, bt + 0.06, sd * (half + 0.1)); S.add(mr); const ms = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.14), M.trim); ms.position.set(xW - 0.08, bt + 0.0, sd * (half + 0.02)); S.add(ms);
+    /* ince LED far */ const hl = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.05, 0.42), M.led); hl.position.set(D.xf - (D.suv ? 0.12 : 0.24), D.suv ? 0.92 : 0.58, sd * (half - 0.32)); hl.rotation.z = D.suv ? 0 : -0.12; S.add(hl); const hh = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.1, 0.46), M.trim); hh.position.copy(hl.position).add(new THREE.Vector3(-0.02, -0.03, 0)); hh.rotation.z = hl.rotation.z; S.add(hh); }
+  /* LED stop barı + köşe stoplar */ const tail = new THREE.MeshStandardMaterial({ color: 0x5a0610, emissive: 0xff1020, emissiveIntensity: 0.35, roughness: 0.25 }); const ty = D.suv ? 1.0 : bt + 0.02;
+  { const bar = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, D.W * 0.86), tail); bar.position.set(D.xr - 0.005, ty - 0.03, 0); S.add(bar); for (const sd of [1, -1]) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.38), tail); c.position.set(D.xr + 0.0, ty - 0.05, sd * (half - 0.26)); S.add(c); } }
+  /* alt detaylar: siyah marşpiyel, ön hava girişi, arka difüzör → yan yüzey ince görünür */
+  for (const sd of [1, -1]) { const sl = new THREE.Mesh(new THREE.BoxGeometry(D.xF - D.xR - 2 * (D.r + 0.16), D.suv ? 0.16 : 0.12, 0.03), M.trim); sl.position.set((D.xF + D.xR) / 2, D.yb + (D.suv ? 0.12 : 0.08), sd * (half + 0.004)); S.add(sl); }
+  { const fi = new THREE.Mesh(new THREE.BoxGeometry(0.04, D.suv ? 0.2 : 0.08, D.W * 0.62), M.trim); fi.position.set(D.xf + 0.0, D.suv ? 0.42 : 0.3, 0); S.add(fi); const df = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, D.W * 0.7), M.trim); df.position.set(D.xr - 0.005, D.yb + 0.12, 0); S.add(df); }
+  /* plakalar */ { const pf = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.12), M.plateW); pf.position.set(D.xf + 0.005, D.suv ? 0.5 : 0.32, 0); pf.rotation.y = Math.PI / 2; S.add(pf); const pr = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.12), taxi ? M.plateY : M.plateW); pr.position.set(D.xr - 0.005, D.suv ? 0.62 : 0.55, 0); pr.rotation.y = -Math.PI / 2; S.add(pr); }
+  /* tekerlekler: merkez y = r */ const wm = []; if (rot) { g.userData.wheels = []; for (const [x, y, z, s] of A.wheels) { const pv = new THREE.Group(); pv.position.set(x, y, z); const w = new THREE.Group(); for (const [k, m] of [["tire", M.tire], ["rim", M.rim], ["hub", M.hub]]) { const o = new THREE.Mesh(A.wh[k], m); o.castShadow = true; w.add(o); } if (s < 0) w.rotation.y = Math.PI; pv.add(w); pv.userData.s = 1; pv.userData.front = x > 0; S.add(pv); g.userData.wheels.push(pv); wm.push(pv); } }
+  else { add(A.merged.tire, M.tire); add(A.merged.rim, M.rim, false); add(A.merged.hub, M.hub, false); }
+  /* SUV: çamurluk kemerleri, krom tavan rayları, yedek lastik */
+  if (D.suv) { for (const [xc] of [[D.xF], [D.xR]]) for (const sd of [1, -1]) { const ra = D.r + 0.16, s = new THREE.Shape(); s.absarc(0, 0, ra + 0.1, 0, Math.PI, false); s.absarc(0, 0, ra - 0.005, Math.PI, 0, true); const fg = AUTO.geo["flare" + type + rot] || (AUTO.geo["flare" + type + rot] = new THREE.ExtrudeGeometry(s, { depth: 0.06, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 1, curveSegments: 10 })); const f = new THREE.Mesh(fg, M.trim); f.position.set(xc, D.r, sd > 0 ? half - 0.02 : -half - 0.04); S.add(f); }
+    const ry = D.H - 0.06, x0 = xW - 0.75, x1 = D.xr + 0.5; for (const sd of [1, -1]) { const z = sd * A.Wg * 0.4, rail = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, x0 - x1, 8).rotateZ(Math.PI / 2), M.chrome); rail.position.set((x0 + x1) / 2, ry + 0.09, z); S.add(rail); for (const xp of [x0 - 0.05, (x0 + x1) / 2, x1 + 0.05]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.05), M.chrome); p.position.set(xp, ry + 0.045, z); S.add(p); } }
+    const sp = new THREE.Group(); sp.position.set(D.xr - 0.14, 0.98, 0); sp.rotation.y = -Math.PI / 2; for (const [k, m] of [["tire", M.tire], ["hub", M.hub]]) sp.add(new THREE.Mesh(A.wh[k], m)); const cv = new THREE.Mesh(new THREE.CylinderGeometry(D.r * 0.98, D.r * 0.98, 0.27, 26).rotateX(Math.PI / 2), M.trim); sp.add(cv); sp.scale.setScalar(0.9); S.add(sp); }
+  /* sedan: bagaj spoyleri */ if (kind === "sedan" || police) { const sp = new THREE.Mesh(roundBox(0.18, 0.03, D.W * 0.78, 0.012), paint); sp.position.set(D.xr + 0.12, bt + 0.2, 0); sp.rotation.z = 0.12; S.add(sp); }
+  /* TAKSİ: ışıklı tepe tabelası + kapı yazısı */
+  if (taxi) { const tm = autoMat("taksiSign", () => new THREE.MeshStandardMaterial({ map: texText("TAKSİ", "#ffd000", "#111", 256, 80), emissive: 0xffffff, emissiveMap: texText("TAKSİ", "#fff3b0", "#000", 256, 80), emissiveIntensity: 0.9, roughness: 0.3 })), bk = M.trim;
+    const tyy = H0(D) - 0.12 + 0.02, sx = xW - (kind === "tesla" ? 1.15 : 1.05); const frame = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.3, 1.02), bk); frame.position.set(sx, tyy + 0.17, 0); S.add(frame); const sg = new THREE.Mesh(new THREE.BoxGeometry(0.37, 0.24, 0.9), [tm, tm, autoMat("signTop", () => new THREE.MeshStandardMaterial({ color: 0xffd21f, emissive: 0xffc000, emissiveIntensity: 0.5 })), bk, bk, bk]); sg.position.set(sx, tyy + 0.18, 0); S.add(sg); g.userData.taxiSign = tm;
+    const dt = autoDecalTex("taksiDoor", (x, w, h) => { x.clearRect(0, 0, w, h); x.fillStyle = "#111"; x.fillRect(0, h - 14, w, 10); x.font = "900 62px sans-serif"; x.textAlign = "center"; x.fillText("TAKSİ", w / 2, h - 26); }, 512, 96), dm = autoMat("taksiDoorM", () => new THREE.MeshStandardMaterial({ map: dt, transparent: true, polygonOffset: true, polygonOffsetFactor: -3, roughness: 0.4 }));
+    for (const sd of [1, -1]) { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.32), dm); p.position.set(xW - 1.2, D.yb + 0.42, sd * (half + (rot ? 0.042 : 0.006))); p.rotation.y = sd > 0 ? 0 : Math.PI; S.add(p); } }
+  /* POLİS: şerit, yazı, yıldız, şeffaf LED çakar, asfalta yansıma */
+  if (police) { const st = autoMat("polStripe", () => new THREE.MeshStandardMaterial({ color: 0x14307a, roughness: 0.35, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -2 })), st2 = autoMat("polStripe2", () => new THREE.MeshStandardMaterial({ color: 0x2f7be8, roughness: 0.35, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -2 }));
+    const pt = autoMat("polTxt", () => new THREE.MeshStandardMaterial({ map: autoDecalTex("polisT", (x, w, h) => { x.clearRect(0, 0, w, h); x.fillStyle = "#ffffff"; x.font = "900 70px sans-serif"; x.textAlign = "center"; x.fillText("POLİS", w / 2, 78); }, 512, 100), transparent: true, polygonOffset: true, polygonOffsetFactor: -4 }));
+    const star = autoMat("polStar", () => new THREE.MeshStandardMaterial({ map: autoDecalTex("polStarT", (x, w, h) => { x.clearRect(0, 0, w, h); x.fillStyle = "#14307a"; x.beginPath(); x.arc(64, 64, 60, 0, TAU); x.fill(); x.fillStyle = "#ffd21f"; x.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 18 : 44; x.lineTo(64 + Math.cos(a) * rr, 64 + Math.sin(a) * rr); } x.closePath(); x.fill(); x.strokeStyle = "#ffd21f"; x.lineWidth = 5; x.beginPath(); x.arc(64, 64, 54, 0, TAU); x.stroke(); }, 128, 128), transparent: true, polygonOffset: true, polygonOffsetFactor: -4 }));
+    for (const sd of [1, -1]) { const rz = sd > 0 ? 0 : Math.PI, z = sd * (half + 0.005); const s1 = new THREE.Mesh(new THREE.PlaneGeometry(D.L - 0.7, 0.26), st); s1.position.set(0.05, D.yb + 0.36, z); s1.rotation.y = rz; S.add(s1); const s2 = new THREE.Mesh(new THREE.PlaneGeometry(D.L - 0.8, 0.07), st2); s2.position.set(0.05, D.yb + 0.54, z * 1.0005); s2.rotation.y = rz; S.add(s2);
+      const tx = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.25), pt); tx.position.set(xW - 1.45, D.yb + 0.36, sd * (half + (rot ? 0.043 : 0.007))); tx.rotation.y = rz; S.add(tx); const sr = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.34), star); sr.position.set(xW - 0.55, D.yb + 0.48, sd * (half + (rot ? 0.043 : 0.007))); sr.rotation.y = rz; S.add(sr); }
+    const ry = H0(D) - 0.1 + 0.03, rx = xW - 1.12, house = new THREE.Mesh(roundBox(0.3, 0.13, 1.2, 0.05), autoMat("lbHouse", () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.28, roughness: 0.05, clearcoat: 1, depthWrite: false })));
+    house.position.set(rx, ry + 0.08, 0); house.renderOrder = 4; S.add(house); const base = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.04, 1.22), M.trim); base.position.set(rx, ry + 0.01, 0); S.add(base);
+    const lr = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.5), new THREE.MeshBasicMaterial({ color: 0xff1030 })), lb = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.08, 0.5), new THREE.MeshBasicMaterial({ color: 0x1040ff })); lr.position.set(rx, ry + 0.08, -0.29); lb.position.set(rx, ry + 0.08, 0.29); S.add(lr); S.add(lb);
+    if (g.userData.lr) g.userData.lr.visible = false; if (g.userData.lb) g.userData.lb.visible = false; g.userData.lr = lr; g.userData.lb = lb;
+    for (const k of ["gr", "gb"]) if (g.userData[k]) g.userData[k].position.set(rx, ry + 0.12, k === "gr" ? -0.29 : 0.29);
+    const gm = k => autoMat("polGround" + k, () => new THREE.MeshBasicMaterial({ map: texRadial(k === "r" ? "rgba(255,40,60,1)" : "rgba(40,90,255,1)"), transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -8 }));
+    const grR = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 4).rotateX(-Math.PI / 2), gm("r").clone()), grB = new THREE.Mesh(new THREE.PlaneGeometry(5.5, 4).rotateX(-Math.PI / 2), gm("b").clone()); grR.position.set(0, 0.05, -2.2); grB.position.set(0, 0.05, 2.2); grR.renderOrder = grB.renderOrder = 2; top.add(grR); top.add(grB); g.userData.polGround = [grR, grB]; }
+  /* kapılar: sürücü (sol ön, binerken) + sağ arka yolcu kapısı — 45° */
+  if (rot) { const dd = new THREE.Group(), x0 = xW - 1.13, x1 = xW - 0.02; dd.position.set(x1, 0, -(half + 0.002)); dd.add(new THREE.Mesh(autoDoorGeo(D, B, x0, x1, -1), paint)); S.add(dd); dd.visible = true;
+    const proxy = dd; g.userData.door = proxy; g.userData.doorMax = Math.PI / 4; g.userData.doorPatch = g.userData.doorPatch || new THREE.Object3D();
+    const pr = new THREE.Group(), r0 = xW - 2.1, r1 = xW - 1.17; pr.position.set(r1, 0, half + 0.002); pr.add(new THREE.Mesh(autoDoorGeo(D, B, r0, r1, 1), paint)); S.add(pr); g.userData.doorR = pr; }
+  g.userData.auto = true; g.userData.glb = false; g.userData.body = paint; g.userData.bodySide = paint; g.userData.tail = tail; return true; }
+function H0(D) { return D.H; }
+
+/* ---- her kare: yolcu kapısı + polis asfalt yansıması + tabela ışığı ---- */
+function autoUpdate(dt) { const v = G.pv; if (v && v.mesh && v.mesh.userData.doorR) { const want = G.pax.some(p => p.state === "board" && p.car === v) || (v.doorRT !== undefined && G.t - v.doorRT < 1.3); v.dR = clamp((v.dR || 0) + (want ? 1 : -1) * dt * 2.6, 0, 1); const e = v.dR * v.dR * (3 - 2 * v.dR); v.mesh.userData.doorR.rotation.y = e * Math.PI / 4; }
+  for (const q of G.veh) { const ud = q.mesh && q.mesh.userData; if (!ud || !ud.polGround) continue; const gr = ud.gr, gb = ud.gb; ud.polGround[0].material.opacity = gr ? gr.material.opacity * 0.45 : 0; ud.polGround[1].material.opacity = gb ? gb.material.opacity * 0.45 : 0; }
+  const ts = AUTO.mat.taksiSign; if (ts) ts.emissiveIntensity = 0.7 + NIGHT * 1.4; }
+{ const _dl0 = deliver; deliver = function () { if (G.pv) G.pv.doorRT = G.t; _dl0(); }; const _ff0 = failFare; failFare = function () { const v = G.fare && G.fare.car; if (v) v.doorRT = G.t; _ff0(); }; }
 
 /* =====================================================================
    ARAYÜZ: HUD (2B katman), mini harita, menüler, mod seçimi, garaj,
@@ -14748,6 +14899,9 @@ $("btnPause").addEventListener("click", () => { auInit(); pauseGame(); });
 function init() {
   IS_TOUCH = (window.matchMedia && matchMedia("(pointer:coarse)").matches) || "ontouchstart" in window; if (IS_TOUCH) document.body.classList.add("touch");
   buildMasterCity(); initPeople(); /* v.27: tek ana şehir — 4 mod da aynı dünyayı kullanır */
+  /* v.39: telefon belleği dolup WebGL bağlamı düşerse (harita kararır, ağaç yaprakları / kaldırım dokuları kaybolur) oyun kaydedilip temiz yeniden açılır */
+  { const cv = renderer.domElement; cv.addEventListener("webglcontextlost", e => { e.preventDefault(); try { persist(true); } catch (q) { } G.ctxLost = true; }, false); cv.addEventListener("webglcontextrestored", () => { try { sessionStorage.setItem("ntCtxRe", String(Date.now())); } catch (q) { } location.reload(); }, false);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden && G.ctxLost) location.reload(); }); }
   if (typeof glbLoadAll === "function") glbLoadAll(); /* v.37: gömülü hazır araç modelleri arka planda açılır */ initFX(); initShowroom(); buildMapImage();
   applyQuality(); addEventListener("resize", resize); addEventListener("orientationchange", () => setTimeout(resize, 250));
   applyCtrl(); if (SV.set.time !== "dinamik") setTimeMode(); else G.tod = 17.2;
