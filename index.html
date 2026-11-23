@@ -7092,7 +7092,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.39";
+const VER = "v.40";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -7133,6 +7133,9 @@ function loadSave() {
   } catch (e) { }
   // Proje 2 v.01 cüzdanını aktar
   try { const o = JSON.parse(localStorage.getItem("neonIstanbulTaksi.v1")); if (o && o.wallet && !b.migrated) { b.wallet += o.wallet; b.up = o.up || b.up; b.migrated = true; } } catch (e) { }
+  /* v.40: tüm arabalar açık + orta seviye zengin başlangıç (bir kez) */
+  if (!b.rich40) { b.rich40 = true; b.wallet = Math.max(b.wallet || 0, 25000); }
+  b.owned = Array.from(new Set((b.owned || []).concat(["taxi", "sedan", "hatch", "klasik", "cabrio", "suv", "pickup", "dolmus", "sport", "police", "bus", "truck", "kamyonet", "cop", "tir", "kepce", "metrobus", "toma"])));
   return b;
 }
 let SV = loadSave();
@@ -7199,7 +7202,7 @@ const LANDMARKS = [
 const LM = {}; for (const l of LANDMARKS) LM[l.id] = l;
 const PARKS = LANDMARKS.filter(l => l.park).concat([{ name: "Gezi Parkı", x: 960, z: 360, r: 26, park: true }]);
 /* v.13: eğlence alanları (lunapark, oyun parkları, havuz) — buralara ağaç dikilmez */
-const FUN_ZONES = [{ id: "luna", x: 1105, z: 205, r: 40 }, { id: "oyun1", x: 1000, z: 240, r: 19 }, { id: "oyun2", x: 960, z: 360, r: 17 }, { id: "oyun3", x: 1118, z: 748, r: 21 }, { id: "oyun4", x: 1545, z: 395, r: 16 }, { id: "havuz", x: 1575, z: 365, r: 16 }];
+const FUN_ZONES = [{ id: "luna", x: 1105, z: 205, r: 40 }, { id: "oyun1", x: 1000, z: 240, r: 20 }, { id: "oyun2", x: 960, z: 360, r: 17 }, { id: "oyun3", x: 1118, z: 748, r: 22 }, { id: "oyun5", x: 1088, z: 272, r: 24 } /* v.40: Macera Parkı (yeni, büyük) */, { id: "oyun4", x: 1545, z: 395, r: 16 }, { id: "havuz", x: 1575, z: 365, r: 16 }];
 function inFun(x, z, pad) { for (const f of FUN_ZONES) if (dist(x, z, f.x, f.z) < f.r + (pad || 0)) return f; return null; }
 function inExclusion(x, z, pad) { for (const l of LANDMARKS) if (l.r && dist(x, z, l.x, l.z) < l.r + pad) return l; return null; }
 
@@ -13969,6 +13972,23 @@ function buildStadium28() { const l = LM.stadium; if (!l || !MONU.oldStand) retu
     /* ön duvar + cam bariyer + çelik korkuluk (tünel ağzı açık) */ const wm = stdMat({ color: 0x0a2a6a, roughness: 0.5 }), gm = new THREE.MeshStandardMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.25, roughness: 0.05, metalness: 0.3, side: THREE.DoubleSide, depthWrite: false }), rm = stdMat({ color: 0xc8ccd2, metalness: 0.8, roughness: 0.25 });
     for (let i = 0; i < N; i++) { const [x0, z0] = s28Inner(i / N * TAU), [x1, z1] = s28Inner((i + 1) / N * TAU), mx = (x0 + x1) / 2, mz = (z0 + z1) / 2, L = Math.hypot(x1 - x0, z1 - z0), ry = -Math.atan2(z1 - z0, x1 - x0); if (Math.abs(mx - S28.TX) < S28.TW / 2 + 0.3 && mz > 0) continue;
       add(new THREE.BoxGeometry(L + 0.02, S28.Y0, 0.25), wm, mx, S28.Y0 / 2, mz, ry).castShadow = false; const gp = add(new THREE.PlaneGeometry(L + 0.02, 1.0), gm, mx, S28.Y0 + 0.5, mz, ry); gp.castShadow = false; gp.renderOrder = 2; add(new THREE.BoxGeometry(L + 0.02, 0.06, 0.08), rm, mx, S28.Y0 + 1.02, mz, ry).castShadow = false; } }
+  /* v.40: STADYUM BÜYÜDÜ — ikinci (üst) kat tribün, ara kat koridoru + LED bant, yarım çatı */
+  { const N = 160, M = 8, UX0 = S28.OX - 7.5, UZ0 = S28.OZ - 6, UX1 = S28.OX + 0.6, UZ1 = S28.OZ + 0.5, UY0 = S28.Y1 + 3.2, UY1 = S28.Y1 + 13.5, P = [], U = [], I = [];
+    for (let i = 0; i <= N; i++) { const th = i / N * TAU, c = Math.cos(th), s = Math.sin(th); for (let j = 0; j <= M; j++) { const t = j / M; P.push(c * lerp(UX0, UX1, t), lerp(UY0, UY1, t), s * lerp(UZ0, UZ1, t)); U.push(i / N * 40, t * 2.6); } }
+    for (let i = 0; i < N; i++) for (let j = 0; j < M; j++) { const a = i * (M + 1) + j, b = a + M + 1; I.push(a, a + 1, b, b, a + 1, b + 1); }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.Float32BufferAttribute(P, 3)); geo.setAttribute("uv", new THREE.Float32BufferAttribute(U, 2)); geo.setIndex(I); geo.computeVertexNormals();
+    const cc = mkCanvas(256, 256), cx = cc.getContext("2d"); for (let y = 0; y < 256; y += 8) { cx.fillStyle = (y / 8) % 2 ? "#0a2a6a" : "#f2c400"; cx.fillRect(0, y, 256, 6); cx.fillStyle = "#2a2e36"; cx.fillRect(0, y + 6, 256, 2); }
+    const fc = ["#f2c400", "#0a2a6a", "#ffffff", "#d8202c", "#2e7dd1", "#1a1a1e"]; for (let k = 0; k < 900; k++) { const x = Math.random() * 256, y = Math.floor(Math.random() * 32) * 8 + 1; cx.fillStyle = fc[k % fc.length]; cx.fillRect(x, y, 4, 4); cx.fillStyle = "#e8c4a0"; cx.fillRect(x + 1, y - 2, 2, 2); } /* üst katta seyirciler */
+    const um = stdMat({ map: canvasTex(cc, true), roughness: 0.8, side: THREE.DoubleSide }); const up = new THREE.Mesh(geo, um); up.receiveShadow = true; up.castShadow = true; g.add(up);
+    /* ara kat: koridor plağı + LED bant (gece yanar) */ const ring = (rx0, rz0, rx1, rz1, y, h, mat) => { const sh = new THREE.Shape(), hole = new THREE.Path(); sh.absellipse(0, 0, rx1, rz1, 0, TAU, false, 0); hole.absellipse(0, 0, rx0, rz0, 0, TAU, true, 0); sh.holes.push(hole); const gg = new THREE.ExtrudeGeometry(sh, { depth: h, bevelEnabled: false, curveSegments: 64 }); gg.rotateX(Math.PI / 2); gg.translate(0, y + h, 0); const o = new THREE.Mesh(gg, mat); o.castShadow = true; o.receiveShadow = true; g.add(o); return o; };
+    ring(UX0 - 0.6, UZ0 - 0.5, S28.OX + 0.4, S28.OZ + 0.3, S28.Y1 + 2.2, 1.0, stdMat({ color: 0x2a2e36, roughness: 0.7 }));
+    const lc = mkCanvas(1024, 32), lx = lc.getContext("2d"); lx.fillStyle = "#0a0a14"; lx.fillRect(0, 0, 1024, 32); lx.fillStyle = "#ffd24a"; lx.font = "900 24px sans-serif"; for (let k = 0; k < 4; k++) lx.fillText("★ İSTANBUL STADYUMU ★ HOŞ GELDİNİZ ", k * 256, 25);
+    const lt = canvasTex(lc); lt.wrapS = THREE.RepeatWrapping; lt.repeat.set(6, 1); const lm = new THREE.MeshStandardMaterial({ map: lt, emissive: 0xffffff, emissiveMap: lt, emissiveIntensity: 0.9, side: THREE.DoubleSide });
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1.0, 96, 1, true), lm); band.scale.set(UX0 - 0.62, 1, UZ0 - 0.52); band.position.y = S28.Y1 + 2.7; g.add(band); S28.ledBand = lm;
+    /* arka duvar + yarım çatı (ön kenarı ince çelik, yarı saydam) */ const wall = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, UY1 - S28.Y1 + 1.5, 96, 1, true), stdMat({ color: 0x1e2430, roughness: 0.6, side: THREE.DoubleSide })); wall.scale.set(UX1 + 0.3, 1, UZ1 + 0.3); wall.position.y = (UY1 + S28.Y1) / 2 + 0.5; g.add(wall);
+    const roof = ring(S28.OX - 11, S28.OZ - 9, UX1 + 0.8, UZ1 + 0.7, UY1 + 2.2, 0.35, new THREE.MeshStandardMaterial({ color: 0xdfe6ee, transparent: true, opacity: 0.55, roughness: 0.3, metalness: 0.4, side: THREE.DoubleSide, depthWrite: false })); roof.castShadow = false;
+    ring(S28.OX - 11.3, S28.OZ - 9.3, S28.OX - 10.6, S28.OZ - 8.6, UY1 + 1.9, 0.7, stdMat({ color: 0xc8ccd2, metalness: 0.8, roughness: 0.25 }));
+    for (let k = 0; k < 24; k++) { const th = k / 24 * TAU, c = Math.cos(th), s = Math.sin(th), p = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, UY1 + 2.4 - S28.Y1, 8), stdMat({ color: 0xc8ccd2, metalness: 0.8, roughness: 0.3 })); p.position.set(c * (UX1 + 0.5), (UY1 + 2.4 + S28.Y1) / 2, s * (UZ1 + 0.4)); p.castShadow = true; g.add(p); } }
   /* saha: biçme şeritli çim, beyaz çizgiler; kenarlar düz yeşil */ { const pm = add(new THREE.PlaneGeometry(60, 40).rotateX(-Math.PI / 2), stdMat({ map: s28PitchTex(), roughness: 0.92, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6 }), 0, S28.PY, 0); pm.castShadow = false;
     const sur = add(new THREE.PlaneGeometry(68, 48).rotateX(-Math.PI / 2), stdMat({ color: 0x3a8a40, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }), 0, S28.PY - 0.01, 0); sur.castShadow = false; }
   /* kaleler: direkler, file dokusu (gol olunca sarsılır) */ { const white = stdMat({ color: 0xf6f6f6, roughness: 0.35 }), nm = new THREE.MeshStandardMaterial({ map: s28NetTex(), transparent: true, alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.8 }); nm.map.repeat.set(10, 4);
@@ -14029,7 +14049,7 @@ function stad28Ball(dt) { const B = STAD.ball; if (!B) return; const l = S28.l, 
   B.cool -= dt; B.vy -= 18 * dt; B.y += B.vy * dt; if (B.y < PY + R) { B.y = PY + R; B.vy = Math.abs(B.vy) > 1.2 ? -B.vy * 0.45 : 0; }
   const fr = Math.exp(-(B.y > PY + R + 0.05 ? 0.15 : 0.85) * dt); B.vx *= fr; B.vz *= fr; const ox = B.x, oz = B.z; B.x += B.vx * dt; B.z += B.vz * dt;
   let lx = B.x - l.x, lz = B.z - l.z;
-  /* gol: kale ağzından girdi */ if (Math.abs(lx) > 28.05 && Math.abs(lz) < 3.5 && B.y < 2.4) { const side = Math.sign(lx); const byMe = B.last === "me", team = side > 0 ? 0 : 1; const near = w && dist(w.x, w.z, l.x, l.z) < 90;
+  /* gol: kale ağzından girdi (v.40: gol sonrası bekleme süresince tekrar sayılmaz → yazı takılmaz) */ if (!(S28.goalT > 0) && Math.abs(lx) > 28.05 && Math.abs(lz) < 3.5 && B.y < 2.4) { const side = Math.sign(lx); const byMe = B.last === "me", team = side > 0 ? 0 : 1; const near = w && dist(w.x, w.z, l.x, l.z) < 90;
     if (near) popText(byMe ? "GOOOL!" : team === 0 ? "SARI-LACİVERT GOL!" : "MAVİ TAKIM GOL!", "#ffd24a", { sub: byMe ? "Muhteşem şut! Tribünler ayakta! +25₺" : "Tribünler coştu!", size: 34, life: 2.4 }); if (byMe) addMoney(25); if (typeof STAD2 !== "undefined") STAD2.cheer = 4; S28.netK = 1; S28.netSide = side; S28.goalT = 2.2; B.vx = B.vz = B.vy = 0; B.x = l.x + side * 28.9; }
   else if (Math.abs(lx) > 30.6 || Math.abs(lz) > 20.6) { /* panolardan sek */ if (Math.abs(lx) > 30.6) { B.vx = -B.vx * 0.45; B.x = l.x + Math.sign(lx) * 30.5; } if (Math.abs(lz) > 20.6) { B.vz = -B.vz * 0.45; B.z = l.z + Math.sign(lz) * 20.5; } }
   if (S28.goalT > 0) { S28.goalT -= dt; if (S28.goalT <= 0) { B.x = l.x; B.z = l.z; B.vx = B.vz = 0; for (const P of S28.players) { P.x = P.hx; P.z = P.hz; } } }
@@ -14053,7 +14073,7 @@ function stad28Interact(w) { if (!S28.l) return false; const B = STAD.ball;
   if (B && stadInside(w.x, w.z) && dist(w.x, w.z, B.x, B.z) < 1.6) { G.interact = { txt: (IS_TOUCH ? "[AL/GİR] " : "[E] ") + "Şut çek ⚽", col: "#ffd200", fn: () => { const l = S28.l, side = Math.cos(w.a) >= 0 ? 1 : -1; s28Kick(B, null, side * 29, GR(-2.6, 2.6), 22, GR(1.5, 4)); B.last = "me"; w.punchT = 1; w.kick = true; setTimeout(() => { w.kick = false; }, 500); } }; return true; }
   return false; }
 function stad28Exit() { const w = G.walker, G0 = STAD2.gates[0]; if (!w || !G0) return; fadeEl().style.opacity = 1; setTimeout(() => { w.x = G0.x + G0.ox * 3.5; w.z = G0.z + G0.oz * 3.5; w.vx = w.vz = 0; w.a = Math.atan2(G0.oz, G0.ox); G.cam.a = w.a; hint("Stadyumdan çıktın · KAPI A", 1.6); fadeEl().style.opacity = 0; }, 260); }
-function updateStadium28(dt) { if (!S28.l) return; const l = S28.l, f = focusPt(); if (!f || dist(f.x, f.z, l.x, l.z) > 200) return;
+function updateStadium28(dt) { if (!S28.l) return; const l = S28.l, f = focusPt(); if (!f || dist(f.x, f.z, l.x, l.z) > 200) return; if (S28.ledBand) { S28.ledBand.map.offset.x -= dt * 0.03; S28.ledBand.emissiveIntensity = 0.6 + NIGHT * 1.6; }
   const near = dist(camera.position.x, camera.position.z, l.x, l.z) < 95; if (near) s28UpdateFans(dt, false); s28Players(dt);
   for (const b of S28.boards) b.offset.x = (b.offset.x + dt * 0.06) % 1;
   for (const F of S28.flags) F.pv.rotation.y = Math.sin(G.t * 2.4 + F.pv.position.x) * 0.5;
@@ -14102,9 +14122,9 @@ function pyTower(g, H, col, roofCol, opts) { const post = pyM(col, { metalness: 
   for (const [x, z, w, d] of [[0, 0.66, 1.3, 0.05], [0, -0.66, 1.3, 0.05], [-0.66, 0, 0.05, 1.3], [0.66, 0, 0.05, 1.3]]) { const open = opts && opts.open || []; if (open.some(o => Math.abs(o[0] - x) < 0.1 && Math.abs(o[1] - z) < 0.1)) continue; g.add(new THREE.Mesh(new THREE.BoxGeometry(w, 0.6, d).translate(x, H + 0.38, z), rail)); }
   g.add(new THREE.Mesh(new THREE.ConeGeometry(1.15, 0.9, 4).rotateY(Math.PI / 4).translate(0, H + 2.15, 0), pyM(roofCol))); g.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6).translate(0, H + 2.65, 0), pyM(0xf2c94c, { metalness: 0.5 }))); }
 /* eğik basamaklı merdiven: (x0,z0) yerde → (x1,z1) platformda */
-function pyLadder(g, x0, z0, x1, z1, H) { const steel = pyM(0xcfd3d8, { metalness: 0.5, roughness: 0.35 }), wood = pyM(0x8a5a32, { roughness: 0.8 }), dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L, sx = -uz, sz = ux, len = Math.hypot(L, H), tilt = Math.atan2(L, H);
-  for (const s of [-0.32, 0.32]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, len + 0.5, 6), steel); r.position.set((x0 + x1) / 2 + sx * s, H / 2 + 0.2, (z0 + z1) / 2 + sz * s); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, H, dz).normalize()); g.add(r); }
-  const n = Math.max(5, Math.round(H / 0.32)); for (let k = 1; k < n; k++) { const t = k / n, st = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.05, 0.62), wood); st.position.set(x0 + dx * t, H * t, z0 + dz * t); st.rotation.y = -Math.atan2(dz, dx); g.add(st); } }
+function pyLadder(g, x0, z0, x1, z1, H, Y0) { Y0 = Y0 || 0; const steel = pyM(0xcfd3d8, { metalness: 0.5, roughness: 0.35 }), wood = pyM(0x8a5a32, { roughness: 0.8 }), dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L, sx = -uz, sz = ux, len = Math.hypot(L, H), tilt = Math.atan2(L, H);
+  for (const s of [-0.32, 0.32]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, len + 0.5, 6), steel); r.position.set((x0 + x1) / 2 + sx * s, Y0 + H / 2 + 0.2, (z0 + z1) / 2 + sz * s); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, H, dz).normalize()); g.add(r); }
+  const n = Math.max(5, Math.round(H / 0.32)); for (let k = 1; k < n; k++) { const t = k / n, st = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.05, 0.62), wood); st.position.set(x0 + dx * t, Y0 + H * t, z0 + dz * t); st.rotation.y = -Math.atan2(dz, dx); g.add(st); } }
 
 /* ---------------- büyük oyuncaklar (yerel koordinat; ride noktaları da yerel) ---------------- */
 /* her biri: { g, fp: [cx, cz, r], solid: [[x,z,w,d]], rides: [{kind, climb, slide, exit, at, label, ...}] } */
@@ -14160,6 +14180,43 @@ function toyTramp() { const g = new THREE.Group(), Y = 0.62, blue = pyM(0x2e7dd1
   g.add(new THREE.Mesh(new THREE.CylinderGeometry(1.56, 1.56, 1.6, 24, 1, true).translate(0, Y + 1.05, 0), new THREE.MeshStandardMaterial({ color: 0x222226, transparent: true, opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })));
   return { g, fp: [0, 0, 1.9], solid: [], rides: [{ kind: "bounce", y: Y, r: 0.9, h: 1.35, at: [1.9, 0], label: "Trambolinde zıpla" }], tramp: true }; }
 
+/* v.40: 2-3 katlı oyun kulesi: her kattan ayrı kaydırak (1: dalgalı, 2: spiral, 3: kapalı tüp) */
+function toyMulti(nf) { const g = new THREE.Group(), FH = 2.0, top = nf * FH, post = pyM(0x2e7dd1, { metalness: 0.3 }), wood = pyM(0x9a6a3a, { roughness: 0.8 }), steel = pyM(0xcfd3d8, { metalness: 0.5, roughness: 0.35 });
+  for (const [x, z] of [[-1.25, -1.25], [-1.25, 1.25], [1.25, -1.25], [1.25, 1.25]]) g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, top + 1.9, 10).translate(x, (top + 1.9) / 2, z), post));
+  for (let f = 1; f <= nf; f++) { const y = f * FH; g.add(new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.14, 2.6).translate(0, y, 0), wood)); const col = pyM(PY_COLS[(f * 3) % 8]);
+    for (const [x, z, w, d, open] of [[0, 1.3, 2.5, 0.06, f === 1], [0, -1.3, 2.5, 0.06, f === 3], [1.3, 0, 0.06, 2.5, f === 2], [-1.3, 0, 0.06, 2.5, f === 1]]) { if (open) { for (const s of [-1, 1]) g.add(new THREE.Mesh(new THREE.BoxGeometry(w > 1 ? 0.6 : w, 0.7, d > 1 ? 0.6 : d).translate(x + (w > 1 ? s * 0.95 : 0), y + 0.42, z + (d > 1 ? s * 0.95 : 0)), col)); continue; } g.add(new THREE.Mesh(new THREE.BoxGeometry(w, 0.7, d).translate(x, y + 0.42, z), col)); }
+    const c = mkCanvas(128, 64), x2 = c.getContext("2d"); x2.fillStyle = "#ffd24a"; x2.fillRect(0, 0, 128, 64); x2.fillStyle = "#1a1a1e"; x2.font = "900 40px sans-serif"; x2.textAlign = "center"; x2.fillText(f + ". KAT", 64, 46); const sg = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.4), new THREE.MeshStandardMaterial({ map: canvasTex(c) })); sg.position.set(-1.34, y + 0.42, 0.75); sg.rotation.y = -Math.PI / 2; g.add(sg); }
+  g.add(new THREE.Mesh(new THREE.ConeGeometry(2.0, 1.3, 4).rotateY(Math.PI / 4).translate(0, top + 2.5, 0), pyM(0xd8202c))); g.add(new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6).translate(0, top + 3.2, 0), pyM(0xf2c94c)));
+  /* merdivenler: zemin→1 (dışta), 1→2, 2→3 (içte) */ pyLadder(g, -2.75, 0, -1.3, 0, FH); if (nf >= 2) pyLadder(g, -0.9, -0.6, 0.5, -0.6, FH, FH); if (nf >= 3) pyLadder(g, 0.9, 0.6, -0.5, 0.6, FH, 2 * FH);
+  const rides = [], trough = c => pyM(c, { side: THREE.DoubleSide, roughness: 0.25 });
+  const cl = f => { const P = [[-3.3, 0, 0], [-2.75, 0.05, 0], [-1.3, FH + 0.07, 0], [-0.9, FH + 0.07, -0.6]]; if (f >= 2) P.push([0.5, 2 * FH + 0.07, -0.6], [0.9, 2 * FH + 0.07, 0.6]); if (f >= 3) P.push([-0.5, 3 * FH + 0.07, 0.6]); return P; };
+  /* 1. kat: dalgalı düz kaydırak (+z) */ { const P = []; for (let k = 0; k <= 40; k++) { const u = k / 40; P.push(new THREE.Vector3(0, FH * (1 - u) + 0.3 * u + Math.sin(u * Math.PI * 2) * 0.2 * (1 - u), 1.3 + u * 4.2)); } g.add(pyTrough(P, 0.42, 0.3, trough(0xf2c94c)));
+    rides.push({ kind: "path", climb: [[-3.3, 0, 0], [-2.75, 0.05, 0], [-1.3, FH + 0.07, 0], [0, FH + 0.07, 0.9]], slide: [[[0, FH + 0.07, 1.0], ...P.map(p => [p.x, p.y + 0.03, p.z])]], exit: [[0, 6.1]], at: [-3.3, 0.9], label: "1. kat kaydırağından kay", face: 0 }); }
+  /* 2. kat: spiral (+x) */ if (nf >= 2) { const cx = 2.75, r = 1.45, P = []; for (let i = 0; i <= 60; i++) { const u = i / 60, th = Math.PI + u * 2.5 * Math.PI; P.push(new THREE.Vector3(cx + Math.cos(th) * r, 2 * FH - 0.08 - (2 * FH - 0.4) * u, Math.sin(th) * r)); } const e = P[P.length - 1]; for (let k = 1; k <= 5; k++) P.push(new THREE.Vector3(e.x + k * 0.22, 0.32, e.z));
+    g.add(pyTrough(P, 0.42, 0.34, trough(0xff7a1a))); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2 * FH + 0.8, 10).translate(cx, FH + 0.4, 0), steel));
+    rides.push({ kind: "path", climb: cl(2).slice(0, 5).concat([[1.0, 2 * FH + 0.07, 0]]), slide: [[[1.0, 2 * FH + 0.07, 0], ...P.map(p => [p.x, p.y + 0.03, p.z])]], exit: [[P[P.length - 1].x + 0.5, P[P.length - 1].z]], at: [-3.3, 0], label: "2. kat spiral kaydıraktan kay", face: 0 }); }
+  /* 3. kat: uzun kapalı tüp (−z) */ if (nf >= 3) { const C = [0, -3.75], r = 1.95, P = [new THREE.Vector3(0, 3 * FH + 0.05, -0.9)]; for (let i = 0; i <= 70; i++) { const u = i / 70, th = Math.PI / 2 + u * 1.75 * TAU; P.push(new THREE.Vector3(C[0] + Math.cos(th) * r, 3 * FH - 0.2 - (3 * FH - 0.9) * u, C[1] + Math.sin(th) * r)); }
+    const th1 = Math.PI / 2 + 1.75 * TAU, tx = -Math.sin(th1), tz = Math.cos(th1), e = P[P.length - 1]; for (let k = 1; k <= 5; k++) P.push(new THREE.Vector3(e.x + tx * k * 0.25, 0.65 - k * 0.06, e.z + tz * k * 0.25));
+    const curve = new THREE.CatmullRomCurve3(P); g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 160, 0.55, 14, false), pyM(0x8a4ab0, { side: THREE.DoubleSide, roughness: 0.3 }))); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 3 * FH, 10).translate(C[0], 1.5 * FH, C[1]), steel));
+    const pts = []; for (let i = 0; i <= 100; i++) { const p = curve.getPointAt(i / 100); pts.push([p.x, p.y - 0.48, p.z]); } const last = pts[pts.length - 1];
+    rides.push({ kind: "path", climb: cl(3).concat([[0, 3 * FH + 0.07, -0.4]]), slide: [[[0, 3 * FH + 0.07, -0.4], ...pts]], exit: [[last[0] + tx * 0.7, last[2] + tz * 0.7]], at: [-3.3, -0.9], label: "3. kat tüp kaydıraktan kay", face: 0 }); }
+  return { g, fp: nf >= 3 ? [0.6, -1.0, 6.0] : [0.8, 1.0, 5.0], solid: [[0, 0, 2.6, 2.6]].concat(nf >= 2 ? [[2.75, 0, 0.35, 0.35]] : []).concat(nf >= 3 ? [[0, -3.75, 0.4, 0.4]] : []), rides }; }
+/* v.40: farklı salıncaklar — 4 kişilik büyük set (2 düz + 2 bebek koltuğu), lastik salıncak */
+function toySwingSet() { const g = new THREE.Group(), H = 2.7, fr = pyM(0xd8202c, { metalness: 0.3 }), W = 6.2; for (const x of [-W / 2, 0, W / 2]) for (const s of [-1, 1]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, H * 1.08, 8), fr); l.position.set(x, H / 2, s * 0.7); l.rotation.x = -s * 0.27; g.add(l); }
+  g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, W + 0.2, 8).rotateZ(Math.PI / 2).translate(0, H, 0), fr)); const rides = [], ch = pyM(0x8a8f98, { metalness: 0.6 });
+  [-2.25, -0.8, 0.8, 2.25].forEach((x, i) => { const piv = new THREE.Group(); piv.position.set(x, H, 0); g.add(piv); const baby = i >= 2, L = baby ? 1.7 : 2.1;
+    for (const z of [-0.24, 0.24]) piv.add(new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, L, 4).translate(0, -L / 2, 0).translate(z, 0, 0), ch));
+    if (baby) { piv.add(new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.22, 0.32, 14, 1, true).translate(0, -L - 0.05, 0), pyM(PY_COLS[i + 2], { side: THREE.DoubleSide }))); piv.add(new THREE.Mesh(new THREE.CircleGeometry(0.22, 14).rotateX(-Math.PI / 2).translate(0, -L - 0.2, 0), pyM(PY_COLS[i + 2]))); }
+    else piv.add(new THREE.Mesh(roundBox(0.55, 0.05, 0.24, 0.02).translate(0, -L, 0), pyM(0x2a2a2e)));
+    const an = new THREE.Object3D(); an.position.set(0, -L + (baby ? -0.15 : 0.03), 0); piv.add(an); const A = { piv, ph: gr() * 6, amp: 0.18 + gr() * 0.2, ride: false }; PLAY.anim.push(dt => { A.ph += dt * (baby ? 1.9 : 1.7); A.amp = A.ride ? Math.min(0.85, A.amp + dt * 0.12) : Math.max(0.15, A.amp - dt * 0.1); piv.rotation.x = Math.sin(A.ph) * A.amp; });
+    if (!baby) rides.push({ kind: "attach", anchor: an, at: [x, 1.7], dur: 18, label: "Büyük salıncakta sallan", A }); });
+  return { g, fp: [0, 0, 3.6], solid: [[-W / 2, 0, 0.3, 1.6], [W / 2, 0, 0.3, 1.6], [0, 0, 0.3, 1.6]], rides: rides.slice(0, 1) }; }
+function toyTire() { const g = new THREE.Group(), H = 3.0, fr = pyM(0x3aa876, { metalness: 0.3 }); for (let k = 0; k < 3; k++) { const a = k / 3 * TAU, l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, H * 1.12, 8), fr); l.position.set(Math.cos(a) * 1.2, H / 2, Math.sin(a) * 1.2); l.lookAt(0, H * 2.2, 0); l.rotateX(Math.PI / 2); g.add(l); }
+  const piv = new THREE.Group(); piv.position.y = H; g.add(piv); const spin = new THREE.Group(); piv.add(spin); for (let k = 0; k < 3; k++) { const a = k / 3 * TAU, d = new THREE.Vector3(Math.cos(a) * 0.42, -1.95, Math.sin(a) * 0.42), c = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, d.length(), 4), pyM(0x8a8f98, { metalness: 0.6 })); c.position.copy(d).multiplyScalar(0.5); c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize()); spin.add(c); }
+  spin.add(new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.15, 10, 22).rotateX(Math.PI / 2).translate(0, -2.0, 0), pyM(0x1b1c1f, { roughness: 0.9 }))); const an = new THREE.Object3D(); an.position.set(0, -1.92, 0.3); spin.add(an);
+  const A = { ph: gr() * 6, ride: false, amp: 0.2 }; PLAY.anim.push(dt => { A.ph += dt * 1.5; A.amp = A.ride ? Math.min(0.6, A.amp + dt * 0.1) : Math.max(0.12, A.amp - dt * 0.1); piv.rotation.x = Math.sin(A.ph) * A.amp; piv.rotation.z = Math.cos(A.ph) * A.amp * 0.8; spin.rotation.y += dt * (A.ride ? 1.6 : 0.4); });
+  return { g, fp: [0, 0, 2.2], solid: [], rides: [{ kind: "attach", anchor: an, at: [1.9, 0], dur: 16, label: "Lastik salıncakta dön", A }] }; }
+
 /* ---------------- yerleştirici: parkın boş yerini bulur ---------------- */
 function pyPlace(Z, toy, obst, Rin) { const R = Z.f.r, lim = (Rin || R - 2.8) - toy.fp[2]; let best = null, bs = -1;
   for (let rot = 0; rot < 8; rot++) { const th = rot / 8 * TAU, c = Math.cos(th), s = Math.sin(th), fx = toy.fp[0] * c - toy.fp[1] * s, fz = toy.fp[0] * s + toy.fp[1] * c;
@@ -14209,7 +14266,7 @@ function pyAddToy(Z, toy, lx, lz, th, labelCol) { const ca = Math.cos(Z.ang), sa
     if (rd.kind === "attach") rd.exitW = W(rd.at[0], rd.at[1]);
     const [px, pz] = W(rd.at[0], rd.at[1]); FUN.pts.push({ kind: rd.kind, ref: rd, x: px, z: pz, price: 0, label: rd.label, col: labelCol || "#ffd040" }); }
   toy.Z = Z; PLAY.toys.push(toy); return toy; }
-function pyParkToys() { const sets = { oyun1: [() => toySpiral(false), toyRope, toyTramp, toyNest], oyun2: [toyTube, toyTramp, toyNest], oyun3: [() => toySpiral(true), () => toyWave(false), toyRope, toyTramp], oyun4: [() => toySpiral(false), toyNest, toyTramp] };
+function pyParkToys() { const sets = { oyun1: [() => toyMulti(2), () => toySpiral(false), toySwingSet, toyRope, toyTramp, toyNest, toyTire], oyun2: [toyTube, toySwingSet, toyTramp, toyNest, toyTire], oyun3: [() => toyMulti(3), () => toySpiral(true), toySwingSet, () => toyWave(false), toyRope, toyTramp, toyTire], oyun4: [() => toySpiral(false), toyNest, toyTramp, toyTire], oyun5: [() => toyMulti(3), () => toyMulti(2), toySwingSet, toyTire, () => toySpiral(true), toyTube, toyRope, toyNest, toyTramp, toyTramp] }; /* v.40: Macera Parkı */
   for (const Z of PARKX.zones) { const R = Z.f.r, list = sets[Z.f.id] || [toyTramp];
     const obst = [[Z.seesaw.x, Z.seesaw.z, 2.1], [Z.mgr.x, Z.mgr.z, 1.6], [Z.dome.x, Z.dome.z, 1.9], [Z.sand.x, Z.sand.z, 1.8], ...Z.springs.map(s => [s.x, s.z, 0.9])];
     for (let x = -5.8; x <= 1.0; x += 1.1) obst.push([x, 0, 1.0]); for (const x of [1.3, 3, 4.7]) obst.push([x, 2.5, 1.7]); /* eski kaydırak + salıncak */
@@ -14243,7 +14300,7 @@ function pyParkGates() { for (const Z of PARKX.zones) { const f = Z.f, R = f.r -
     for (const s of [1, -1]) { const g = new THREE.Group(); g.position.set(f.x, y0, f.z + zc * s); scene.add(g);
       for (const x of [-hw, hw]) { g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 3.4, 10).translate(x, 1.7, 0), pyM(0x1e3a2a, { metalness: 0.5 }))); g.add(new THREE.Mesh(new THREE.SphereGeometry(0.24, 10, 8).translate(x, 3.5, 0), pyM(0xf2c94c))); }
       g.add(new THREE.Mesh(new THREE.TorusGeometry(hw, 0.12, 8, 24, Math.PI).translate(0, 2.9, 0), pyM(0xd8202c)));
-      const c = mkCanvas(512, 128), x = c.getContext("2d"); x.fillStyle = "#1e3a2a"; x.fillRect(0, 0, 512, 128); x.fillStyle = "#ffd24a"; x.font = "900 76px sans-serif"; x.textAlign = "center"; x.fillText("OYUN PARKI", 256, 94);
+      const c = mkCanvas(512, 128), x = c.getContext("2d"); x.fillStyle = "#1e3a2a"; x.fillRect(0, 0, 512, 128); x.fillStyle = "#ffd24a"; x.font = "900 76px sans-serif"; x.textAlign = "center"; x.fillText(f.id === "oyun5" ? "MACERA PARKI" : "OYUN PARKI", 256, 94);
       const sw = Math.min(4.2, hw * 1.6), sg = new THREE.Mesh(new THREE.PlaneGeometry(sw, sw / 4), new THREE.MeshStandardMaterial({ map: canvasTex(c), side: THREE.DoubleSide, roughness: 0.6 })); sg.position.set(0, 2.9 + hw + 0.35, 0); g.add(sg);
       g.traverse(o => { if (o.isMesh) o.castShadow = true; }); } } }
 
@@ -14378,7 +14435,7 @@ function glbRefreshCars() { if (!G.veh) return; for (const v of G.veh) { if (aut
    ardında koltuk + direksiyon silüeti. Işık / sinyal / fren / hasar /
    kabin sistemleri eski araçtaki gibi çalışır.
    ===================================================================== */
-const AUTO_MAP = { taxi: "tesla", sedan: "sedan", hatch: "sedan", klasik: "sedan", sport: "sedan", cabrio: "sedan", police: "police", suv: "suv" };
+const AUTO_MAP = { /* v.40: Tesla taksi geri alındı → taksi yine hazır model */ sedan: "sedan", hatch: "sedan", klasik: "sedan", sport: "sedan", cabrio: "sedan", police: "police", suv: "suv" };
 const AUTO = { geo: {}, mat: {} };
 const AUTO_PAL = ["#1b2a4a", "#b8bec8", "#6a1426", "#f2f2f4", "#121216", "#24365e", "#8d939c", "#3a3d44"];
 function autoHas(type) { return !!AUTO_MAP[type]; }
