@@ -7080,7 +7080,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.28";
+const VER = "v.29";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -14091,7 +14091,20 @@ const GPPL = { ready: false, sex: {}, hair: {}, clips: {} };
 const GPPL_CLIPS = ["Idle_Loop", "Idle_Talking_Loop", "Walk_Loop", "Jog_Fwd_Loop", "Sprint_Loop"];
 const GP_MAP = { root: "body", pelvis: "pelvis", spine_01: "torso", spine_02: "torso", spine_03: "torso", neck_01: "torso", Head: "head", clavicle_l: "torso", upperarm_l: "uaL", lowerarm_l: "faL", hand_l: "hdL", clavicle_r: "torso", upperarm_r: "uaR", lowerarm_r: "faR", hand_r: "hdR", thigh_l: "thL", calf_l: "shL", foot_l: "ftL", ball_l: "ftL", thigh_r: "thR", calf_r: "shR", foot_r: "ftR", ball_r: "ftR" };
 function gpCls(name) { if (/^(Head|neck_01)$/.test(name)) return 0; if (/^(hand|index|middle|ring|pinky|thumb)/.test(name)) return 0; if (/^lowerarm/.test(name)) return 2; if (/^(upperarm|clavicle|spine)/.test(name)) return 1; if (/^(pelvis|thigh|root)/.test(name)) return 3; if (/^calf/.test(name)) return 4; if (/^(foot|ball)/.test(name)) return 5; return 1; }
-function gpBodyMat(src) { const m = src.clone(); m.metalness = 0; m.roughness = 0.75; m.roughnessMap = null; m.metalnessMap = null; m.side = THREE.FrontSide;
+/* v.29: kaslı "süper kahraman" gövdeyi normal insana inceltir — iskelet/eklemler aynı kalır, sadece kas hacmi
+   kemik eksenine doğru küçültülür (kol, omuz, göğüs, sırt, boyun, bacak). Ağırlıklar karıştırıldığı için eklem
+   geçişleri yumuşak kalır. */
+const GP_SLIM = { upperarm: 0.64, lowerarm: 0.78, clavicle: 0.7, spine_03: 0.72, spine_02: 0.78, spine_01: 0.86, neck_01: 0.74, pelvis: 0.94, thigh: 0.84, calf: 0.86 };
+function gpSlim(body, fem) { const g = body.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, bones = body.skeleton.bones, inv = body.skeleton.boneInverses, bmi = body.bindMatrixInverse || new THREE.Matrix4();
+  const P = bones.map((b, i) => new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(inv[i]).invert().premultiply(bmi)));
+  const seg = bones.map((b, i) => { const n = b.name.replace(/_(l|r)$/, ""); const f0 = GP_SLIM[n]; if (!f0) return null; const ch = b.children.find(c => c.isBone && bones.includes(c) && !/twist|leaf/i.test(c.name)) || b.children.find(c => c.isBone && bones.includes(c)); if (!ch) return null; const f = fem ? 1 - (1 - f0) * 0.55 : f0; return { a: P[i], b: P[bones.indexOf(ch)], f }; });
+  const v = new THREE.Vector3(), out = new THREE.Vector3(), q = new THREE.Vector3(), ab = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); out.set(0, 0, 0); let wsum = 0;
+    for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w <= 0) continue; const S = seg[si.getComponent(i, k)]; if (!S) { out.addScaledVector(v, w); wsum += w; continue; }
+      ab.subVectors(S.b, S.a); const L2 = ab.lengthSq() || 1, t = clamp(q.subVectors(v, S.a).dot(ab) / L2, -0.25, 1.25); q.copy(S.a).addScaledVector(ab, t); q.lerp(v, S.f); out.addScaledVector(q, w); wsum += w; }
+    if (wsum > 0) { out.multiplyScalar(1 / wsum); pos.setXYZ(i, out.x, out.y, out.z); } }
+  pos.needsUpdate = true; g.computeBoundingSphere(); }
+function gpBodyMat(src) { const m = src.clone(); m.metalness = 0; m.roughness = 0.75; m.roughnessMap = null; m.metalnessMap = null; m.side = THREE.FrontSide; if (m.normalMap) m.normalScale = new THREE.Vector2(0.18, 0.18); /* v.29: kas çizgileri (six-pack) silikleşir */
   m.onBeforeCompile = sh => { for (const k of ["uShirt", "uSleeve", "uPants", "uCalf", "uShoes", "uSkin"]) sh.uniforms[k] = m.userData[k];
     sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nattribute float aCloth;\nvarying float vCloth;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvCloth = aCloth;");
     sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying float vCloth;\nuniform vec3 uShirt; uniform vec3 uSleeve; uniform vec3 uPants; uniform vec3 uCalf; uniform vec3 uShoes; uniform vec3 uSkin;").replace("#include <map_fragment>", `#include <map_fragment>
@@ -14113,6 +14126,7 @@ function gpApplyLook(U, L) { const d = U.bodyMat.userData, f = L.sex === "f", to
   U.look = L; }
 function gpPrep(sc) { let body = null; const skinned = []; sc.traverse(o => { if (o.isSkinnedMesh) { skinned.push(o); if (o.material && /Superhero/.test(o.material.name)) body = o; } }); if (!body) body = skinned.sort((a, b) => b.geometry.attributes.position.count - a.geometry.attributes.position.count)[0];
   /* köşe başına kıyafet bölgesi: baskın kemik */ { const g = body.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, n = si.count, A = new Float32Array(n), names = body.skeleton.bones.map(b => b.name); for (let i = 0; i < n; i++) { let bi = 0, bw = -1; for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w > bw) { bw = w; bi = si.getComponent(i, k); } } A[i] = gpCls(names[bi] || ""); } g.setAttribute("aCloth", new THREE.BufferAttribute(A, 1)); }
+  try { gpSlim(body, /Female/i.test(body.material.name || body.name)); } catch (e) { console.warn("inceltme", e); }
   const S = { sc, bodyName: body.name, srcMat: body.material };
   /* kalibrasyon: bekleme klibinin ilk karesi = poz sistemimizin sıfır duruşu (kollar yanda) */ const C = GLTFX.SkeletonUtils.clone(sc); const mx = new THREE.AnimationMixer(C); const ic = GPPL.clips.Idle_Loop; if (ic) { mx.clipAction(ic).play(); mx.update(0.001); } C.updateMatrixWorld(true);
   const B = {}; C.traverse(o => { if (o.isBone) B[o.name] = o; }); const wp = n => B[n].getWorldPosition(new THREE.Vector3());
