@@ -7095,7 +7095,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.70";
+const VER = "v.71";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -9357,7 +9357,7 @@ function syncMesh(v) {
   { const ud = v.mesh.userData, bg = ud.brakeGlow; if (bg) { const st = v.brakeOn ? 2 : NIGHT > 0.3 ? 1 : 0; if (ud.bgSt !== st) { ud.bgSt = st; bg.visible = st > 0; if (st) { bg.material = cmat(st === 2 ? "brakeGlow" : "tailGlowN", () => { const m = CMAT.brakeGlow.clone(); m.opacity = 0.32; return m; }); bg.scale.set(st === 2 ? 3.2 : 2.2, st === 2 ? 1.2 : 0.8, 1); } } } }
   { const ud = v.mesh.userData, rv = v.reversing || false; if (ud.rev && ud.revOn !== rv) { ud.revOn = rv; ud.rev.emissiveIntensity = rv ? 3 : 0; ud.revGlow.visible = rv; } }
   const bm = v.mesh.userData.body; if (bm.userData.n !== NIGHT) { bm.userData.n = NIGHT; bm.emissive.copy(bm.color).multiplyScalar(NIGHT * (v === G.pv ? 0.35 : 0.22)); }
-  if (v.police) { const on = (G.t * 5 + v.id) % 2 < 1, lit = v.chase || v.siren || v.parked; /* v.26: park halindeyken de çakar yanıp söner */ v.mesh.userData.lr.material.color.setRGB(lit && on ? 1 : 0.3, 0.05, 0.1); v.mesh.userData.lb.material.color.setRGB(0.05, 0.1, lit && !on ? 1 : 0.3); v.mesh.userData.gr.material.opacity = lit && on ? 0.95 : 0; v.mesh.userData.gb.material.opacity = lit && !on ? 0.95 : 0; }
+  if (v.police) { const on = (G.t * 5 + v.id) % 2 < 1, lit = v.chase || v.siren || (v.parked && !v.sirOff71); /* v.26: park halindeyken de çakar yanıp söner · v.71: oyuncu indiyse kapalı */ v.mesh.userData.lr.material.color.setRGB(lit && on ? 1 : 0.3, 0.05, 0.1); v.mesh.userData.lb.material.color.setRGB(0.05, 0.1, lit && !on ? 1 : 0.3); v.mesh.userData.gr.material.opacity = lit && on ? 0.95 : 0; v.mesh.userData.gb.material.opacity = lit && !on ? 0.95 : 0; }
 }
 function circles(v) { const n = v.l > 7 ? 3 : 2, r = v.w / 2 + 0.05, c = Math.cos(v.a), s = Math.sin(v.a), span = v.l / 2 - r, out = []; for (let i = 0; i < n; i++) { const o = -span + 2 * span * i / (n - 1); out.push([v.x + v.ox + c * o, v.z + v.oz + s * o, r]); } return out; }
 
@@ -9821,9 +9821,10 @@ function pedUpdate(p, dt) {
     const E = p.e; p.avT = (p.avT || 0) - dt; if (p.avT <= 0) { p.avT = 0.12 + gr() * 0.06; p.latT = pedAvoid(p, E); }
     p.lat = (p.lat || 0) + ((p.latT || 0) - (p.lat || 0)) * Math.min(1, dt * 3.2); let Lw = E.hw + 1.6 + p.lat;
     /* v.22: yaya geçidi — ara sıra karşıya geçer (arabalar durur) */
-    const zs = midZebra(E); if (p.crossK === undefined && zs != null && Math.abs(p.s - zs) < 0.5 && !(p.crossCD > 0) && gr() < 0.45) { p.crossK = 0; p.s = zs; (G.crossPeds || (G.crossPeds = [])).push(p); }
+    const zs = midZebra(E); if (p.crossK === undefined && !p.sir71 && zs != null && Math.abs(p.s - zs) < 0.5 && !(p.crossCD > 0) && gr() < 0.45) { p.crossK = 0; p.s = zs; (G.crossPeds || (G.crossPeds = [])).push(p); }
     if (p.crossCD > 0) p.crossCD -= dt;
-    if (p.crossK !== undefined) { p.s -= p.dir * p.spd * dt; p.crossK += dt * p.spd / (2 * Lw); const k = Math.min(1, p.crossK), lw = Lw * (1 - 2 * k); p.x = E.a.x + E.dx * p.s - E.dz * lw * p.side; p.z = E.a.z + E.dz * p.s + E.dx * lw * p.side; p.a = Math.atan2(-E.dx * p.side, E.dz * p.side) ; p.walk += dt * p.spd * 5;
+    if (p.crossK !== undefined && p.sir71 && p.crossK < 0.5 && (p.crossK -= dt * p.spd * 3 / (2 * Lw)) <= 0) { p.crossK = undefined; p.crossCD = 8; const i = G.crossPeds.indexOf(p); if (i >= 0) G.crossPeds.splice(i, 1); } /* v.71: siren — geçitteki yaya geri kaldırıma */
+    if (p.crossK !== undefined) { p.s -= p.dir * p.spd * dt * (p.sir71 ? 0 : 1); if (!(p.sir71 && p.crossK < 0.5)) p.crossK += dt * p.spd / (2 * Lw) * (p.sir71 ? 3 : 1); const k = Math.min(1, p.crossK), lw = Lw * (1 - 2 * k); p.x = E.a.x + E.dx * p.s - E.dz * lw * p.side; p.z = E.a.z + E.dz * p.s + E.dx * lw * p.side; p.a = Math.atan2(-E.dx * p.side, E.dz * p.side) ; p.walk += dt * p.spd * 5;
       if (k >= 1) { p.side = -p.side; p.crossK = undefined; p.crossCD = 12; const i = G.crossPeds.indexOf(p); if (i >= 0) G.crossPeds.splice(i, 1); } }
     else {
     let px = E.a.x + E.dx * p.s - E.dz * Lw * p.side, pz = E.a.z + E.dz * p.s + E.dx * Lw * p.side;
@@ -10991,7 +10992,7 @@ function toggleCar() {
     const [sx, sz] = standPoint(v); if (!rAt(sx, sz) || pointInBuilding(sx, sz)) { // sol kapı kapalıysa sağdan in
       const [rx, rz] = carLocal(v, 0, v.w / 2 + 0.9); if (!rAt(rx, rz) || pointInBuilding(rx, rz)) { hint("Burada kapı açılmıyor"); return; } G.seq = { type: "exit", v, phase: "out", t: 0, lock: true, side: 1 }; }
     else G.seq = { type: "exit", v, phase: "open", t: 0, lock: true };
-    upgradeMesh(v); v.vx = v.vz = 0; v.nitroOn = false; G.nitroOn = false; v.parked = true; v.brakeOn = false; v.spd = 0; hornOff();
+    upgradeMesh(v); v.vx = v.vz = 0; v.nitroOn = false; G.nitroOn = false; v.parked = true; v.brakeOn = false; v.spd = 0; hornOff(); if (typeof sirenOff71 === "function") sirenOff71(v); /* v.71: inince siren + çakar kapanır */
     if (G.seq.phase === "open") sfxDoor(); else beginExitWalk();
   } else if (G.walker) {
     const o = nearestCar(G.walker, 4); if (!o) { hint("Yakında araba yok"); return; }
@@ -19111,6 +19112,52 @@ function drawTop70(c, small) { const k = clamp(CH / 430, 1, 1.35), W = Math.roun
 { const _uc70 = updateCity27; updateCity27 = function (dt) { const r = _uc70.apply(this, arguments); try { if (!HUD70.on && typeof UI66 !== "undefined" && UI66.on && IS_TOUCH) ui70Init(); else if (HUD70.on && G.state === "play" && (HUD70.f = (HUD70.f || 0) + 1) % 4 === 0) ui70Tick(); } catch (e) { } return r; }; } /* düğme içeriği başka kod tarafından yeniden yazılırsa aynı karede geri gelir */
 /* hız göstergesi: yeni düğme dizilimiyle çakışmasın (yatayda alt orta) */
 { const _ds70 = drawSpeedo; drawSpeedo = function (c, x, y, r) { if (HUD70.on && CW > CH && !document.body.classList.contains("ctrlBtn")) { x = CW * 0.5; y = CH - 64 * sc70(); r = Math.round(50 * clamp(sc70(), 0.8, 1.15)); } return _ds70.call(this, c, x, y, r); }; }
+
+</script>
+<script>
+/* =====================================================================
+   v.71 — POLİS SİRENİ YAPAY ZEKÂSI + DURAKLAT MENÜSÜNDE "YENİDEN BAŞLAT"
+   1) Oyuncu polis arabasında sireni açınca (isSirenOn):
+      • 35 m içindeki (önündeki ve çevresindeki) trafik araçları şeridinin en
+        sağına, kaldırım kenarına yanaşır; yavaşlar, yakındaysa durur ve geçiş
+        üstünlüğü verir. Siren kapanınca / araç uzaklaşınca şeride geri döner.
+      • 20 m içindeki yayalar yola atlamaz; kaldırımda durup bekler; yaya
+        geçidindeki yaya en yakın kaldırıma hızla çıkar.
+      • Arabadan [E] / İN ile inildiği anda siren sesi ve tepe çakarları
+        otomatik kapanır (park hâlinde çakar yanıp sönmez).
+   2) Duraklat (||) menüsü: DEVAM ET · YENİDEN BAŞLAT (RESTART) · AYARLAR · ANA MENÜ.
+      Yeniden Başlat aktif modu (Serbest Gezinti, Çılgın Taksi, Yaya, Yarış)
+      ana menüye dönmeden sıfırlar: konum, can, süre / görev baştan; oyun hemen başlar.
+   Şehir, binalar, joystick ve 60 FPS ayarları değişmedi.
+   ===================================================================== */
+const P71 = { on: false, x: 0, z: 0, a: 0, v: null, walk: false, inWalk: false, n: 0 };
+let isSirenOn = false;
+/* her karede bir kez: oyuncu polis arabası + siren açık mı */
+function siren71() { const v = G.pv; isSirenOn = !!(v && v.police && v.siren && G.state === "play"); P71.on = isSirenOn; if (isSirenOn) { P71.v = v; P71.x = v.x + (v.ox || 0); P71.z = v.z + (v.oz || 0); P71.a = v.a; } }
+/* trafik: yol ver (dbAiLimit her AI aracı için her karede çağrılır) */
+{ const _db71 = dbAiLimit; dbAiLimit = function (ai, want, v) { want = _db71.apply(this, arguments); try { yield71(ai, v, want); if (v.yt71 && v.yk71 > 0.02) { const d = v.yd71; want = Math.min(want, d < 14 ? 0 : d < 24 ? 2.2 : 4.5); } } catch (e) { } return want; }; }
+function yield71(ai, v, want) { let tgt = 0; if (P71.on && v !== P71.v && !v.police && !v.chase && !v.racer && !v.bustCop) { const rx = v.x - P71.x, rz = v.z - P71.z, d = Math.hypot(rx, rz); if (d < 35) { const ah = rx * Math.cos(P71.a) + rz * Math.sin(P71.a); if (ah > -10) { tgt = 1; v.yd71 = d; } } }
+  v.yt71 = tgt; const k0 = v.yk71 || 0, k = k0 + (tgt - k0) * Math.min(1, (1 / 60) * (tgt ? 3.5 : 1.6)); v.yk71 = k < 0.002 ? 0 : k; if (!k0 && !v.yk71) return;
+  /* kaldırım kenarına yanaşma: şeridin sağına (lanePos'taki şerit yönü) ek kayma */ const e = ai.e, outer = e.wide ? 8.6 : e.lanes === 2 ? 6.2 : 3.4, cur = laneOff(e, ai.lane), off = Math.max(0, outer - cur) * v.yk71, rxv = -Math.sin(v.a), rzv = Math.cos(v.a), nx = rxv * off, nz = rzv * off, px = v.y71x || 0, pz = v.y71z || 0;
+  v.ox = (v.ox || 0) + nx - px; v.oz = (v.oz || 0) + nz - pz; v.y71x = nx; v.y71z = nz; if (!v.yk71) { v.ox -= nx; v.oz -= nz; v.y71x = v.y71z = 0; } if (v.yk71 > 0.3 && !v.y71s) { v.y71s = 1; v.brakeOn = true; } else if (v.yk71 < 0.1) v.y71s = 0; }
+/* yayalar: 20 m içinde kaldırımda bekler, geçitteki hızla kaldırıma çıkar */
+function sirenNear71(p) { return P71.on && Math.abs(p.x - P71.x) < 20 && Math.abs(p.z - P71.z) < 20 && Math.hypot(p.x - P71.x, p.z - P71.z) < 20; }
+{ const _pu71 = pedUpdate; pedUpdate = function (p, dt) { const near = sirenNear71(p); p.sir71 = near; if (near && p.crossK === undefined && p.state !== "down") { const sp = p.spd; p.spd = 0; let r; try { r = _pu71.apply(this, arguments); } finally { p.spd = sp; } if (p.state === "walk" || !p.state) { const L = p.e; if (L && P71.on) { const ta = Math.atan2(P71.z - p.z, P71.x - p.x); p.a += angDiff(p.a, ta) * Math.min(1, dt * 4); } } return r; } return _pu71.apply(this, arguments); }; }
+/* arabadan inince siren + çakar kapanır */
+function sirenOff71(v) { if (!v) return; v.siren = false; v.sirOff71 = true; isSirenOn = false; P71.on = false; try { if (AU && AU.sir && AU.ctx) AU.sir.g.gain.setTargetAtTime(0, AU.ctx.currentTime, 0.05); } catch (e) { } }
+{ const _uc71 = updateCity27; updateCity27 = function (dt) { const r = _uc71.apply(this, arguments); try { siren71(); for (const v of G.veh) if (v.sirOff71 && v.police && !v.chase && !v.bustCop && v.siren && v !== G.pv) v.siren = false; } catch (e) { } return r; }; }
+/* ---------- YENİDEN BAŞLAT ---------- */
+{ const _sw71 = startWalkMode; startWalkMode = function () { P71.inWalk = true; P71.walk = true; try { return _sw71.apply(this, arguments); } finally { P71.inWalk = false; } }; }
+{ const _sm71 = startMode; startMode = function (mode, routeId) { if (!P71.inWalk) P71.walk = false; P71.mode = mode; P71.route = routeId; return _sm71.apply(this, arguments); }; }
+function restart71() { try { hornOff(); } catch (e) { } if (typeof W68 !== "undefined" && W68.R) try { dropNow68(); } catch (e) { } if (typeof J69 !== "undefined") try { j69Reset(); } catch (e) { }
+  for (const k in TOUCH.btn) TOUCH.btn[k] = false; for (const k in KEY) KEY[k] = false; showOv(null);
+  if (P71.walk) startWalkMode(); else if (G.route) startMode(G.mode, G.route.id); else startMode(P71.mode || G.mode);
+  G.state = "play"; showOv(null); try { sfxClick(); } catch (e) { } popText("YENİDEN BAŞLADI", "#7affb0", { sub: P71.walk ? "Yaya modu baştan" : ({ taxi: "Çılgın Taksi baştan", cruise: "Serbest Gezinti baştan", race: "Yarış baştan", blitz: "Görev baştan" }[G.mode] || "Mod baştan"), size: 28, life: 1.6 }); }
+function restartBtn71() { const card = document.querySelector("#pause .card"); if (!card || card.querySelector('[data-act="restart71"]')) return; const b = document.createElement("button"); b.className = "nb big"; b.dataset.act = "restart71"; b.id = "btnRestart71"; b.innerHTML = "<span>🔄 YENİDEN BAŞLAT</span><small>RESTART</small>";
+  const res = card.querySelector('[data-act="resume"]'); res.insertAdjacentElement("afterend", b);
+  const st = document.createElement("style"); st.textContent = "#btnRestart71{background:linear-gradient(180deg,#ff9a2e,#e5530a)!important;border-color:#ffd8a0!important;color:#fff!important;display:flex;flex-direction:column;align-items:center;gap:2px}#btnRestart71 small{font-size:11px;font-weight:800;opacity:.85;letter-spacing:2px}#btnRestart71:active{transform:scale(.97)}"; document.head.appendChild(st);
+  b.addEventListener("click", e => { e.stopPropagation(); restart71(); }); }
+restartBtn71(); document.addEventListener("DOMContentLoaded", restartBtn71);
 
 </script>
 <div id="fpsBox" style="position:fixed;left:max(8px,env(safe-area-inset-left));top:calc(max(6px,env(safe-area-inset-top)) + 64px);z-index:60;font:700 13px/1.2 monospace;color:#7affc0;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:7px;pointer-events:none;display:none"></div>
