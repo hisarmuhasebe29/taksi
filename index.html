@@ -7095,7 +7095,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.68";
+const VER = "v.69";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -18955,6 +18955,60 @@ function stations68() { const L = []; for (const W of WHEELS) { const I = W.m.us
     G0.traverse(o => { if (o.isMesh) o.castShadow = true; }); ST.push({ name: S.name, x, z, g: G0 }); }
   if (AM.length) { const im = inst67(arch, steel, AM, { cast: true }); scene.add(im); W68.archIM = im; }
   W68.st = ST; W68.info += " istasyon " + ST.length + " (" + ST.map(s => s.name).join(", ") + ") · yeni bisiklet " + nb + " kaykay " + ns; try { renderer.shadowMap.needsUpdate = true; } catch (e) { } }
+
+</script>
+<script>
+/* =====================================================================
+   v.69 — DOKUNMATİK JOYSTICK YENİDEN YAZILDI (yalnız kontrol kodu)
+   1) Bölge kilidi: joystick yalnız sol alttaki sabit #joystick-zone
+      dairesine (140×140 px, bottom 24 px, left 24 px + güvenli alan)
+      dokununca başlar. Ekranın ortası ve sağı (düğmeler hariç) yalnız
+      kamerayı döndürür; eski "parmağın değdiği yerde açılan" joystick
+      ve sol yarı-ekran joystick'i devre dışı.
+   2) Takılma / donma çözümü:
+      a) Parmak kilidi: ilk basan parmağın touch.identifier'ı
+         (activeJoystickTouchId) saklanır; touchmove / touchend yalnız
+         o parmağı izler — sağ elle kamera, GAZ, ZIPLA… joystick'i bozmaz.
+      b) Daire dışına taşsa bile takip sürer: topuz maxRadius = 45 px'te
+         sınırlanır, vektör (dx / 45, dy / 45) kesintisiz 1.0 tam değerde.
+      c) Tarayıcı kaydırma / yenileme engeli: touch-action: none,
+         user-select: none, tüm dokunma olaylarında preventDefault().
+      d) touchend / touchcancel (ve uygulama arka plana düşünce): topuz
+         anında merkeze (0, 0), hareket vektörü sıfır.
+   Şehir, araçlar, sahne ve 60 FPS ayarları değişmedi.
+   ===================================================================== */
+const J69 = { id: null, cx: 0, cy: 0, max: 45, zone: null, knob: null, on: false, n: 0 };
+let activeJoystickTouchId = null;
+function j69Css() { const st = document.createElement("style"); st.id = "css69"; st.textContent = `
+#joystick-zone{position:absolute;left:calc(24px + env(safe-area-inset-left));bottom:calc(24px + env(safe-area-inset-bottom));width:140px;height:140px;border-radius:50%;pointer-events:auto;touch-action:none;-ms-touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;z-index:2}
+#joystick-zone #joyBase{position:absolute!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:100%!important;height:100%!important;margin:0!important;display:block!important;pointer-events:none!important;opacity:.55;transition:opacity .12s;touch-action:none}
+body.j69 #joystick-zone #joyBase{opacity:.95}
+#joystick-zone #joyKnob{width:56px!important;height:56px!important;margin:-28px 0 0 -28px!important;transition:none!important;will-change:transform;pointer-events:none}
+body.ctrlBtn.driving #joystick-zone{display:none!important}body.shopping #joystick-zone{visibility:hidden}body:not(.touch) #joystick-zone{display:none}`; document.head.appendChild(st); }
+/* topuz + vektör: parmak daireden çıksa da kenarda (45 px) kalır, değer 1.0'da sürer */
+function j69Set(x, y) { let dx = x - J69.cx, dy = y - J69.cy; const d = Math.hypot(dx, dy), m = J69.max; if (d > m) { dx = dx / d * m; dy = dy / d * m; }
+  TOUCH.jx = dx / m; TOUCH.jy = dy / m; TOUCH.jm = Math.min(1, Math.hypot(dx, dy) / m); if (J69.knob) J69.knob.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px)"; }
+function j69Reset() { J69.id = null; activeJoystickTouchId = null; TOUCH.jx = 0; TOUCH.jy = 0; TOUCH.jm = 0; if (J69.knob) J69.knob.style.transform = "translate(0px,0px)"; document.body.classList.remove("j69"); }
+function j69Find(list) { if (J69.id === null) return null; for (let i = 0; i < list.length; i++) if (list[i].identifier === J69.id) return list[i]; return null; }
+function j69Start(e) { e.preventDefault(); e.stopPropagation(); try { auInit(); if (typeof au66Unlock === "function") au66Unlock(); } catch (er) { } if (J69.id !== null) return; if (typeof G === "undefined" || G.state !== "play") return;
+  const t = e.changedTouches[0]; if (!t) return; const r = J69.zone.getBoundingClientRect(); J69.cx = r.left + r.width / 2; J69.cy = r.top + r.height / 2; J69.id = t.identifier; activeJoystickTouchId = t.identifier; document.body.classList.add("j69"); j69Set(t.clientX, t.clientY); }
+function j69Move(e) { if (J69.id === null) return; const t = j69Find(e.changedTouches); if (!t) return; if (e.cancelable) e.preventDefault(); j69Set(t.clientX, t.clientY); }
+function j69End(e) { if (J69.id === null) return; const t = j69Find(e.changedTouches); if (!t) { if (e.touches && !j69Find(e.touches)) j69Reset(); return; } if (e.cancelable) e.preventDefault(); j69Reset(); }
+function j69Init() { if (J69.on) return; const base = $("joyBase"), host = $("touch"); if (!base || !host) return; J69.on = true; j69Css();
+  const z = document.createElement("div"); z.id = "joystick-zone"; z.setAttribute("aria-label", "Yön"); host.appendChild(z); z.appendChild(base); base.style.left = base.style.top = base.style.display = ""; J69.zone = z; J69.knob = $("joyKnob"); J69.knob.style.transform = "translate(0px,0px)";
+  const o = { passive: false }; z.addEventListener("touchstart", j69Start, o); z.addEventListener("touchmove", j69Move, o); z.addEventListener("touchend", j69End, o); z.addEventListener("touchcancel", j69End, o);
+  /* yedek: parmak daireden çıkıp başka öğenin üstüne gelse bile kimlikle izlenir */ addEventListener("touchmove", j69Move, o); addEventListener("touchend", j69End, o); addEventListener("touchcancel", j69End, o);
+  /* daire üzerindeki işaretçi olayları kameraya / eski joystick'e gitmesin */ for (const ev of ["pointerdown", "pointermove", "pointerup", "pointercancel", "mousedown", "contextmenu"]) z.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, o);
+  addEventListener("blur", j69Reset); document.addEventListener("visibilitychange", () => { if (document.hidden) j69Reset(); }); joyOff69(); }
+/* eski joystick yollarını kalıcı kapat: joyId'yi hiçbir işaretçi kimliğiyle eşleşmeyen nöbetçi değere sabitle */
+function joyOff69() { if (!J69.on) return; if (joyId !== -969) joyId = -969; }
+addEventListener("pointerdown", e => { if (J69.on && e.pointerType !== "mouse") joyOff69(); }, true);
+/* kamera: joystick dairesi ve düğmeler dışındaki tüm dokunuşlar (ortası dahil) kamerayı döndürür */
+hud.addEventListener("pointerdown", e => { if (!J69.on || e.pointerType === "mouse" || ORB.id !== null) return; if (G.state !== "play" || freeCamOn() || inMinimap(e.clientX, e.clientY)) return;
+  if (document.body.classList.contains("ctrlBtn") && G.pv) return; ORB.id = e.pointerId; ORB.x = e.clientX; try { hud.setPointerCapture(e.pointerId); } catch (er) { } });
+/* durum değişince (harita, duraklat, araca binme düğme modu) takılı kalma olmasın */
+{ const _at69 = applyTimeOfDay; applyTimeOfDay = function () { const r = _at69.apply(this, arguments); try { if (IS_TOUCH) j69Init(); } catch (e) { } return r; }; }
+{ const _uc69 = updateCity27; updateCity27 = function (dt) { const r = _uc69.apply(this, arguments); try { if (!J69.on && IS_TOUCH) j69Init(); joyOff69(); if (J69.id !== null) { const hide = G.state !== "play" || (document.body.classList.contains("ctrlBtn") && G.pv); if (hide) j69Reset(); } else if (TOUCH.jm !== 0 && J69.on && (J69.n = (J69.n + 1) % 30) === 0 && !KEY.KeyW) { /* serbest kalmış eski değer */ TOUCH.jx = TOUCH.jy = TOUCH.jm = 0; } } catch (e) { } return r; }; }
 
 </script>
 <div id="fpsBox" style="position:fixed;left:max(8px,env(safe-area-inset-left));top:calc(max(6px,env(safe-area-inset-top)) + 64px);z-index:60;font:700 13px/1.2 monospace;color:#7affc0;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:7px;pointer-events:none;display:none"></div>
