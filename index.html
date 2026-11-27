@@ -7095,7 +7095,7 @@ const GLB_RAW = {"car_police": "H4sIAAAAAAAC/817C3xT1f34aZM0aZv2JqFvCgl9o33c3Hvz
    Tek dosya: grafikler three.js ile kodla, sesler Web Audio ile üretilir.
    Birim: 1 = 1 metre. x doğu, z güney, y yukarı.
    ===================================================================== */
-const VER = "v.67";
+const VER = "v.68";
 const MW = 2000, MH = 1400;            // harita boyutu (metre)
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 let rnd = mulberry32(170219);
@@ -18698,6 +18698,263 @@ function update67() { if (!K67.ok) return; const c = camera.position, l = K67.l,
   const pv = dd < 110; if (K67.plaza.visible !== pv) K67.plaza.visible = pv;
   const st = K49.in; if (K49.inG.visible !== st) K49.inG.visible = st; /* merdiven: yalnız içerideyken */ }
 { const _uc67 = updateCity27; updateCity27 = function (dt) { const r = _uc67.apply(this, arguments); try { update67(dt); } catch (e) { if (!K67.uerr) { K67.uerr = 1; console.error("v67", e); } } return r; }; }
+
+</script>
+<script>
+/* =====================================================================
+   v.68 — BİSİKLET VE KAYKAY SİSTEMİ (BAŞTAN YAZILDI)
+   1) Bisiklet: binince yürüme animasyonu tamamen durur, karakter bisiklet
+      grubunun (bikeGroup) çocuğu olur. Kalça selenin üstünde, gövde 15°
+      önde; iki el gidon elciklerinde (2 kemikli IK, milimetrik), gidon
+      dönünce eller + ön tekerlek birlikte döner; bacaklar pedallarda (IK),
+      pedal/tekerlek/aynakol dönüşüyle senkron pedal çevirme; durunca
+      bisiklet hafif yatar ve sol ayak yere basar.
+   2) Kaykay: zımpara yüzeyli kavisli tahta, çift truck (dingil), renkli
+      tekerlekler. Yan duruş (gövde 70° yan), iki ayak tahtada, dizler
+      kırık, kollar dengeye açık; hızlanırken arka ayakla yerden itme
+      (push); Space / ZIPLA ile tahtayla birlikte OLLIE.
+   3) Bisiklet park istasyonları (metal kemerli park demirleri, InstancedMesh):
+      Oğuzhan Enes Oyun Parkı, Lunapark girişi, Sahil kordonu, AVM önü,
+      Sultanahmet Meydanı. İstasyonlarda farklı renkte 15 bisiklet + 10
+      kaykay (şehirdeki mevcutlarla birlikte 27 bisiklet, 23 kaykay).
+   4) 2,5 m'de "[E] Bisiklete Bin / Kaykaya Bin"; [E] ile inişte araç
+      yavaşlayıp durur, pozlar sıfırlanır, karakter aracın sol yanındaki
+      güvenli zemine iner ve yürümeye döner.
+   5) 60 FPS: park demirleri InstancedMesh; park hâlindeki bisiklet 3,
+      kaykay 4 çizim (birleşik geometri); 110 m dışında gizli; binilen
+      bisiklet için tek eklemli model (tekerlek, gidon, aynakol, pedal).
+      Dokunmatik: joystick + GAZ / FREN / ZIPLA / E(İN) düğmeleri.
+   ===================================================================== */
+const W68 = { R: null, mats: {}, rigs: {}, info: "", st: [], hideT: 0, prevJ: false, err: 0 };
+/* bisiklet ölçüleri (bz çerçevesi: +z ileri, +x sol, y yukarı, zemin y = 0) */
+const BK68 = { R: 0.34, rz: -0.52, fz: 0.53, ay: 0.34, BB: [0, 0.30, -0.02], crank: 0.17, ST: [0, 0.78, -0.15], HB: [0, 0.68, 0.45], HT: [0, 0.90, 0.405], pz: 0.43, grip: [0.25, 1.04, 0.30], seatSlope: -0.271 };
+function mat68(k, f) { return W68.mats[k] || (W68.mats[k] = f()); }
+function tube68(a, b, r, seg) { const d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = d.length(), g = new THREE.CylinderGeometry(r, r, L, seg || 8, 1, false); g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize())); g.translate((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2); return g; }
+function mg68(list) { return merge67(list); }
+/* tekerlek (aks x ekseninde, merkez 0): lastik / jant+tel+göbek */
+function wheelGeo68(bmx) { const R = BK68.R, black = [new THREE.TorusGeometry(R - 0.032, bmx ? 0.038 : 0.031, 8, 30).rotateY(Math.PI / 2)], steel = [new THREE.TorusGeometry(0.296, 0.011, 5, 30).rotateY(Math.PI / 2), new THREE.CylinderGeometry(0.026, 0.026, 0.11, 10).rotateZ(Math.PI / 2)];
+  for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, sx = k % 2 ? 0.035 : -0.035, rx = 0; steel.push(tube68([sx, Math.sin(a + 0.25) * 0.024, Math.cos(a + 0.25) * 0.024], [rx, Math.sin(a) * 0.29, Math.cos(a) * 0.29], 0.0026, 3)); }
+  return { black: mg68(black), steel: mg68(steel) }; }
+/* gövde (sabit kısımlar): kadro, arka maşa, çamurluklar, zincir, arka dişli, sele borusu yuvası, ayak */
+function frameGeo68(bmx) { const { BB, ST, HB, HT, rz, ay } = BK68, F = [], K = [], S = [];
+  F.push(tube68(BB, HB, 0.024), tube68(ST, HT, 0.019), tube68(BB, [0, ST[1] + 0.02, ST[2] - 0.006], 0.021), tube68(HB, HT, 0.027));
+  for (const s of [-1, 1]) { F.push(tube68(BB, [s * 0.065, ay, rz], 0.012), tube68([s * 0.012, ST[1] - 0.02, ST[2] - 0.01], [s * 0.065, ay, rz], 0.011)); }
+  F.push(new THREE.CylinderGeometry(0.034, 0.034, 0.1, 12).rotateZ(Math.PI / 2).translate(BB[0], BB[1], BB[2])); /* orta göbek */
+  if (!bmx) { const fr = new THREE.TorusGeometry(BK68.R + 0.03, 0.026, 4, 18, 2.15); fr.rotateZ(0.25); fr.rotateY(Math.PI / 2); fr.translate(0, ay, rz); F.push(fr); S.push(new THREE.BoxGeometry(0.16, 0.03, 0.12).translate(0, ay + 0.37, rz + 0.05)); /* arka bagaj */ for (const s of [-1, 1]) S.push(tube68([s * 0.07, ay + 0.36, rz + 0.1], [s * 0.065, ay, rz], 0.006, 4)); }
+  /* zincir (sağ taraf: x < 0) + arka dişli */ K.push(tube68([-0.062, BB[1] + 0.094, BB[2]], [-0.062, ay + 0.042, rz], 0.005, 4), tube68([-0.062, BB[1] - 0.094, BB[2]], [-0.062, ay - 0.042, rz], 0.005, 4)); S.push(new THREE.TorusGeometry(0.042, 0.006, 4, 16).rotateY(Math.PI / 2).translate(-0.062, ay, rz));
+  /* arka reflektör */ const rr = new THREE.BoxGeometry(0.06, 0.03, 0.012).translate(0, ay + 0.33, rz - 0.34);
+  return { frame: mg68(F), black: mg68(K), steel: mg68(S), refl: rr }; }
+/* ön takım (pivot yerel): çatal, gidon (geriye kıvrık), elcikler, sepet, far */
+function frontGeo68(bmx) { const { HB, HT, pz, fz, ay, grip } = BK68, F = [], K = [], S = [], dz = -pz;
+  for (const s of [-1, 1]) F.push(tube68([s * 0.04, HB[1] - 0.02, HB[2] + dz], [s * 0.05, ay, fz + dz], 0.014, 6)); F.push(new THREE.BoxGeometry(0.11, 0.04, 0.05).translate(0, HB[1] - 0.02, HB[2] + dz));
+  S.push(tube68([0, HT[1], HT[2] + dz], [0, HT[1] + 0.09, HT[2] + dz + 0.01], 0.014), tube68([0, HT[1] + 0.09, HT[2] + dz + 0.01], [0, grip[1] - 0.02, HT[2] + dz + 0.07], 0.016));
+  const bar = []; for (let i = -6; i <= 6; i++) { const u = i / 6, x = u * grip[0], zc = HT[2] + dz + 0.07 - Math.pow(Math.abs(u), 1.6) * (HT[2] + dz + 0.07 - (grip[2] + dz)), y = grip[1] - 0.02 + Math.abs(u) * 0.02; bar.push([x, y, zc]); } for (let i = 0; i < bar.length - 1; i++) S.push(tube68(bar[i], bar[i + 1], 0.012, 6));
+  for (const s of [-1, 1]) { K.push(new THREE.CylinderGeometry(0.019, 0.019, 0.11, 8).rotateZ(Math.PI / 2).translate(s * (grip[0] - 0.035), grip[1], grip[2] + dz)); S.push(tube68([s * (grip[0] - 0.09), grip[1] + 0.005, grip[2] + dz + 0.01], [s * (grip[0] - 0.02), grip[1] + 0.012, grip[2] + dz + 0.1], 0.004, 3)); }
+  if (!bmx) { /* tel sepet */ const bx0 = -0.17, bx1 = 0.17, y0 = 0.80, y1 = 0.99, z0 = HT[2] + dz + 0.13, z1 = z0 + 0.26, E = [[bx0, y0, z0], [bx1, y0, z0], [bx1, y0, z1], [bx0, y0, z1]], T = E.map(p => [p[0], y1, p[2]]); for (let i = 0; i < 4; i++) { S.push(tube68(E[i], E[(i + 1) % 4], 0.004, 3), tube68(T[i], T[(i + 1) % 4], 0.005, 3), tube68(E[i], T[i], 0.004, 3)); } for (let k = 1; k < 5; k++) { const x = bx0 + (bx1 - bx0) * k / 5; S.push(tube68([x, y0, z1], [x, y1, z1], 0.003, 3), tube68([x, y0, z0], [x, y1, z0], 0.003, 3)); } S.push(new THREE.BoxGeometry(0.34, 0.006, 0.26).translate(0, y0, (z0 + z1) / 2)); for (const s of [-1, 1]) S.push(tube68([s * 0.1, y0, z0], [s * 0.04, HB[1] - 0.04, HB[2] + dz + 0.02], 0.005, 3));
+    const fe = new THREE.TorusGeometry(BK68.R + 0.03, 0.024, 4, 14, 1.5); fe.rotateZ(1.7); fe.rotateY(Math.PI / 2); fe.translate(0, ay, fz + dz); F.push(fe); }
+  const lamp = new THREE.CylinderGeometry(0.03, 0.026, 0.05, 10).rotateX(Math.PI / 2).translate(0, bmx ? grip[1] - 0.08 : 0.79, (bmx ? HT[2] + dz + 0.1 : HT[2] + dz + 0.12));
+  return { frame: mg68(F), black: mg68(K), steel: mg68(S), lamp }; }
+/* aynakol (BB yerel): sağ kol yukarı (θ = 0), sol kol aşağı, aynakol dişlisi */
+function crankGeo68() { const c = BK68.crank, S = [new THREE.BoxGeometry(0.016, c + 0.03, 0.03).translate(-0.078, c / 2, 0), new THREE.BoxGeometry(0.016, c + 0.03, 0.03).translate(0.078, -c / 2, 0), new THREE.TorusGeometry(0.095, 0.007, 4, 26).rotateY(Math.PI / 2).translate(-0.062, 0, 0), new THREE.CylinderGeometry(0.088, 0.088, 0.004, 26).rotateZ(Math.PI / 2).translate(-0.062, 0, 0), new THREE.CylinderGeometry(0.008, 0.008, 0.2, 6).rotateZ(Math.PI / 2)]; return mg68(S); }
+function pedalGeo68() { return mg68([new THREE.BoxGeometry(0.1, 0.022, 0.07), new THREE.CylinderGeometry(0.007, 0.007, 0.05, 5).rotateZ(Math.PI / 2).translate(0, 0, 0)]); }
+/* sele (üst yüzey y = 0) */
+function saddleGeo68() { const a = roundBox(0.17, 0.05, 0.12, 0.022).translate(0, -0.025, -0.03), b = roundBox(0.075, 0.042, 0.16, 0.018).translate(0, -0.023, 0.08); return mg68([a, b]); }
+function bikeMats68(col) { return { frame: mat68("bf" + col, () => new THREE.MeshStandardMaterial({ color: col, metalness: 0.45, roughness: 0.32 })), black: mat68("bk", () => new THREE.MeshStandardMaterial({ color: 0x17171a, roughness: 0.7 })), steel: mat68("bs", () => new THREE.MeshStandardMaterial({ color: 0xc8ccd3, metalness: 0.85, roughness: 0.28 })), refl: mat68("br", () => new THREE.MeshStandardMaterial({ color: 0xff2a2a, emissive: 0xff2010, emissiveIntensity: 0.6 })), lamp: mat68("bl", () => glow47(0xfff4d0, 0.4, 1.6)) }; }
+/* ---------- park hâlindeki bisiklet: 3 birleşik ağ (renk / siyah / çelik) ---------- */
+function bikeStatic68(col, bmx) { const M = bikeMats68(col), root = new THREE.Group(), bz = new THREE.Group(), lean = new THREE.Group(); bz.rotation.y = Math.PI / 2; root.add(bz); bz.add(lean);
+  const fr = frameGeo68(bmx), fg = frontGeo68(bmx), wg = wheelGeo68(bmx), c = BK68, th = 1.05, seatTop = 0.86, sz = c.ST[2] + c.seatSlope * (seatTop - 0.05 - c.ST[1]);
+  const T = (g, x, y, z) => g.clone().translate(x, y, z), P = (g, ry) => { const q = g.clone(); if (ry) q.rotateY(ry); return q.translate(0, 0, c.pz); };
+  const frame = [fr.frame, P(fg.frame)], black = [fr.black, P(fg.black), T(wg.black, 0, c.ay, c.rz), T(wg.black, 0, c.ay, c.fz), T(saddleGeo68(), 0, seatTop, sz)], steel = [fr.steel, P(fg.steel), T(wg.steel, 0, c.ay, c.rz), T(wg.steel, 0, c.ay, c.fz), tube68([0, c.ST[1], c.ST[2]], [0, seatTop - 0.04, sz], 0.014, 6)];
+  const cg = crankGeo68().clone(); cg.rotateX(th); cg.translate(c.BB[0], c.BB[1], c.BB[2]); steel.push(cg); for (const s of [-1, 1]) { const ang = s > 0 ? th + Math.PI : th, py = c.BB[1] + Math.cos(ang) * c.crank, pzz = c.BB[2] + Math.sin(ang) * c.crank; black.push(T(pedalGeo68(), s * 0.125, py, pzz)); }
+  if (!bmx) steel.push(tube68([0.04, c.BB[1] - 0.02, c.BB[2] - 0.12], [0.2, 0.0, c.BB[2] - 0.3], 0.01, 4)); /* yan ayak */
+  for (const [g, m] of [[mg68(frame), M.frame], [mg68(black), M.black], [mg68(steel), M.steel]]) { const me = new THREE.Mesh(g, m); me.castShadow = true; lean.add(me); }
+  root.userData.bike68 = { col, bmx }; return root; }
+/* ---------- binilen bisiklet: eklemli model ---------- */
+function bikeRig68(col, bmx) { const key = col + "|" + (bmx ? 1 : 0); if (W68.rigs[key]) return W68.rigs[key]; const M = bikeMats68(col), c = BK68, root = new THREE.Group(), bz = new THREE.Group(), lean = new THREE.Group(); root.userData.noCull = true; bz.rotation.y = Math.PI / 2; root.add(bz); bz.add(lean); lean.rotation.order = "ZXY";
+  const fr = frameGeo68(bmx), fg = frontGeo68(bmx), wg = wheelGeo68(bmx), add = (p, g, m) => { const me = new THREE.Mesh(g, m); me.castShadow = true; p.add(me); return me; };
+  add(lean, fr.frame, M.frame); add(lean, fr.black, M.black); add(lean, fr.steel, M.steel); add(lean, fr.refl, M.refl);
+  const wr = new THREE.Group(); wr.position.set(0, c.ay, c.rz); lean.add(wr); add(wr, wg.black, M.black); add(wr, wg.steel, M.steel);
+  const front = new THREE.Group(); front.position.set(0, 0, c.pz); lean.add(front); add(front, fg.frame, M.frame); add(front, fg.black, M.black); add(front, fg.steel, M.steel); add(front, fg.lamp, M.lamp);
+  const wf = new THREE.Group(); wf.position.set(0, c.ay, c.fz - c.pz); front.add(wf); add(wf, wg.black, M.black); add(wf, wg.steel, M.steel);
+  const crank = new THREE.Group(); crank.position.set(c.BB[0], c.BB[1], c.BB[2]); lean.add(crank); add(crank, crankGeo68(), M.steel);
+  const pL = add(lean, pedalGeo68(), M.black), pR = add(lean, pedalGeo68(), M.black);
+  const seat = new THREE.Group(); lean.add(seat); const sad = add(seat, saddleGeo68(), M.black); const post = add(lean, new THREE.CylinderGeometry(0.014, 0.014, 1, 6).translate(0, 0.5, 0), M.steel);
+  const R = { root, bz, lean, wr, wf, front, crank, pL, pR, seat, post, key, col, bmx, wa: 0, th: 1.05 }; W68.rigs[key] = R; return R; }
+function rigCrank68(R, th) { const c = BK68; R.th = th; R.crank.rotation.x = th; for (const [p, s] of [[R.pL, 1], [R.pR, -1]]) { const ang = s > 0 ? th + Math.PI : th; p.position.set(s * 0.125, c.BB[1] + Math.cos(ang) * c.crank, c.BB[2] + Math.sin(ang) * c.crank); p.rotation.x = Math.sin(th * 1 + (s > 0 ? Math.PI : 0)) * 0.18; } }
+function pedalPos68(th, s) { const c = BK68, ang = s > 0 ? th + Math.PI : th; return [s * 0.125, c.BB[1] + Math.cos(ang) * c.crank, c.BB[2] + Math.sin(ang) * c.crank]; }
+function rigSeat68(R, seatTop, sz) { const c = BK68, a = [0, c.ST[1], c.ST[2]], b = [0, seatTop - 0.035, sz], d = new THREE.Vector3(b[0] - a[0], b[1] - a[1], b[2] - a[2]), L = d.length(); R.seat.position.set(0, seatTop, sz); R.post.position.set(a[0], a[1], a[2]); R.post.scale.set(1, L, 1); R.post.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); }
+/* ---------- kaykay: kavisli tahta + zımpara yüzey + 2 truck + 4 renkli tekerlek ---------- */
+const SK68 = { L: 0.80, W: 0.21, deckY: 0.088, th: 0.013, kick: 0.25, truck: 0.215, wr: 0.027 };
+function deckShape68(w, L) { const s = new THREE.Shape(), r = w / 2, h = L / 2 - r; s.moveTo(-r, -h); s.lineTo(-r, h); s.absarc(0, h, r, Math.PI, 0, true); s.lineTo(r, -h); s.absarc(0, -h, r, 0, Math.PI, true); return s; }
+function bend68(g, y0) { const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const z = p.getZ(i), a = Math.abs(z); p.setY(i, p.getY(i) + y0 + (a > SK68.kick ? Math.pow(a - SK68.kick, 1.15) * 0.42 : 0)); } p.needsUpdate = true; g.computeVertexNormals(); return g; }
+function skateTex68(col) { return mat68("sd" + col, () => { const c = mkCanvas(128, 512), g = c.getContext("2d"), hex = "#" + col.toString(16).padStart(6, "0"); g.fillStyle = hex; g.fillRect(0, 0, 128, 512); g.fillStyle = "rgba(255,255,255,.85)"; for (let i = 0; i < 6; i++) g.fillRect(0, 150 + i * 36, 128, 12); g.fillStyle = "rgba(0,0,0,.55)"; g.beginPath(); g.arc(64, 96, 34, 0, Math.PI * 2); g.fill(); g.fillStyle = "#fff"; g.font = "900 40px sans-serif"; g.textAlign = "center"; g.fillText("3K", 64, 110); g.fillStyle = "#c8a070"; g.fillRect(0, 0, 4, 512); g.fillRect(124, 0, 4, 512); const t = canvasTex(c); t.repeat.set(1 / SK68.W, 1 / SK68.L); t.offset.set(0.5, 0.5); t.wrapS = t.wrapT = THREE.RepeatWrapping; return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55 }); }); }
+function gripMat68() { return mat68("grip", () => { const c = mkCanvas(128, 128), g = c.getContext("2d"); g.fillStyle = "#1b1b1d"; g.fillRect(0, 0, 128, 128); for (let i = 0; i < 2600; i++) { const v = Math.random(); g.fillStyle = v < 0.5 ? "rgba(255,255,255,.10)" : "rgba(0,0,0,.35)"; g.fillRect(Math.random() * 128, Math.random() * 128, 1, 1); } const t = canvasTex(c, true); t.repeat.set(6, 6); return new THREE.MeshStandardMaterial({ map: t, roughness: 1, bumpMap: t, bumpScale: 0.6 }); }); }
+function skateStatic68(col, wcol) { const root = new THREE.Group(), bz = new THREE.Group(), lean = new THREE.Group(); bz.rotation.y = Math.PI / 2; root.add(bz); bz.add(lean); lean.rotation.order = "ZXY"; const S = SK68;
+  const dk = new THREE.ExtrudeGeometry(deckShape68(S.W, S.L), { depth: S.th, bevelEnabled: false, curveSegments: 10 }); dk.rotateX(-Math.PI / 2); bend68(dk, S.deckY);
+  const gp = new THREE.ShapeGeometry(deckShape68(S.W - 0.006, S.L - 0.006), 10); gp.rotateX(-Math.PI / 2); bend68(gp, S.deckY + S.th + 0.0015);
+  const st = []; for (const z of [-S.truck, S.truck]) { st.push(new THREE.BoxGeometry(0.056, 0.012, 0.085).translate(0, S.deckY - 0.006, z), new THREE.BoxGeometry(0.15, 0.022, 0.03).translate(0, S.deckY - 0.036, z + (z > 0 ? -0.008 : 0.008)), new THREE.CylinderGeometry(0.005, 0.005, 0.225, 6).rotateZ(Math.PI / 2).translate(0, S.wr + 0.003, z), new THREE.CylinderGeometry(0.004, 0.004, 0.05, 5).translate(0, S.deckY - 0.03, z + (z > 0 ? 0.012 : -0.012))); for (const s of [-1, 1]) st.push(new THREE.CylinderGeometry(0.012, 0.012, 0.012, 8).rotateZ(Math.PI / 2).translate(s * 0.118, S.wr + 0.003, z)); }
+  for (const z of [-S.truck, S.truck]) st.push(new THREE.CylinderGeometry(0.014, 0.014, 0.016, 10).translate(0, S.deckY - 0.02, z)); /* lastik takozlar (bushing) */
+  const wh = []; for (const z of [-S.truck, S.truck]) for (const s of [-1, 1]) wh.push(new THREE.CylinderGeometry(S.wr, S.wr, 0.033, 14).rotateZ(Math.PI / 2).translate(s * 0.097, S.wr + 0.003, z));
+  const steel = mat68("bs", () => new THREE.MeshStandardMaterial({ color: 0xc8ccd3, metalness: 0.85, roughness: 0.28 })), wm = mat68("sw" + wcol, () => new THREE.MeshStandardMaterial({ color: wcol, roughness: 0.45 }));
+  const board = new THREE.Group(); lean.add(board); /* kickflip için ayrı tahta grubu (binici lean'de kalır) */
+  for (const [g, m] of [[dk, skateTex68(col)], [gp, gripMat68()], [mg68(st), steel], [mg68(wh), wm]]) { const me = new THREE.Mesh(g, m); me.castShadow = true; board.add(me); }
+  root.userData.skate68 = { col, wcol, bz, lean, board }; return root; }
+/* eski üreticilerin yerine: oyundaki tüm bisiklet/kaykay (skate parkı NPC'leri dahil) yeni modeli kullanır */
+const BIKE_COLS68 = [0xd8202c, 0x2e6ad1, 0xf2c230, 0x1e1f22, 0x1fb5b0], SK_COLS68 = [0xff7a1a, 0x8a4ab0, 0x2ab0b8, 0xd6457a, 0x5ac83a, 0x2e6ad1], SKW68 = [0xffd23a, 0xff4a4a, 0xf4f4f0, 0x2ad4d0, 0x8a5aff];
+bikeMesh = function (col) { return bikeStatic68(BIKE_COLS68.includes(col) ? col : BIKE_COLS68[(Math.abs(col | 0) >> 3) % BIKE_COLS68.length], false); };
+skateMesh = function (col) { const i = Math.abs(col | 0) % SK_COLS68.length; return skateStatic68(SK_COLS68.includes(col) ? col : SK_COLS68[i], SKW68[(i + 1) % SKW68.length]); };
+
+/* ---------- v.68: sürücü pozları — 2 kemikli IK (bacak → pedal / tahta, kol → gidon elciği) ---------- */
+const _qa68 = new THREE.Quaternion(), _qb68 = new THREE.Quaternion(), _qc68 = new THREE.Quaternion(), _X68 = new THREE.Vector3(1, 0, 0), _Z68 = new THREE.Vector3(0, 0, 1), _u68 = new THREE.Vector3(), _d68 = new THREE.Vector3(), _e68 = new THREE.Euler(), _m68 = new THREE.Matrix4();
+const LEG68 = [0.43, 0.42], ARM68 = [0.275, 0.255];
+/* v: kemiğin ebeveyn çerçevesinde kök → hedef; knee=+1 dizi öne (bacak), -1 dirseği aşağı-geri (kol) */
+function ik68(b1, b2, v, L, knee) { const L1 = L[0], L2 = L[1], dd = v.length(), d = clamp(dd, 0.04, L1 + L2 - 0.0005); _u68.copy(v).multiplyScalar(1 / Math.max(dd, 1e-6));
+  const a = Math.atan2(-_u68.z, -_u68.y), b = Math.asin(clamp(_u68.x, -1, 1)), g = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1)), E = Math.acos(clamp((L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), -1, 1)), be = Math.PI - E;
+  _qa68.setFromAxisAngle(_X68, a); _qb68.setFromAxisAngle(_Z68, b); _qc68.setFromAxisAngle(_X68, knee > 0 ? -g : g); b1.quaternion.copy(_qa68).multiply(_qb68).multiply(_qc68); b2.rotation.set(knee > 0 ? be : -be, 0, 0);
+  /* alt kemiğin yön eğimi (ayak bileğini yere paralel tutmak için) */ _d68.set(0, -1, 0).applyQuaternion(b2.quaternion).applyQuaternion(b1.quaternion); return Math.atan2(_d68.z, -_d68.y); }
+/* model uzayı (ölçeksiz) yardımcıları: kalça ve omuz eklemleri */
+function hipM68(s, by) { return new THREE.Vector3(s * 0.088, 0.93 + by, 0); }
+function torsoQ68(tx, ty) { _e68.set(tx, ty, 0, "XYZ"); return new THREE.Quaternion().setFromEuler(_e68); }
+function shoulderM68(s, by, q) { return new THREE.Vector3(s * 0.178, 0.355, 0).applyQuaternion(q).add(new THREE.Vector3(0, 1.01 + by, 0)); }
+/* binici çerçevesindeki (bz/lean) bir noktayı karakterin model uzayına çevir */
+function toModel68(p, rootP, yaw, sc) { const dx = p[0] - rootP[0], dy = p[1] - rootP[1], dz = p[2] - rootP[2], c = Math.cos(-yaw), sn = Math.sin(-yaw); return new THREE.Vector3((dx * c + dz * sn) / sc, dy / sc, (-dx * sn + dz * c) / sc); }
+function resetRig68(n) { for (const k of ["body", "pelvis", "torso", "head", "hdL", "hdR"]) { n[k].rotation.set(0, 0, 0); } n.body.position.y = 0; }
+/* oturma geometrisi: binicinin boyuna göre sele yüksekliği ve kalça konumu */
+function bikeFit68(sc) { const c = BK68, tau = 0.26, Gw = [c.grip[0], c.grip[1] + 0.035, c.grip[2] - 0.045], reach = 0.93 * (ARM68[0] + ARM68[1]) * sc, legN = 0.95 * (LEG68[0] + LEG68[1]) * sc; let seatTop = 0.86, rootZ = -0.16, rootY = 0;
+  for (let it = 0; it < 3; it++) { rootY = seatTop + 0.07 * sc - 0.93 * sc; const shY = rootY + sc * (1.01 + 0.355 * Math.cos(tau)), dx = Gw[0] - 0.178 * sc, dy = Gw[1] - shY, dz2 = reach * reach - dx * dx - dy * dy, dz = Math.sqrt(Math.max(0.0004, dz2)); rootZ = clamp(Gw[2] - dz - sc * 0.355 * Math.sin(tau), -0.30, -0.02);
+    const zl = c.ST[2] + c.seatSlope * (seatTop - 0.05 - c.ST[1]); rootZ = clamp(rootZ, zl - 0.06 + 0.02, zl + 0.06 + 0.02);
+    const ank = [0.125, c.BB[1] - c.crank + 0.065, c.BB[2] - 0.03], hz = rootZ - ank[2], hx = 0.088 * sc - ank[0], dyl = Math.sqrt(Math.max(0.01, legN * legN - hz * hz - hx * hx)); seatTop = clamp(ank[1] + dyl - 0.07 * sc, 0.80, 1.06); }
+  rootY = seatTop + 0.07 * sc - 0.93 * sc; return { seatTop, rootY, rootZ, sadZ: rootZ - 0.02, tau }; }
+/* bisiklet pozu: P = { th (aynakol), st (gidon -1..1), stop (0..1 durup sol ayak yere), sc, fit } */
+function bikePose68(wm, P) { const n = wm.userData.rig, sc = P.sc, f = P.fit, c = BK68, k = P.stop || 0; resetRig68(n);
+  const rootP = [0, f.rootY - 0.06 * k, f.rootZ + 0.07 * k], by = 0, tq = torsoQ68(f.tau + 0.06 * k, 0); wm.position.set(rootP[0], rootP[1], rootP[2]); wm.rotation.set(0, 0, 0); wm.scale.setScalar(sc);
+  n.torso.quaternion.copy(tq); n.head.rotation.set(-f.tau * 0.75, 0, 0);
+  /* eller: gidon elcikleri (gidonla döner) */ const dl = -(P.st || 0) * 0.45, cs = Math.cos(dl), sn = Math.sin(dl), tqi = tq.clone().invert();
+  for (const s of [1, -1]) { const gx = s * c.grip[0], gz = c.grip[2] - c.pz, wx = gx * cs + gz * sn, wz = -gx * sn + gz * cs, wrist = [wx, c.grip[1] + 0.035, c.pz + wz - 0.045], H = toModel68(wrist, rootP, 0, sc), S = shoulderM68(s, by, tq), v = H.sub(S).applyQuaternion(tqi);
+    const L = s > 0 ? n.uaL : n.uaR, F = s > 0 ? n.faL : n.faR, hd = s > 0 ? n.hdL : n.hdR; ik68(L, F, v, ARM68, -1); hd.rotation.set(-0.55, 0, s * 0.12); }
+  /* bacaklar: pedallara; durunca sol ayak yere */ for (const s of [1, -1]) { const pp = pedalPos68(P.th, s); let a = [pp[0], pp[1] + 0.065, pp[2] - 0.03]; if (s > 0 && k > 0) { const g = [0.37, 0.37 * Math.tan(0.13) + 0.08 * sc, f.rootZ + 0.16]; a = [lerp(a[0], g[0], k), lerp(a[1], g[1], k), lerp(a[2], g[2], k)]; }
+    const T = toModel68(a, rootP, 0, sc), Hh = hipM68(s, by), v = T.sub(Hh), th = s > 0 ? n.thL : n.thR, sh = s > 0 ? n.shL : n.shR, ft = s > 0 ? n.ftL : n.ftR, pitch = ik68(th, sh, v, LEG68, 1); ft.rotation.set(pitch - 0.08 + (s > 0 ? k * 0.25 : 0), 0, 0); } }
+/* kaykay pozu: P = { sc, push (0..1 karışım), ph (itme fazı 0..1), air (0..1), lean, t } */
+function skatePose68(wm, P) { const n = wm.userData.rig, sc = P.sc, S = SK68, dTop = S.deckY + S.th, pk = clamp(P.push || 0, 0, 1), air = clamp(P.air || 0, 0, 1); resetRig68(n);
+  const yaw = lerp(-1.22, -0.32, pk), rootP = [0, dTop, 0], by = -0.075 - 0.03 * pk + 0.05 * air - Math.abs(Math.sin((P.t || 0) * 2.2)) * 0.008; wm.position.set(rootP[0], rootP[1], rootP[2]); wm.rotation.set(0, yaw, 0); wm.scale.setScalar(sc); n.body.position.y = by;
+  const tq = torsoQ68(0.12 + 0.12 * pk, lerp(0.38, 0.05, pk)); n.torso.quaternion.copy(tq); n.head.rotation.set(-0.1, lerp(0.82, 0.1, pk), 0);
+  /* kollar dengeye iki yana açık (itmede biri öne) */ const sw = Math.sin((P.t || 0) * 1.7) * 0.06 + (P.lean || 0) * 0.3; n.uaL.rotation.set(lerp(-0.2, -0.55, pk), 0, 0.78 + sw + air * 0.4); n.uaR.rotation.set(lerp(-0.1, 0.35, pk), 0, -0.72 + sw - air * 0.4); n.faL.rotation.set(-0.38, 0, 0); n.faR.rotation.set(-0.32, 0, 0); n.hdL.rotation.set(0, 0, 0.1); n.hdR.rotation.set(0, 0, -0.1);
+  /* ayaklar: ön ayak (sol) ön trucka, arka ayak (sağ) kuyruğa; itmede arka ayak yerde süpürür */ const ank = 0.08 * sc;
+  const front = [0, dTop + ank + air * 0.0, lerp(0.19, 0.13, pk)]; let back = [0, dTop + ank, -0.2];
+  if (pk > 0.02) { const ph = P.ph || 0, down = ph < 0.62, u = down ? ph / 0.62 : (ph - 0.62) / 0.38, gz = down ? lerp(0.08, -0.55, u) : lerp(-0.55, 0.08, u), gy = down ? 0.08 * sc + 0.0 : 0.08 * sc + Math.sin(u * Math.PI) * 0.13, g = [-0.2, gy, gz]; back = [lerp(back[0], g[0], pk), lerp(back[1], g[1], pk), lerp(back[2], g[2], pk)]; }
+  for (const [s, a] of [[1, front], [-1, back]]) { const T = toModel68(a, rootP, yaw, sc), Hh = hipM68(s, by), v = T.sub(Hh), th = s > 0 ? n.thL : n.thR, sh = s > 0 ? n.shL : n.shR, ft = s > 0 ? n.ftL : n.ftR, pitch = ik68(th, sh, v, LEG68, 1); ft.rotation.set(pitch - 0.05, 0, 0); } }
+
+/* ---------- v.68: binme / inme ---------- */
+function okXZ68(x, z, jy, yRef) { return !!walkAt(x, z) && !pibW45(x, z, jy || 0) && !railBlocks(x, z, jy || 0) && heightAt(x, z) < yRef + 0.5; }
+takeWheel = function (W) { const w = G.walker, wm = G.walkerMesh; if (!w || !wm || G.pv || G.ride || W68.R || W.held) return; const bike = W.type === "bike";
+  W.held = true; G.wheel = { W, k: 1 }; G.posture = 0; const sc = wm.userData.h || 1;
+  const R = { W, type: W.type, bike, w, wm, sc, v: 0, st: 0, vy: 0, air: false, airT: 0, peak: 0, th: 1.05, wa: 0, stopK: 1, pushK: 0, pushPh: 0, mode: "ride", offT: 0, leanZ: 0, pitch: 0, t: 0, flip: null };
+  w.x = W.x; w.z = W.z; w.a = W.a; w.jy = 0; w.vy = 0; w.vx = w.vz = 0; w.sitK = 0; w.state = "walk"; R.y = heightAt(W.x, W.z);
+  if (bike) { const info = W.m.userData.bike68 || { col: BIKE_COLS68[0], bmx: !!W.bmx }, rig = bikeRig68(info.col, info.bmx || !!W.bmx); R.rig = rig; R.fit = bikeFit68(sc); rigSeat68(rig, R.fit.seatTop, R.fit.sadZ); rigCrank68(rig, R.th); W.m.visible = false; scene.add(rig.root); rig.lean.add(wm); }
+  else { const S = W.m.userData.skate68; R.sk = S; S.lean.add(wm); }
+  W68.R = R; G.isRidingBike = bike; G.isRidingSkateboard = !bike; W68.prevJ = true; upd68(0); try { ui66Layout(true); } catch (e) { }
+  hint(bike ? "🚲 Bisiklet · ileri: pedal · sağ-sol: gidon · ZIPLA/Space: hop (havada tekrar: takla) · [E] in" : "🛹 Kaykay · ileri: ayakla it · sağ-sol: dön · ZIPLA/Space: OLLIE (havada tekrar: KICKFLIP) · [E] in", 3.2); try { sfxClick(); } catch (e) { } };
+dropWheel = function () { const R = W68.R; if (!R) { G.wheel = null; return; } if (R.mode === "ride") { R.mode = "off"; R.offT = 0; } };
+/* aracı bırak: park et, karakteri sol yandaki güvenli zemine indir, pozları sıfırla */
+function park68(R) { const W = R.W, w = R.w, a = w ? w.a : W.a, x = w ? w.x : W.x, z = w ? w.z : W.z; W.x = x; W.z = z; W.a = a; W.held = false; W.m.position.set(x, heightAt(x, z), z); W.m.rotation.set(0, -a, 0); W.m.visible = true;
+  if (R.bike) { if (R.rig.root.parent) R.rig.root.parent.remove(R.rig.root); R.rig.lean.rotation.set(0, 0, 0); R.rig.lean.position.set(0, 0, 0); } else { R.sk.lean.rotation.set(0, 0, 0); R.sk.lean.position.set(0, 0, 0); R.sk.board.rotation.set(0, 0, 0); R.sk.board.position.set(0, 0, 0); } }
+function finishOff68() { const R = W68.R; if (!R) return; const w = R.w, wm = R.wm; park68(R);
+  if (w && w === G.walker) { const a = w.a, lx = Math.sin(a), lz = -Math.cos(a), y0 = heightAt(w.x, w.z); let px = w.x, pz = w.z; for (const [dx, dz] of [[lx * 0.75, lz * 0.75], [-lx * 0.75, -lz * 0.75], [-Math.cos(a) * 1.3, -Math.sin(a) * 1.3], [lx * 1.2, lz * 1.2]]) { const x = w.x + dx, z = w.z + dz; if (okXZ68(x, z, 0, y0)) { px = x; pz = z; break; } }
+    w.x = px; w.z = pz; w.jy = 0; w.vy = 0; w.vx = w.vz = 0; w.sitK = 0; w.state = "walk"; w.still = false; }
+  if (wm) { if (wm.parent !== scene) scene.add(wm); resetRig68(wm.userData.rig); wm.rotation.set(0, 0, 0); wm.scale.setScalar(wm.userData.h || 1); if (w && G.walkerMesh === wm) { wm.position.set(w.x, heightAt(w.x, w.z), w.z); wm.rotation.y = -w.a + Math.PI / 2; } }
+  W68.R = null; G.wheel = null; G.isRidingBike = false; G.isRidingSkateboard = false; try { ui66Layout(true); } catch (e) { } }
+function dropNow68() { const R = W68.R; if (!R) return; R.v = 0; if (R.wm && R.wm !== G.walkerMesh && R.wm.parent) R.wm.parent.remove(R.wm); if (R.w !== G.walker) R.w = null; if (R.wm !== G.walkerMesh) R.wm = null; finishOff68(); }
+/* ---------- v.68: sürüş fiziği (yürüme hesabının yerine) ---------- */
+function ride68(dt) { const R = W68.R, w = R.w, bike = R.bike; R.t += dt; dt = Math.min(dt, 0.05);
+  let fwd = (KEY.KeyW || KEY.ArrowUp ? 1 : 0) - (KEY.KeyS || KEY.ArrowDown ? 1 : 0), str = (KEY.KeyD || KEY.ArrowRight ? 1 : 0) - (KEY.KeyA || KEY.ArrowLeft ? 1 : 0);
+  if (TOUCH.jm > 0.15) { fwd = clamp(-TOUCH.jy * 1.25, -1, 1); str = clamp(TOUCH.jx * 1.15, -1, 1); } if (TOUCH.btn.gas) fwd = 1; if (TOUCH.btn.brake) fwd = -1; if (TOUCH.btn.left) str = -1; if (TOUCH.btn.right) str = 1;
+  const sprint = !!(KEY.ShiftLeft || KEY.ShiftRight || TOUCH.btn.nitro), jNow = !!(KEY.Space || TOUCH.btn.hb), jEdge = jNow && !W68.prevJ; W68.prevJ = jNow;
+  if (R.mode === "off") { fwd = 0; R.offT += dt; R.v = Math.max(0, R.v - 9 * dt); if (R.v < 0.25 || R.offT > 1.2) { finishOff68(); return; } }
+  const vmax = (bike ? (R.W.bmx ? 8.0 : 8.6) : 6.2) * (sprint ? 1.22 : 1) * (hasPerk && hasPerk("eymen") ? 1.1 : 1), acc = bike ? 3.1 : 2.3;
+  if (!R.air) { if (fwd > 0.1) { const th = bike ? 1 : (R.pushPh < 0.62 ? 1.6 : 0.25); if (R.v < vmax * Math.max(0.35, fwd)) R.v = Math.min(vmax * Math.max(0.35, fwd), R.v + acc * fwd * th * dt); } else if (fwd < -0.1) R.v = R.v > 0 ? Math.max(0, R.v - 7.5 * dt) : Math.min(0, R.v + 7.5 * dt); const fr = ((bike ? 0.22 : 0.5) + 0.012 * R.v * R.v) * dt; R.v = R.v > 0 ? Math.max(0, R.v - fr) : Math.min(0, R.v + fr); }
+  R.st += (str - R.st) * Math.min(1, dt * 6); const yr = R.v < 0.6 ? 1.25 : clamp(2.7 / (0.6 + R.v * 0.32), 0.7, 2.3); w.a += R.st * yr * dt;
+  /* yatay hareket: 10 cm'lik alt adımlar (rampa / half-pipe yüzeyine tırmanır) + çarpışma (yürüyüş kurallarıyla aynı engeller) */ const ca = Math.cos(w.a), sa = Math.sin(w.a), x0 = w.x, z0 = w.z, gPrev = heightAt(w.x, w.z);
+  if (Math.abs(R.v) > 0.001) { const D = Math.abs(R.v) * dt, n = Math.max(1, Math.ceil(D / 0.1)), sx = ca * R.v * dt / n, sz = sa * R.v * dt / n; let yC = R.air ? R.y : gPrev, hit = 0, steep = false;
+    for (let i = 0; i < n; i++) { const tx = w.x + sx, tz = w.z + sz, jc = Math.max(0, R.y - heightAt(w.x, w.z)), ref = R.air ? R.y : yC;
+      if (okXZ68(tx, tz, jc, R.air ? ref : ref - 0.08)) { w.x = tx; w.z = tz; if (!R.air) yC = heightAt(tx, tz); continue; }
+      const gh = heightAt(tx, tz); if (!R.air && walkAt(tx, tz) && !pibW45(tx, tz, 0) && gh > yC + 0.4 && gh < yC + 4.5 && Math.abs(R.v) > 3) { steep = true; hit = 2; break; }
+      if (okXZ68(tx, w.z, jc, ref)) { w.x = tx; R.v *= 0.92; if (!R.air) yC = heightAt(w.x, w.z); continue; } if (okXZ68(w.x, tz, jc, ref)) { w.z = tz; R.v *= 0.92; if (!R.air) yC = heightAt(w.x, w.z); continue; } hit = 1; break; }
+    if (hit === 2) { R.air = true; R.vert = true; R.flipped = false; R.vy = Math.min(11, Math.abs(R.v) * 0.9); R.airT = 0; R.peak = 0; R.flip = null; R.trick = "180 AIR"; R.v = 0; R.y = Math.max(R.y, yC); }
+    else if (hit === 1) { if (Math.abs(R.v) > 4.5) { try { sfxCrash(0.18); } catch (e) { } popText("ÇARPTIN!", "#ff7a5a", { sub: "Yavaşla ve yön değiştir", size: 22, life: 1.1 }); } R.v = 0; } }
+  /* eğim: yokuş yukarı yavaşlar, aşağı hızlanır (half-pipe'ta geri kayar) */ if (!R.air) { const hd = Math.hypot(w.x - x0, w.z - z0); if (hd > 1e-3) { const sl = (heightAt(w.x, w.z) - gPrev) / hd; R.v -= Math.sign(R.v) * 9.8 * sl / Math.sqrt(1 + sl * sl) * dt; } }
+  /* düşey: yer takibi, rampadan havalanma, OLLIE / BUNNY HOP, takla */ const g = heightAt(w.x, w.z);
+  if (!R.air) { if (jEdge && R.mode === "ride") { R.air = true; R.vy = bike ? 5.6 : 6.1; R.airT = 0; R.peak = 0; R.flip = null; R.trick = bike ? "BUNNY HOP" : "OLLIE"; try { tone(bike ? 300 : 520, 0.06, "square", 0.05); } catch (e) { } }
+    else { const cand = R.y + R.vy * dt - 10 * dt * dt; if (g >= cand - 0.02 || R.v < 1) { R.vy = clamp((g - R.y) / Math.max(dt, 1e-3), -3, 12); R.y = g; } else { R.air = true; R.airT = 0; R.peak = 0; R.flip = null; R.trick = "AIR"; } } }
+  if (R.air) { if (jEdge && !R.flip && R.airT > 0.05 && R.mode === "ride") R.flip = { t: 0, dur: bike ? 0.8 : 0.45 }; if (R.flip) R.flip.t += dt; R.vy -= 20 * dt; R.y += R.vy * dt; R.airT += dt; R.peak = Math.max(R.peak, R.y - g); if (R.vert && !R.flipped && R.vy < 0) { R.flipped = true; w.a += Math.PI; } /* dik rampada havada 180° dönüş */
+    if (R.y <= g && R.vy < 0) { R.y = g; R.vy = 0; R.air = false; R.vert = false; const F = R.flip; R.flip = null;
+      if (F && F.t < F.dur * 0.85) { popText("DÜŞTÜN!", "#ff5a5a", { sub: "Takla bitmeden yere değdin", size: 26, life: 1.6 }); try { sfxCrash(0.25); } catch (e) { } R.v *= 0.2; }
+      else if (R.airT > 0.35) { const nm = F ? (bike ? "BACKFLIP" : "KICKFLIP") : R.trick, pts = (F ? 150 : 30) + Math.round(R.peak * 20); popText(nm, "#7affb0", { sub: "+" + money(pts) + " · " + R.peak.toFixed(1) + " m hava", size: 26, life: 1.6 }); addMoney(pts); try { sfxCash(); } catch (e) { } } } }
+  w.jy = Math.max(0, R.y - g); w.vy = 0; w.vx = ca * R.v; w.vz = sa * R.v; w.run = false; w.state = "walk"; w.walk = (w.walk || 0);
+  /* pedal / tekerlek / itme döngüleri */ if (bike) { const ped = fwd > 0.1 && !R.air && R.mode === "ride"; if (ped) R.th += (R.v / BK68.R / 2.3 + 1.2) * dt; else if (R.v < 0.4) R.th += angDiff(R.th, 0.9 + Math.round((R.th - 0.9) / (Math.PI * 2)) * Math.PI * 2) * Math.min(1, dt * 3); R.wa += R.v * dt / BK68.R; }
+  else { const push = fwd > 0.1 && !R.air && R.v < vmax * 0.97 && R.mode === "ride"; R.pushK += ((push ? 1 : 0) - R.pushK) * Math.min(1, dt * (push ? 5 : 3)); if (R.pushK > 0.05) R.pushPh = (R.pushPh + dt / 0.85) % 1; else R.pushPh = 0; R.wa += R.v * dt / SK68.wr; }
+  const stopT = (R.v < 0.35 && !R.air && fwd <= 0.1) ? 1 : 0; R.stopK += (stopT - R.stopK) * Math.min(1, dt * (stopT ? 3 : 6)); }
+/* ---------- v.68: görsel güncelleme (konum, yatma, eğim, gidon, tekerlek, aynakol, takla) ---------- */
+function upd68(dt) { if (!W68.built && WHEELS.length && (typeof L65 === "undefined" || L65.world || G.t > 25)) { W68.built = true; try { stations68(); } catch (e) { W68.info += " istasyon hata: " + e; console.error("v68 st", e); } }
+  if (!W68.npcDone && typeof S61 !== "undefined" && S61.npc && S61.npc.length) { W68.npcDone = true; try { npc68(); } catch (e) { console.warn("v68 npc", e); } }
+  W68.hideT -= dt || 0; if (W68.hideT <= 0) { W68.hideT = 0.3; const c = camera.position, f = (typeof focusPt === "function" && focusPt()) || c; for (const W of WHEELS) { if (W.held) continue; const d = Math.min(Math.hypot(W.x - c.x, W.z - c.z), Math.hypot(W.x - f.x, W.z - f.z)); const v = d < 110; if (W.m.visible !== v) W.m.visible = v; } for (const S of W68.st) { const d = Math.min(Math.hypot(S.x - c.x, S.z - c.z), Math.hypot(S.x - f.x, S.z - f.z)); S.g.visible = d < 140; } }
+  const R = W68.R; if (!R) return; const w = G.walker; W68.uiT = (W68.uiT || 0) - (dt || 0); if (W68.uiT <= 0) { W68.uiT = 0.12; try { uiRide68(); } catch (e) { } }
+  if (!w || w !== R.w || G.pv || G.ride || G.indoor || G.state === "menu" || G.walkerMesh !== R.wm || (typeof K49 !== "undefined" && K49.in)) { dropNow68(); return; }
+  const W = R.W, a = w.a, y = R.y, ca = Math.cos(a), sa = Math.sin(a); W.x = w.x; W.z = w.z; W.a = a;
+  const L = R.bike ? 1.0 : 0.55, sl = R.air ? 0 : (heightAt(w.x + ca * L / 2, w.z + sa * L / 2) - heightAt(w.x - ca * L / 2, w.z - sa * L / 2)) / L, pitchT = R.air ? -clamp(R.vy * 0.035, -0.28, 0.28) - (!R.bike && R.airT < 0.16 && R.trick === "OLLIE" ? 0.32 * (1 - R.airT / 0.16) : 0) : -Math.atan(sl);
+  R.pitch += (pitchT - R.pitch) * Math.min(1, (dt || 0.016) * 10); const lt = R.st * clamp(R.v / 4, 0, 1) * (R.bike ? 0.3 : 0.2) - (R.bike ? 0.13 * R.stopK : 0); R.leanZ += (lt - R.leanZ) * Math.min(1, (dt || 0.016) * 6);
+  const F = R.flip, fp = F ? clamp(F.t / F.dur, 0, 1) : 0;
+  if (R.bike) { const g = R.rig; g.root.position.set(w.x, y, w.z); g.root.rotation.set(0, -a, 0); const ax = R.pitch - fp * Math.PI * 2, py = 0.85; g.lean.rotation.set(ax, 0, R.leanZ); g.lean.position.set(0, py - py * Math.cos(ax) * Math.cos(R.leanZ), -py * Math.sin(ax)); if (!F) g.lean.position.set(0, 0, 0);
+    g.wr.rotation.x = R.wa; g.wf.rotation.x = R.wa; g.front.rotation.y = -R.st * 0.45; rigCrank68(g, R.th); }
+  else { const S = R.sk; W.m.position.set(w.x, y, w.z); W.m.rotation.set(0, -a, 0); S.lean.rotation.set(R.pitch, 0, R.leanZ); const fa = fp * Math.PI * 2, py = 0.06; S.board.rotation.set(0, 0, fa); S.board.position.set(py * Math.sin(fa), py - py * Math.cos(fa) + (F ? Math.sin(fp * Math.PI) * 0.12 : 0), 0); } }
+/* ---------- v.68: binici pozu (çizimden hemen önce; yürüme pozunun üzerine yazar) ---------- */
+function pose68() { const R = W68.R; if (!R || !R.wm || R.wm !== G.walkerMesh) return; const wm = R.wm; if (R.bike) { if (wm.parent !== R.rig.lean) R.rig.lean.add(wm); bikePose68(wm, { th: R.th, st: R.st, stop: R.stopK, sc: R.sc, fit: R.fit }); }
+  else { if (wm.parent !== R.sk.lean) R.sk.lean.add(wm); const air = R.air ? clamp(R.airT / 0.12, 0, 1) * (R.flip ? 1 : 0.6) : 0; skatePose68(wm, { sc: R.sc, push: R.pushK, ph: R.pushPh, air, lean: R.leanZ, t: R.t }); } }
+/* ---------- v.68: skate parkı NPC'leri de doğru oturuş / duruşta ---------- */
+function npc68() { for (const N of S61.npc) { const p = N.p, ride = N.ride; if (!p || !ride) continue; const sc = p.userData.h || 1; poseChar(p, { state: "idle", still: true, walk: 0 });
+    if (ride.userData.bike68) { let rd = ride; if (!ride.userData.bike68.bmx && N.g) { rd = bikeStatic68(ride.userData.bike68.col, true); rd.position.copy(ride.position); N.g.remove(ride); N.g.add(rd); N.ride = rd; } const lean = rd.children[0].children[0]; lean.add(p); bikePose68(p, { th: 1.05, st: 0, stop: 0, sc, fit: bikeFit68(sc) }); }
+    else if (ride.userData.skate68) { ride.userData.skate68.lean.add(p); skatePose68(p, { sc, push: 0, ph: 0, air: 0, lean: 0, t: 0 }); } } }
+/* ---------- v.68: etkileşim — 2,5 m'de "[E] Bisiklete Bin / Kaykaya Bin" ---------- */
+wheelInteract = function (w) { if (G.wheel || W68.R) return false; let best = null, bd = 2.5; for (const W of WHEELS) { if (W.held) continue; const d = dist(W.x, W.z, w.x, w.z); if (d < bd) { bd = d; best = W; } }
+  if (!best) return false; G.interact = { txt: "[E] " + (best.type === "bike" ? (best.bmx ? "BMX Bisiklete Bin" : "Bisiklete Bin") : "Kaykaya Bin"), col: "#7affb0", fn: () => takeWheel(best) }; return true; };
+updateWheels = function (dt) { try { upd68(dt); } catch (e) { if (!W68.err) { W68.err = 1; console.error("v68", e); } } };
+riderPose61 = function () { }; /* eski eğim/takla pozu yerine v.68 */
+{ const _uw68 = updateWalker; updateWalker = function (dt) { if (W68.R && G.walker && W68.R.w === G.walker && !G.pv && !G.ride && !G.seq) { try { ride68(dt); } catch (e) { if (!W68.err) { W68.err = 1; console.error("v68 ride", e); } } return; } return _uw68.apply(this, arguments); }; }
+{ const _dp68 = drawPeople; drawPeople = function () { const r = _dp68.apply(this, arguments); try { pose68(); } catch (e) { if (!W68.perr) { W68.perr = 1; console.error("v68 pose", e); } } return r; }; }
+{ const _pp68 = playerPunch; playerPunch = function () { if (W68.R) return; return _pp68.apply(this, arguments); }; }
+/* ---------- v.68: dokunmatik düzen (sürüşte GAZ / FREN / ZIPLA / HIZLI / E·İN) ---------- */
+{ const _l68 = ui66Layout; ui66Layout = function (force) { const ride = !G.pv && !!W68.R; const B = UI66.b || {};
+    if (!ride) { if (UI66.mode === "ride") { for (const k of ["enter", "act", "brake", "hb", "gas", "nitro"]) if (B[k]) B[k].classList.remove("hid"); if (B.nitro && B.nitro.dataset.h66) B.nitro.innerHTML = B.nitro.dataset.h66; force = true; } return _l68(force); }
+    if (!force && UI66.mode === "ride") return; UI66.mode = "ride"; const set = (k, h) => { if (B[k]) B[k].innerHTML = h; };
+    if (B.gas) { B.gas.classList.remove("hid"); ui66Pos(B.gas, 0, 6, 96); set("gas", "<i>⏫</i><s>GAZ</s>"); } if (B.brake) { B.brake.classList.remove("hid"); ui66Pos(B.brake, 108, 2, 76); set("brake", "<i>⏬</i><s>FREN</s>"); }
+    if (B.hb) { B.hb.classList.remove("hid"); ui66Pos(B.hb, 12, 112, 66); set("hb", "<i>⤒</i><s>ZIPLA</s>"); } if (B.nitro) { B.nitro.classList.remove("hid"); ui66Pos(B.nitro, 98, 96, 56); set("nitro", "<i>💨</i><s>HIZLI</s>"); }
+    if (B.act) { B.act.classList.remove("hid"); ui66Pos(B.act, 194, 4, 60); } for (const k of ["horn", "enter", "crouch"]) if (B[k]) B[k].classList.add("hid"); }; }
+function uiRide68() { if (typeof UI66 === "undefined" || !UI66.on || !W68.R || G.pv || G.state !== "play") return; if (UI66.mode !== "ride") ui66Layout(true); const B = UI66.b; for (const k of ["gas", "brake", "hb", "act"]) if (B[k]) B[k].classList.add("ctx"); if (B.nitro) B.nitro.classList.toggle("ctx", W68.R.v > 1); for (const k of ["horn", "enter", "crouch"]) if (B[k]) B[k].classList.add("hid"); if (B.act) { B.act.classList.remove("hid"); const s = B.act.querySelector("s"); if (s && s.textContent !== "İN") s.textContent = "İN"; } }
+{ const _t68 = ui66Tick; ui66Tick = function () { const r = _t68.apply(this, arguments); try { uiRide68(); } catch (e) { } return r; }; }
+/* ---------- v.68: bisiklet park istasyonları ---------- */
+function ok68(x, z) { return isLand(x, z) && !onRoad(x, z) && !pointInBuilding(x, z) && !!walkAt(x, z) && propFree(x, z, 0.5); }
+function row68(x, z, ang, n) { const ux = Math.cos(ang), uz = Math.sin(ang), px = -uz, pz = ux; for (let i = -1.6; i <= n + 1.4; i += 0.5) { const s = (i - (n - 1) / 2) * 1.0, cx = x + ux * s, cz = z + uz * s; for (const q of [-0.95, 0, 0.95]) { if (!ok68(cx + px * q, cz + pz * q)) return false; if (inFun(cx + px * q, cz + pz * q, 0.5)) return false; } } return true; }
+function site68(cx, cz, r0, r1, angF) { for (let r = r0; r <= r1; r += 1.5) { const N = r < 1 ? 1 : Math.max(10, Math.round(r * 0.9)); for (let k = 0; k < N; k++) { const a = k / N * Math.PI * 2, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r, ang = angF !== undefined ? angF : a + Math.PI / 2; for (const da of [0, Math.PI / 2]) if (row68(x, z, ang + da, 5)) return { x, z, ang: ang + da }; } } return null; }
+function totemTex68(name) { const c = mkCanvas(256, 512), g = c.getContext("2d"); g.fillStyle = "#0f4fa8"; g.fillRect(0, 0, 256, 512); g.fillStyle = "#ffffff"; g.fillRect(14, 14, 228, 120); g.fillStyle = "#0f4fa8"; g.font = "900 64px sans-serif"; g.textAlign = "center"; g.fillText("🚲", 128, 100); g.fillStyle = "#fff"; g.font = "900 34px system-ui, Arial"; g.fillText("BİSİKLET", 128, 190); g.fillText("İSTASYONU", 128, 232); g.font = "700 22px system-ui, Arial"; g.fillStyle = "#cfe6ff"; const words = name.split(" "); let line = "", y = 286; for (const wd of words) { if (g.measureText(line + " " + wd).width > 220 && line) { g.fillText(line, 128, y); y += 28; line = wd; } else line = line ? line + " " + wd : wd; } g.fillText(line, 128, y);
+  g.fillStyle = "#07264f"; g.fillRect(40, 360, 176, 110); g.fillStyle = "#5af07a"; g.font = "800 20px monospace"; g.fillText("[E] BİN", 128, 405); g.fillStyle = "#fff"; g.fillText("1 SAAT 0 ₺", 128, 440); return canvasTex(c); }
+function padTex68() { return mat68("pad", () => { const c = mkCanvas(512, 128), g = c.getContext("2d"); g.fillStyle = "#3a4a5e"; g.fillRect(0, 0, 512, 128); g.strokeStyle = "#ffffff"; g.lineWidth = 6; g.strokeRect(6, 6, 500, 116); g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 3; for (let i = 1; i < 8; i++) { g.beginPath(); g.moveTo(i * 64, 14); g.lineTo(i * 64, 114); g.stroke(); } g.fillStyle = "rgba(255,255,255,.7)"; g.font = "900 40px sans-serif"; g.textAlign = "center"; for (let i = 0; i < 8; i++) g.fillText("🚲", i * 64 + 32, 80); return new THREE.MeshStandardMaterial({ map: canvasTex(c), roughness: 0.9, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }); }); }
+function stations68() { const L = []; for (const W of WHEELS) { const I = W.m.userData.bike68; if (W.type === "bike" && W.bmx && I && !I.bmx) { const m = bikeStatic68(I.col, true); m.position.copy(W.m.position); m.rotation.copy(W.m.rotation); m.visible = W.m.visible; if (W.m.parent) W.m.parent.add(m); if (W.m.parent) W.m.parent.remove(W.m); W.m = m; } } /* skate parkı BMX'leri: sepetsiz/çamurluksuz model */ const fz = FUN_ZONES.find(f => f.id === "oyun2"); if (fz) L.push({ name: "Oğuzhan Enes Oyun Parkı", c: [fz.x, fz.z], r0: fz.r + 2, r1: fz.r + 22 });
+  if (typeof L65 !== "undefined" && L65.world) { const Wd = L65.world, gp = Wd.wpt(9, Wd.R + 6); L.push({ name: "Lunapark Girişi", c: gp, r0: 0, r1: 16, ang: Math.atan2(Wd.RV[1], Wd.RV[0]) }); }
+  if (typeof B55 !== "undefined" && B55.site && B55.site.sh) { const B = B55.site, sh = B.sh; L.push({ name: "Sahil Kordonu", c: [sh.x + B.nx * 22, sh.z + B.nz * 22], r0: 0, r1: 26, ang: Math.atan2(B.tz, B.tx), alt: [sh.x - B.nx * 22, sh.z - B.nz * 22] }); }
+  const av = BINS.find(B => B.style === "avm"); if (av) L.push({ name: "İstanbul AVM Önü", c: [av.mx - av.nx * 7, av.mz - av.nz * 7], r0: 0, r1: 18, ang: Math.atan2(av.nz, av.nx) + Math.PI / 2, alt: [av.mx + av.nx * 7, av.mz + av.nz * 7] });
+  if (LM.hippodrome) L.push({ name: "Sultanahmet Meydanı", c: [LM.hippodrome.x, LM.hippodrome.z], r0: LM.hippodrome.r * 0.75, r1: LM.hippodrome.r + 20 });
+  const arch = mg68([new THREE.TorusGeometry(0.34, 0.026, 6, 16, Math.PI).translate(0, 0.52, 0), new THREE.CylinderGeometry(0.026, 0.026, 0.52, 6).translate(0.34, 0.26, 0), new THREE.CylinderGeometry(0.026, 0.026, 0.52, 6).translate(-0.34, 0.26, 0), new THREE.BoxGeometry(0.12, 0.012, 0.08).translate(0.34, 0.006, 0), new THREE.BoxGeometry(0.12, 0.012, 0.08).translate(-0.34, 0.006, 0), new THREE.CylinderGeometry(0.03, 0.03, 0.1, 8).translate(0.34, 0.4, 0)]), AM = [];
+  const steel = mat68("bs", () => new THREE.MeshStandardMaterial({ color: 0xc8ccd3, metalness: 0.85, roughness: 0.28 })), blue = mat68("tb", () => new THREE.MeshStandardMaterial({ color: 0x0f4fa8, roughness: 0.5 })), white = mat68("tw", () => new THREE.MeshStandardMaterial({ color: 0xf2f4f8, roughness: 0.5 }));
+  let nb = 0, ns = 0, ci = 0; const ST = [];
+  for (const S of L) { let site = site68(S.c[0], S.c[1], S.r0, S.r1, S.ang); if (!site && S.alt) site = site68(S.alt[0], S.alt[1], 0, S.r1, S.ang); if (!site) { W68.info += " yer yok: " + S.name; continue; }
+    const { x, z, ang } = site, ux = Math.cos(ang), uz = Math.sin(ang), px = -uz, pz = ux, y0 = heightAt(x, z), G0 = new THREE.Group(); scene.add(G0); const at = s => [x + ux * s, z + uz * s];
+    const pad = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 2.4).rotateX(-Math.PI / 2), padTex68()); pad.position.set(x + ux * 0.3, y0 + 0.012, z + uz * 0.3); pad.rotation.y = -ang; pad.receiveShadow = true; G0.add(pad);
+    for (let i = 0; i < 5; i++) { const s = (i - 2) * 1.0, [sx, sz] = at(s); AM.push(mtx67(sx, heightAt(sx, sz), sz, -ang)); }
+    /* totem (ödeme / bilgi direği) */ { const [tx, tz] = at(-3.1), tg = new THREE.Group(); tg.position.set(tx, heightAt(tx, tz), tz); tg.rotation.y = -ang + Math.PI / 2; G0.add(tg); tg.add(new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.75, 0.3).translate(0, 0.875, 0), blue)); tg.add(new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.08, 0.38).translate(0, 1.79, 0), white)); const pn = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.8), new THREE.MeshStandardMaterial({ map: totemTex68(S.name), emissive: 0xffffff, emissiveMap: null, roughness: 0.5 })); pn.material.emissiveMap = pn.material.map; pn.material.emissiveIntensity = 0.3; pn.position.set(0, 1.15, 0.152); tg.add(pn); const pn2 = pn.clone(); pn2.position.z = -0.152; pn2.rotation.y = Math.PI; tg.add(pn2); const b = addSolidBox(tx, tz, 0.5, 0.35, -ang + Math.PI / 2); b.maxY = 1.9; }
+    /* 3 bisiklet (park demirine yaslı) + 2 kaykay */ for (const i of [0, 2, 4]) { const s = (i - 2) * 1.0 + 0.24, [bx, bz] = at(s), col = BIKE_COLS68[ci++ % BIKE_COLS68.length], a = ang + Math.PI / 2 + (i === 2 ? Math.PI : 0), m = bikeStatic68(col, false); m.position.set(bx, heightAt(bx, bz), bz); m.rotation.y = -a; scene.add(m); WHEELS.push({ type: "bike", x: bx, z: bz, a, m, x0: bx, z0: bz, a0: a, st68: S.name }); nb++; }
+    for (const k of [0, 1]) { const [kx, kz] = at(3.0 + k * 0.55), kxx = kx + px * (k ? 0.3 : -0.3), kzz = kz + pz * (k ? 0.3 : -0.3), col = SK_COLS68[(ci + k) % SK_COLS68.length], a = ang + (k ? 0.25 : -0.2), m = skateStatic68(col, SKW68[(ci + k + 2) % SKW68.length]); m.position.set(kxx, heightAt(kxx, kzz), kzz); m.rotation.y = -a; scene.add(m); WHEELS.push({ type: "skate", x: kxx, z: kzz, a, m, x0: kxx, z0: kzz, a0: a, st68: S.name }); ns++; }
+    G0.traverse(o => { if (o.isMesh) o.castShadow = true; }); ST.push({ name: S.name, x, z, g: G0 }); }
+  if (AM.length) { const im = inst67(arch, steel, AM, { cast: true }); scene.add(im); W68.archIM = im; }
+  W68.st = ST; W68.info += " istasyon " + ST.length + " (" + ST.map(s => s.name).join(", ") + ") · yeni bisiklet " + nb + " kaykay " + ns; try { renderer.shadowMap.needsUpdate = true; } catch (e) { } }
 
 </script>
 <div id="fpsBox" style="position:fixed;left:max(8px,env(safe-area-inset-left));top:calc(max(6px,env(safe-area-inset-top)) + 64px);z-index:60;font:700 13px/1.2 monospace;color:#7affc0;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:7px;pointer-events:none;display:none"></div>
